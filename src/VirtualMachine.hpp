@@ -22,9 +22,9 @@ private:
     VM() = default;
     ~VM() = default;
 
-    static void printValue(size_t index);
+    static void printValueDebug(size_t index);
 
-    static void operation(const OpCode& code);
+    static void operation(const Value& a, const Value& b, const OpCode& code);
 
     static Value& pop() { Value& v = m_Stack.top(); m_Stack.pop(); return v; }
 };

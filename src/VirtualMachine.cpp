@@ -30,7 +30,7 @@ void VM::printOpCodes()
         switch (m_OpCodes[i].code)
         {
         case OP_PUSH_INT: 
-            printValue(i); break;
+            printValueDebug(i); break;
         default:
             printf("%.4lu | %.30s\n", i, OpCodeString[m_OpCodes[i].code]);
             break;
@@ -49,7 +49,47 @@ void VM::simulate()
         {
         case OP_ADD:
             {
-                operation(op);
+                assert(!m_Stack.empty());
+
+                Value& b = pop();
+                Value& a = pop();
+                operation(a, b, op);
+                ip++;
+                break;
+            }
+        case OP_SUBTRACT:
+            {
+                assert(!m_Stack.empty());
+
+                Value& b = pop();
+                Value& a = pop();
+                operation(a, b, op);
+                ip++;
+                break;
+            }
+        case OP_MULTIPLY:
+            {
+                assert(!m_Stack.empty());
+
+                Value& b = pop();
+                Value& a = pop();
+                operation(a, b, op);
+                ip++;
+                break;
+            }
+        case OP_DIVIDE:
+            {
+                assert(!m_Stack.empty());
+
+                Value& b = pop();
+                Value& a = pop();
+                operation(a, b, op);
+                ip++;
+                break;
+            }
+        case OP_CR:
+            {
+                printf("\n");
                 ip++;
                 break;
             }
@@ -61,6 +101,8 @@ void VM::simulate()
             }
         case OP_PRINT:
             {
+                assert(!m_Stack.empty());
+
                 Value& a = pop();
                 printf("%d", a.as.v_Int);
                 ip++;
@@ -72,7 +114,7 @@ void VM::simulate()
     }
 }
 
-void VM::printValue(size_t index)
+void VM::printValueDebug(size_t index)
 {
     OpCode& code = m_OpCodes[index];
     switch (code.value.type)
@@ -85,11 +127,8 @@ void VM::printValue(size_t index)
     }
 }
 
-void VM::operation(const OpCode& code)
+void VM::operation(const Value& a, const Value& b, const OpCode& code)
 {
-    Value& a = pop();
-    Value& b = pop();
- 
     assert(a.type == b.type); // TYPES ARE EQUAL
 
     Value v;
@@ -99,6 +138,15 @@ void VM::operation(const OpCode& code)
     {
     case OP_ADD:
         addValue(a, b, v);
+        break;
+    case OP_SUBTRACT:
+        subtractValue(a, b, v);
+        break;
+    case OP_MULTIPLY:
+        multiplyValue(a, b, v);
+        break;
+    case OP_DIVIDE:
+        divideValue(a, b, v);
         break;
     default:
         assert(false); // UNREACHABLE
