@@ -44,8 +44,10 @@ int main()
 
     // VM::printOpCodes();
 
-    Lexer::lexString("34 35 + print CR 34 31 - * / print  ");
+    // Lexer::lexString("34 35 + print CR 34 31 - * / print  ");
+    Lexer::lexFile("examples/basic.SBIMCL");
     Lexer::printTokens();
+    Lexer::deallocate();
 
     VM::simulate();
 }

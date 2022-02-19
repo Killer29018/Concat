@@ -11,17 +11,21 @@ class Lexer
 {
 private:
     static std::vector<Token> m_Tokens;
+    static char* m_InputString;
 public:
     static void lexFile(const char* filePath);
-    static void lexString(char* inputString);
+    static void lexString(const char* inputString);
 
     static void printTokens();
+
+    static void deallocate();
 private:
     Lexer() {}
     ~Lexer() {}
 
-    static void parseString(char* inputString);
-    static void getTokenType(char* inputString, Token& token);
+    static void parseString();
+    static void getTokenType(Token& token);
+    static bool isDelimiter(char c);
 };
 
 #endif

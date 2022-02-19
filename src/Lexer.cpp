@@ -5,16 +5,34 @@
 #include <cstdlib>
 #include <cstdio>
 
+#include <fstream>
+
 std::vector<Token> Lexer::m_Tokens;
+char* Lexer::m_InputString;
 
 void Lexer::lexFile(const char* filePath)
 {
-    assert(false); // NOT IMPLEMENTED
+    std::ifstream file;
+    file.open(filePath, std::ios::out);
+
+    file.seekg(0, std::ios::end);
+    size_t fileSize = file.tellg();
+
+    m_InputString = new char[fileSize];
+
+    file.seekg(0, std::ios::beg);
+    file.read(m_InputString, fileSize);
+
+    file.close();
+
+    parseString();
 }
 
-void Lexer::lexString(char* inputString)
+void Lexer::lexString(const char* inputString)
 {
-    parseString(inputString);
+    m_InputString = new char[strlen(inputString)];
+    strcpy(m_InputString, inputString);
+    parseString();
 }
 
 void Lexer::printTokens()
@@ -29,52 +47,57 @@ void Lexer::printTokens()
     }
 }
 
-void Lexer::parseString(char* inputString)
+void Lexer::deallocate()
+{
+    delete[] m_InputString;
+}
+
+void Lexer::parseString()
 {
     Token t;
     int currentLine = 1;
-    t.startIndex = inputString;
+    int currentColumn = 1;
+    t.startIndex = m_InputString;
 
     bool start = false;
 
-    for (size_t i = 0; i < strlen(inputString); i++)
+    for (size_t i = 0; i < strlen(m_InputString); i++)
     {
-        if (inputString[i] == '\n')
+        if (!isDelimiter(m_InputString[i]) && !start)
         {
-            currentLine++;
-            continue;
-        }
-
-        if (inputString[i] != ' ' && !start)
-        {
-            t.startIndex = inputString + i;
-            t.column = t.startIndex - inputString;
+            t.startIndex = m_InputString + i;
+            t.column = currentColumn;
             start = true;
-            continue;
         }
-
-        if (start && inputString[i] == ' ')
+        else if (start && isDelimiter(m_InputString[i]))
         {
-            t.endIndex = (inputString + i);
+            t.endIndex = (m_InputString + i);
             t.line = currentLine;
             start = false;
-            getTokenType(inputString, t);
+            getTokenType(t);
 
             m_Tokens.push_back(t);
-            continue;
         }
+
+        if (m_InputString[i] == '\n')
+        {
+            currentLine++;
+            currentColumn = 0;
+        }
+
+        currentColumn++;
     }
 
     if (start)
     {
-        t.endIndex = inputString + strlen(inputString);
+        t.endIndex = m_InputString + strlen(m_InputString);
         t.line = currentLine;
-        getTokenType(inputString, t);
+        getTokenType(t);
         m_Tokens.push_back(t);
     }
 }
 
-void Lexer::getTokenType(char* inputString, Token& token)
+void Lexer::getTokenType(Token& token)
 {
     int length = token.endIndex - token.startIndex;
 
@@ -118,5 +141,17 @@ void Lexer::getTokenType(char* inputString, Token& token)
                 exit(-1);
         }
 
+    }
+}
+
+bool Lexer::isDelimiter(char c)
+{
+    switch (c)
+    {
+    case ' ':
+    case '\n':
+        return true;
+    default:
+        return false;
     }
 }
