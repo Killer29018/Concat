@@ -6,9 +6,9 @@
  *      Opcode -> Virtual Machine -> Output
  */
 
-#include "VirtualMachine.hpp"
-
 #include "Lexer.hpp"
+#include "Compiler.hpp"
+#include "VirtualMachine.hpp"
 
 int main()
 {
@@ -47,7 +47,11 @@ int main()
     // Lexer::lexString("34 35 + print CR 34 31 - * / print  ");
     Lexer::lexFile("examples/basic.SBIMCL");
     Lexer::printTokens();
-    Lexer::deallocate();
+
+    Compiler::startCompiler();
+
+    VM::printOpCodes();
 
     VM::simulate();
+    Lexer::deallocate();
 }

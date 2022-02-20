@@ -14,6 +14,11 @@ void VM::addOpCode(OpCodeEnum code)
     m_OpCodes.emplace_back(op);
 }
 
+void VM::addCode(const OpCode& code)
+{
+    m_OpCodes.push_back(code);
+}
+
 void VM::pushInt(int32_t value)
 {
     OpCode op;

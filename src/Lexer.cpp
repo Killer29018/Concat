@@ -7,6 +7,8 @@
 
 #include <fstream>
 
+#include "Compiler.hpp"
+
 std::vector<Token> Lexer::m_Tokens;
 char* Lexer::m_InputString;
 
@@ -95,6 +97,8 @@ void Lexer::parseString()
         getTokenType(t);
         m_Tokens.push_back(t);
     }
+
+    Compiler::addTokens(m_Tokens);
 }
 
 void Lexer::getTokenType(Token& token)
@@ -109,11 +113,13 @@ void Lexer::getTokenType(Token& token)
         case '-': token.type = TOKEN_SUBTRACT; break;
         case '*': token.type = TOKEN_MULTIPLY; break;
         case '/': token.type = TOKEN_DIVIDE; break;
+        default:
+            parseWord(token);
         }
     }
     else
     {
-        if (!strncmp(token.startIndex, "CR", length))
+        if (!strncmp(token.startIndex, "cr", length))
         {
             token.type = TOKEN_CR;
         }
@@ -121,26 +127,35 @@ void Lexer::getTokenType(Token& token)
         {
             token.type = TOKEN_PRINT;
         }
-        else if (*token.startIndex >= '0' && *token.startIndex <= '9')
+        else
         {
-            char* end;
-            strtol(token.startIndex, &end, 0);
-            if (end != token.endIndex)
-            {
-                fprintf(stderr, "%lu:%lu Failed to pass integer constant %.*s\n", token.line, token.column, length, token.startIndex);
-                exit(-1);
-            }
-            else
-            {
-                token.type = TOKEN_INT;
-            }
+            parseWord(token);
+        }
+
+    }
+}
+
+void Lexer::parseWord(Token& token)
+{
+    int length = token.endIndex - token.startIndex;
+    if (*token.startIndex >= '0' && *token.startIndex <= '9')
+    {
+        char* end;
+        strtol(token.startIndex, &end, 0);
+        if (end != token.endIndex)
+        {
+            fprintf(stderr, "%lu:%lu Failed to pass integer constant %.*s\n", token.line, token.column, length, token.startIndex);
+            exit(-1);
         }
         else
         {
-                fprintf(stderr, "%lu:%lu Unknown word %.*s\n", token.line, token.column, length, token.startIndex);
-                exit(-1);
+            token.type = TOKEN_INT;
         }
-
+    }
+    else
+    {
+        fprintf(stderr, "%lu:%lu Unknown word %.*s\n", token.line, token.column, length, token.startIndex);
+        exit(-1);
     }
 }
 

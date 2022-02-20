@@ -1,6 +1,8 @@
 #ifndef TOKENS_HPP
 #define TOKENS_HPP
 
+#include <vector>
+
 enum TokenType
 {
     TOKEN_ADD,

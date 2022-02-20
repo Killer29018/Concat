@@ -25,6 +25,7 @@ private:
 
     static void parseString();
     static void getTokenType(Token& token);
+    static void parseWord(Token& token);
     static bool isDelimiter(char c);
 };
 
