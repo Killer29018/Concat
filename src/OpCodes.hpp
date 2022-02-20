@@ -11,9 +11,13 @@ enum OpCodeEnum
     OP_SUBTRACT,
     OP_MULTIPLY,
     OP_DIVIDE,
-    OP_CR, // Carriage Return
+    OP_CR,
     OP_PUSH_INT,
     OP_PRINT,
+    OP_DUP,
+    OP_DOT,
+
+    OP_COUNT
 };
 
 const std::vector<const char*> OpCodeString
@@ -25,6 +29,8 @@ const std::vector<const char*> OpCodeString
     "OP_CR",
     "OP_PUSH_INT",
     "OP_PRINT",
+    "OP_DUP",
+    "OP_DOT"
 };
 
 struct OpCode

@@ -66,6 +66,18 @@ void Compiler::startCompiler()
             code.value = { TYPE_NULL, 0 };
             VM::addCode(code);
             break;
+        case TOKEN_DUP:
+            code.code = OP_DUP;
+            code.value = { TYPE_NULL, 0 };
+            VM::addCode(code);
+            break;
+        case TOKEN_DOT:
+            code.code = OP_DOT;
+            code.value = { TYPE_NULL, 0 };
+            VM::addCode(code);
+            break;
+        default:
+            assert(false); // UNREACHABLE
         }
     }
 }

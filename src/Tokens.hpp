@@ -12,6 +12,10 @@ enum TokenType
     TOKEN_CR,
     TOKEN_INT,
     TOKEN_PRINT,
+    TOKEN_DUP,
+    TOKEN_DOT,
+
+    TOKEN_COUNT
 };
 
 const std::vector<const char*> TokenString
@@ -23,6 +27,8 @@ const std::vector<const char*> TokenString
     "TOKEN_CR",
     "TOKEN_INT",
     "TOKEN_PRINT",
+    "TOKEN_DUP",
+    "TOKEN_DOT",
 };
 
 struct Token

@@ -12,6 +12,9 @@ Directly print what the value at the top of the stack is
 
 cr ( -- )
 Print a Carriage Return
+
+. ( a -- )
+Print the value at the top of the stack in ascii
 ```
 
 ### Arithmetic
@@ -28,5 +31,10 @@ Pop the top two values and then push the product
 
 / (a b -- b/a)
 Pop the top two values and then push the division
+```
 
+### Stack Operations
+```
+dup ( a -- a a )
+Duplicate the value at the top of the stack
 ```

@@ -113,6 +113,7 @@ void Lexer::getTokenType(Token& token)
         case '-': token.type = TOKEN_SUBTRACT; break;
         case '*': token.type = TOKEN_MULTIPLY; break;
         case '/': token.type = TOKEN_DIVIDE; break;
+        case '.': token.type = TOKEN_DOT; break;
         default:
             parseWord(token);
         }
@@ -126,6 +127,10 @@ void Lexer::getTokenType(Token& token)
         else if (!strncmp(token.startIndex, "print", length))
         {
             token.type = TOKEN_PRINT;
+        }
+        else if (!strncmp(token.startIndex, "dup", length))
+        {
+            token.type = TOKEN_DUP;
         }
         else
         {

@@ -113,6 +113,25 @@ void VM::simulate()
                 ip++;
                 break;
             }
+        case OP_DUP:
+            {
+                assert(!m_Stack.empty());
+
+                Value& a = pop();
+                m_Stack.push(a);
+                m_Stack.push(a);
+                ip++;
+                break;
+            }
+        case OP_DOT:
+            {
+                assert(!m_Stack.empty());
+
+                Value& a = pop();
+                printf("%c", a.as.v_Int);
+                ip++;
+                break;
+            }
         default:
             assert(false); // UNREACHABLE
         }
