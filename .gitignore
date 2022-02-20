@@ -2,3 +2,7 @@ bin/**
 build/**
 **.sh
 **.bat
+compile_commands.json
+
+# File
+SBIMCL

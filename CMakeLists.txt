@@ -6,15 +6,15 @@ set (CMAKE_CXX_STANDARD 17)
 
 set (linker "")
 
-set (CMAKE_BINARY_DIR "/bin")
-set (OUTPUT_DIRECTORY "${PROJECT_SOURCE_DIR}${CMAKE_BINARY_DIR}")
+set (OUTPUT_DIRECTORY "${PROJECT_SOURCE_DIR}")
+set (CMAKE_RUNTIME_OUTPUT_DIRECTORY "${OUTPUT_DIRECTORY}")
 
 if (CMAKE_BUILD_TYPE MATCHES Debug)
     message  ("Building Debug")
-    set (CMAKE_RUNTIME_OUTPUT_DIRECTORY "${OUTPUT_DIRECTORY}/debug")
+    set (linker "${linker}-g")
 else ()
     message ("Building Release")
-    set (CMAKE_RUNTIME_OUTPUT_DIRECTORY "${OUTPUT_DIRECTORY}/release")
+    set (linker "${linker}-O3")
 endif()
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wno-unknown-pragmas")
