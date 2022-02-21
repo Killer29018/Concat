@@ -39,6 +39,7 @@ void Lexer::lexString(const char* inputString)
 
 void Lexer::printTokens()
 {
+    printf("--- TOKENS ---\n");
     for (size_t i = 0; i < m_Tokens.size(); i++)
     {
         Token& t = m_Tokens[i];
@@ -104,40 +105,21 @@ void Lexer::parseString()
 void Lexer::getTokenType(Token& token)
 {
     int length = token.endIndex - token.startIndex;
+    char* word = new char[length + 1];
+    strncpy(word, token.startIndex, length);
+    word[length] = 0;
 
-    if (length == 1)
+    if (Keywords.find(word) != Keywords.end())
     {
-        switch (*token.startIndex)
-        {
-        case '+': token.type = TOKEN_ADD; break;
-        case '-': token.type = TOKEN_SUBTRACT; break;
-        case '*': token.type = TOKEN_MULTIPLY; break;
-        case '/': token.type = TOKEN_DIVIDE; break;
-        case '.': token.type = TOKEN_DOT; break;
-        default:
-            parseWord(token);
-        }
+        token.type = Keywords.at(word);
     }
     else
     {
-        if (!strncmp(token.startIndex, "cr", length))
-        {
-            token.type = TOKEN_CR;
-        }
-        else if (!strncmp(token.startIndex, "print", length))
-        {
-            token.type = TOKEN_PRINT;
-        }
-        else if (!strncmp(token.startIndex, "dup", length))
-        {
-            token.type = TOKEN_DUP;
-        }
-        else
-        {
-            parseWord(token);
-        }
-
+        parseWord(token);
     }
+
+
+    delete[] word;
 }
 
 void Lexer::parseWord(Token& token)

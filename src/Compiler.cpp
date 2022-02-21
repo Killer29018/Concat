@@ -15,7 +15,7 @@ void Compiler::addTokens(std::vector<Token>& tokens)
 void Compiler::startCompiler()
 {
     if (m_Tokens->size() == 0)
-        assert(false); // No Tokens
+        return;
 
     OpCode code;
     for (size_t i = 0; i < m_Tokens->size(); i++)

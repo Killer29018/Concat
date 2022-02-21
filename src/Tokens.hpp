@@ -3,6 +3,8 @@
 
 #include <vector>
 
+#include <unordered_map>
+
 enum TokenType
 {
     TOKEN_ADD,
@@ -30,6 +32,18 @@ const std::vector<const char*> TokenString
     "TOKEN_DUP",
     "TOKEN_DOT",
 };
+
+const int KeywordCount = 8;
+const std::unordered_map<std::string, TokenType> Keywords({
+    { "+",      TOKEN_ADD },
+    { "-",      TOKEN_SUBTRACT },
+    { "*",      TOKEN_MULTIPLY },
+    { "/",      TOKEN_DIVIDE },
+    { "cr",     TOKEN_CR },
+    { "print",  TOKEN_PRINT },
+    { "dup",    TOKEN_DUP },
+    { ".",      TOKEN_DOT },
+});
 
 struct Token
 {
