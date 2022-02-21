@@ -6,24 +6,32 @@
 #include <cstdio>
 
 #include <fstream>
+#include <sstream>
 
 #include "Compiler.hpp"
 
 std::vector<Token> Lexer::m_Tokens;
-char* Lexer::m_InputString;
+std::string Lexer::m_InputString;
 
 void Lexer::lexFile(const char* filePath)
 {
     std::ifstream file;
     file.open(filePath, std::ios::out);
 
-    file.seekg(0, std::ios::end);
-    size_t fileSize = file.tellg();
+    // file.seekg(0, std::ios::end);
+    // size_t fileSize = file.tellg();
 
-    m_InputString = new char[fileSize];
+    // m_InputString = new char[fileSize];
 
-    file.seekg(0, std::ios::beg);
-    file.read(m_InputString, fileSize);
+    // file.seekg(0, std::ios::beg);
+    // file.read(m_InputString, fileSize);
+
+    // file.close();
+
+    std::stringstream ss;
+    ss << file.rdbuf();
+    m_InputString = ss.str();
+
 
     file.close();
 
@@ -32,8 +40,8 @@ void Lexer::lexFile(const char* filePath)
 
 void Lexer::lexString(const char* inputString)
 {
-    m_InputString = new char[strlen(inputString)];
-    strcpy(m_InputString, inputString);
+    // strcpy(m_InputString, inputString);
+    m_InputString = inputString;
     parseString();
 }
 
@@ -52,7 +60,7 @@ void Lexer::printTokens()
 
 void Lexer::deallocate()
 {
-    delete[] m_InputString;
+    // delete[] m_InputString;
 }
 
 void Lexer::parseString()
@@ -60,21 +68,22 @@ void Lexer::parseString()
     Token t;
     int currentLine = 1;
     int currentColumn = 1;
-    t.startIndex = m_InputString;
+    t.startIndex = &m_InputString[0];
 
     bool start = false;
 
-    for (size_t i = 0; i < strlen(m_InputString); i++)
+    for (size_t i = 0; i < m_InputString.size(); i++)
     {
         if (!isDelimiter(m_InputString[i]) && !start)
         {
-            t.startIndex = m_InputString + i;
+            t.startIndex = &m_InputString[0] + i;
             t.column = currentColumn;
             start = true;
         }
         else if (start && isDelimiter(m_InputString[i]))
         {
-            t.endIndex = (m_InputString + i);
+            // t.endIndex = (m_InputString + i);
+            t.endIndex = (&m_InputString[0] + i);
             t.line = currentLine;
             start = false;
             getTokenType(t);
@@ -93,7 +102,7 @@ void Lexer::parseString()
 
     if (start)
     {
-        t.endIndex = m_InputString + strlen(m_InputString);
+        t.endIndex = &m_InputString[0] + m_InputString.length();
         t.line = currentLine;
         getTokenType(t);
         m_Tokens.push_back(t);

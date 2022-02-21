@@ -11,7 +11,7 @@ class Lexer
 {
 private:
     static std::vector<Token> m_Tokens;
-    static char* m_InputString;
+    static std::string m_InputString;
 public:
     static void lexFile(const char* filePath);
     static void lexString(const char* inputString);

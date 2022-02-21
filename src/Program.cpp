@@ -1,5 +1,8 @@
 #include "Program.hpp"
 
+bool Program::printDebugTokens =false;
+bool Program::printDebugOpcodes = false;
+
 void Program::startProgramFromFile(const char* filename)
 {
     assert(TokenString.size()  == TOKEN_COUNT);
@@ -8,18 +11,16 @@ void Program::startProgramFromFile(const char* filename)
 
     Lexer::lexFile(filename);
 
-#ifdef PRINT_DEBUG_TOKENS
-    Lexer::printTokens();
-#endif
+    if (printDebugTokens)
+        Lexer::printTokens();
 
     Compiler::startCompiler();
 
 
     Lexer::deallocate();
 
-#ifdef PRINT_DEBUG_TOKENS
-    VM::printOpCodes();
-#endif
+    if (printDebugOpcodes)
+        VM::printOpCodes();
 
     VM::simulate();
 }
