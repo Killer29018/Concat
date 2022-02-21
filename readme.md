@@ -38,3 +38,20 @@ Pop the top two values and then push the division
 dup ( a -- a a )
 Duplicate the value at the top of the stack
 ```
+
+### Planned Commands
+```
+mod
+
+if <condition> do <body> <else> <condition> do <endif>
+while <condition> then <body> endwhile
+
+swap
+over
+rot
+
+macro <body> endmacro
+
+
+
+```
