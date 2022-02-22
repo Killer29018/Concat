@@ -22,31 +22,28 @@ void Compiler::startCompiler()
     {
         Token& t = m_Tokens->at(i);
 
+        code.value = { TYPE_NULL, 0 };
+
         switch (t.type)
         {
         case TOKEN_ADD:
             code.code = OP_ADD;
-            code.value = { TYPE_NULL, 0 };
             VM::addCode(code);
             break;
         case TOKEN_SUBTRACT:
             code.code = OP_SUBTRACT;
-            code.value = { TYPE_NULL, 0 };
             VM::addCode(code);
             break;
         case TOKEN_MULTIPLY:
             code.code = OP_MULTIPLY;
-            code.value = { TYPE_NULL, 0 };
             VM::addCode(code);
             break;
         case TOKEN_DIVIDE:
             code.code = OP_DIVIDE;
-            code.value = { TYPE_NULL, 0 };
             VM::addCode(code);
             break;
         case TOKEN_CR:
             code.code = OP_CR;
-            code.value = { TYPE_NULL, 0 };
             VM::addCode(code);
             break;
         case TOKEN_INT:
@@ -63,17 +60,26 @@ void Compiler::startCompiler()
             }
         case TOKEN_PRINT:
             code.code = OP_PRINT;
-            code.value = { TYPE_NULL, 0 };
             VM::addCode(code);
             break;
         case TOKEN_DUP:
             code.code = OP_DUP;
-            code.value = { TYPE_NULL, 0 };
             VM::addCode(code);
             break;
         case TOKEN_DOT:
             code.code = OP_DOT;
-            code.value = { TYPE_NULL, 0 };
+            VM::addCode(code);
+            break;
+        case TOKEN_SWAP:
+            code.code = OP_SWAP;
+            VM::addCode(code);
+            break;
+        case TOKEN_OVER:
+            code.code = OP_OVER;
+            VM::addCode(code);
+            break;
+        case TOKEN_ROT:
+            code.code = OP_ROT;
             VM::addCode(code);
             break;
         default:

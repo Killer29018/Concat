@@ -56,8 +56,8 @@ void VM::simulate()
             {
                 assert(!m_Stack.empty());
 
-                Value& b = pop();
-                Value& a = pop();
+                const Value b = pop();
+                const Value a = pop();
                 operation(a, b, op);
                 ip++;
                 break;
@@ -66,8 +66,8 @@ void VM::simulate()
             {
                 assert(!m_Stack.empty());
 
-                Value& b = pop();
-                Value& a = pop();
+                const Value b = pop();
+                const Value a = pop();
                 operation(a, b, op);
                 ip++;
                 break;
@@ -76,8 +76,8 @@ void VM::simulate()
             {
                 assert(!m_Stack.empty());
 
-                Value& b = pop();
-                Value& a = pop();
+                const Value b = pop();
+                const Value a = pop();
                 operation(a, b, op);
                 ip++;
                 break;
@@ -86,8 +86,8 @@ void VM::simulate()
             {
                 assert(!m_Stack.empty());
 
-                Value& b = pop();
-                Value& a = pop();
+                const Value b = pop();
+                const Value a = pop();
                 operation(a, b, op);
                 ip++;
                 break;
@@ -108,7 +108,7 @@ void VM::simulate()
             {
                 assert(!m_Stack.empty());
 
-                Value& a = pop();
+                const Value a = pop();
                 printf("%d", a.as.v_Int);
                 ip++;
                 break;
@@ -117,7 +117,7 @@ void VM::simulate()
             {
                 assert(!m_Stack.empty());
 
-                Value& a = pop();
+                const Value a = pop();
                 m_Stack.push(a);
                 m_Stack.push(a);
                 ip++;
@@ -127,9 +127,49 @@ void VM::simulate()
             {
                 assert(!m_Stack.empty());
 
-                Value& a = pop();
+                const Value a = pop();
                 printf("%c", a.as.v_Int);
                 ip++;
+                break;
+            }
+        case OP_SWAP:
+            {
+                assert(m_Stack.size() >= 2);
+
+                const Value a = pop();
+                const Value b = pop();
+                m_Stack.push(a);
+                m_Stack.push(b);
+                ip++;
+
+                break;
+            }
+        case OP_OVER:
+            {
+                assert(m_Stack.size() >= 2);
+
+                const Value a = pop();
+                const Value b = pop();
+                m_Stack.push(b);
+                m_Stack.push(a);
+                m_Stack.push(b);
+                ip++;
+
+                break;
+            }
+        case OP_ROT:
+            {
+                assert(m_Stack.size() >= 3);
+
+                const Value a = pop();
+                const Value b = pop();
+                const Value c = pop();
+
+                m_Stack.push(b);
+                m_Stack.push(a);
+                m_Stack.push(c);
+                ip++;
+
                 break;
             }
         default:

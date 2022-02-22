@@ -71,16 +71,28 @@ void Lexer::parseString()
     t.startIndex = &m_InputString[0];
 
     bool start = false;
+    bool comments = false;
+    bool end = false;
 
     for (size_t i = 0; i < m_InputString.size(); i++)
     {
-        if (!isDelimiter(m_InputString[i]) && !start)
+        if (m_InputString[i] == '/' && i < m_InputString.size())
+        {
+            if (m_InputString[i + 1] == '/')
+            {
+                comments = true;
+                if (start)
+                    end = true;
+            }
+        }
+
+        if (!isDelimiter(m_InputString[i]) && !start && !comments)
         {
             t.startIndex = &m_InputString[0] + i;
             t.column = currentColumn;
             start = true;
         }
-        else if (start && isDelimiter(m_InputString[i]))
+        else if ((start && isDelimiter(m_InputString[i])) || end)
         {
             // t.endIndex = (m_InputString + i);
             t.endIndex = (&m_InputString[0] + i);
@@ -95,6 +107,7 @@ void Lexer::parseString()
         {
             currentLine++;
             currentColumn = 0;
+            comments = false;
         }
 
         currentColumn++;

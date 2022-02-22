@@ -16,6 +16,9 @@ enum OpCodeEnum
     OP_PRINT,
     OP_DUP,
     OP_DOT,
+    OP_SWAP,
+    OP_OVER,
+    OP_ROT,
 
     OP_COUNT
 };
@@ -30,7 +33,10 @@ const std::vector<const char*> OpCodeString
     "OP_PUSH_INT",
     "OP_PRINT",
     "OP_DUP",
-    "OP_DOT"
+    "OP_DOT",
+    "OP_SWAP",
+    "OP_OVER",
+    "OP_ROT",
 };
 
 struct OpCode

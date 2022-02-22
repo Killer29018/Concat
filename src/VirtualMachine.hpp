@@ -27,7 +27,7 @@ private:
 
     static void operation(const Value& a, const Value& b, const OpCode& code);
 
-    static Value& pop() { Value& v = m_Stack.top(); m_Stack.pop(); return v; }
+    static Value pop() { Value v = m_Stack.top(); m_Stack.pop(); return v; }
 };
 
 #endif
