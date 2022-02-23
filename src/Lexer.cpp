@@ -9,6 +9,7 @@
 #include <sstream>
 
 #include "Compiler.hpp"
+#include "Keywords.hpp"
 
 std::vector<Token> Lexer::m_Tokens;
 std::string Lexer::m_InputString;

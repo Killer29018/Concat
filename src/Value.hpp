@@ -23,5 +23,6 @@ void addValue(const Value& a, const Value& b, Value& rV);
 void subtractValue(const Value& a, const Value& b, Value& rV);
 void multiplyValue(const Value& a, const Value& b, Value& rV);
 void divideValue(const Value& a, const Value& b, Value& rV);
+void modValue(const Value& a, const Value& b, Value& rV);
 
 #endif

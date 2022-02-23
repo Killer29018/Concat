@@ -82,6 +82,10 @@ void Compiler::startCompiler()
             code.code = OP_ROT;
             VM::addCode(code);
             break;
+        case TOKEN_MOD:
+            code.code = OP_MOD;
+            VM::addCode(code);
+            break;
         default:
             assert(false); // UNREACHABLE
         }

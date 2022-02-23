@@ -19,6 +19,7 @@ enum OpCodeEnum
     OP_SWAP,
     OP_OVER,
     OP_ROT,
+    OP_MOD,
 
     OP_COUNT
 };
@@ -37,6 +38,7 @@ const std::vector<const char*> OpCodeString
     "OP_SWAP",
     "OP_OVER",
     "OP_ROT",
+    "OP_MOD",
 };
 
 struct OpCode

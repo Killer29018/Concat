@@ -1,0 +1,26 @@
+/*
+A Basic program to show of the basic Math Operations and show a simple program
+*/
+
+21 // Value A
+2  // Value B
+
+// A + B = C
+over over
+over print 32 . 43 . 32 . dup print 32 . 61 . 32 . + print cr
+
+// A - B = C
+over over
+over print 32 . 45 . 32 . dup print 32 . 61 . 32 . - print cr
+
+// A * B = C
+over over
+over print 32 . 42 . 32 . dup print 32 . 61 . 32 . * print cr
+
+// A / B = C
+over over
+over print 32 . 47 . 32 . dup print 32 . 61 . 32 . / print cr
+
+// A % B = C
+over over
+over print 32 . 37 . 32 . dup print 32 . 61 . 32 . mod print cr

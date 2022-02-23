@@ -7,6 +7,7 @@
  */
 
 #include <cxxopts.hpp>
+#include <filesystem>
 
 #include "Program.hpp"
 
@@ -17,15 +18,21 @@ int main(int argc, char** argv)
     options.add_options()
         ("print-tokens", "Print Debug Tokens", cxxopts::value<bool>()->default_value("false"))
         ("print-opcodes", "Print Debug OpCodes", cxxopts::value<bool>()->default_value("false"))
-        ("f,file", "Input File", cxxopts::value<std::string>(inputfile))
         ("h,help", "Print usage")
     ;
 
     auto result = options.parse(argc, argv);
 
-    if (result.count("help"))
+    if (argc <= 1 || result.count("help"))
     {
-        std::cout << options.help() << "\n";
+        std::cout << "Stack Based Interpreted Maybe Compiled Language\n";
+        std::cout << "Usage: \n";
+        std::cout << "  SBIMCL [<OPTIONS>] <filepath>\n";
+        std::cout << "  OPTIONS\n";
+        std::cout << "        --print-tokens    Print Debug Tokens\n";
+        std::cout << "        --print-opcodes   Print Debug Opcodes\n";
+        std::cout << "    -h, --help            Print Help\n";
+
         exit(0);
     }
 
@@ -34,10 +41,9 @@ int main(int argc, char** argv)
     bool debugOpcodes = result["print-opcodes"].as<bool>();
     Program::printDebugOpcodes = debugOpcodes;
 
-    if (argc <= 1)
+    if (std::filesystem::is_regular_file(argv[argc - 1]))
     {
-        printf("Invalid Usage\n");
-        exit(0);
+        inputfile = argv[argc - 1];
     }
 
     if (inputfile.size() != 0)

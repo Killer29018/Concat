@@ -1,5 +1,7 @@
 #include "Program.hpp"
 
+#include "Keywords.hpp"
+
 bool Program::printDebugTokens =false;
 bool Program::printDebugOpcodes = false;
 

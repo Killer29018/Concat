@@ -172,6 +172,16 @@ void VM::simulate()
 
                 break;
             }
+        case OP_MOD:
+            {
+                assert(m_Stack.size() >= 2);
+                const Value b = pop();
+                const Value a = pop();
+
+                operation(a, b, op);
+                ip++;
+                break;
+            }
         default:
             assert(false); // UNREACHABLE
         }
@@ -211,6 +221,9 @@ void VM::operation(const Value& a, const Value& b, const OpCode& code)
         break;
     case OP_DIVIDE:
         divideValue(a, b, v);
+        break;
+    case OP_MOD:
+        modValue(a, b, v);
         break;
     default:
         assert(false); // UNREACHABLE
