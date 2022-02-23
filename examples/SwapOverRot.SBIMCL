@@ -1,17 +1,15 @@
-// 32 . // Space
+/* A Basic Program to check whether Swap Over and Rot work correctly */
 
-// 10 20 swap print 32 . print cr
+// Output 10 20
+10 20 swap print 32 . print cr
 
-// 10 20 10 (10 print)
+/* 10 20 10 20 10 */
 10 20 over dup print 32 .
 
-// 10 10 (20 print)
 swap print 32 .
 
-// 10 20 10
 20 rot
 print 32 .
 print 32 .
 print cr
 
-// 10 20 10 20 10

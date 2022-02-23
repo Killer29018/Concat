@@ -1,3 +1,10 @@
+// Single Line Comment
+/*
+
+Multi line comments
+
+*/
+
 34 35 + print cr
 
 7 5 * 68 2 / + dup print 32 . print cr

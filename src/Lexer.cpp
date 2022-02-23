@@ -72,21 +72,14 @@ void Lexer::parseString()
 
     bool start = false;
     bool comments = false;
+    bool multiLineComment = false;
     bool end = false;
 
-    for (size_t i = 0; i < m_InputString.size(); i++)
+    for (size_t i = 0; i < m_InputString.size();)
     {
-        if (m_InputString[i] == '/' && i < m_InputString.size())
-        {
-            if (m_InputString[i + 1] == '/')
-            {
-                comments = true;
-                if (start)
-                    end = true;
-            }
-        }
+        bool skip = checkComments(&start, &end, &comments, &multiLineComment, i);
 
-        if (!isDelimiter(m_InputString[i]) && !start && !comments)
+        if (!isDelimiter(m_InputString[i]) && !start && !comments && !skip)
         {
             t.startIndex = &m_InputString[0] + i;
             t.column = currentColumn;
@@ -98,6 +91,7 @@ void Lexer::parseString()
             t.endIndex = (&m_InputString[0] + i);
             t.line = currentLine;
             start = false;
+            end = false;
             getTokenType(t);
 
             m_Tokens.push_back(t);
@@ -107,10 +101,17 @@ void Lexer::parseString()
         {
             currentLine++;
             currentColumn = 0;
-            comments = false;
         }
 
         currentColumn++;
+
+        if (skip)
+        {
+            i++;
+            currentColumn++;
+        }
+
+        i++;
     }
 
     if (start)
@@ -179,3 +180,47 @@ bool Lexer::isDelimiter(char c)
         return false;
     }
 }
+
+bool Lexer::checkComments(bool* start, bool* end, bool* comments, bool* multiLineComment, int index)
+{
+    bool skip = false;
+    if (m_InputString[index] == '/' && index < m_InputString.size())
+    {
+        if (m_InputString[index + 1] == '/')
+        {
+            (*comments) = true;
+            if (*start)
+                (*end) = true;
+
+            skip = true;
+        }
+        else if (m_InputString[index + 1] == '*')
+        {
+            (*comments) = true;
+            (*multiLineComment) = true;
+
+            if (*start)
+                (*end) = true;
+
+            skip = true;
+        }
+    }
+    else if (m_InputString[index] == '*' && index < m_InputString.size() && (*multiLineComment))
+    {
+        if (m_InputString[index + 1] == '/')
+        {
+            (*comments) = false;
+            (*multiLineComment) = false;
+            skip = true;
+        }
+    }
+
+    if (m_InputString[index] == '\n')
+    {
+        if (!(*multiLineComment))
+            *(comments) = false;
+    }
+
+    return skip;
+}
+

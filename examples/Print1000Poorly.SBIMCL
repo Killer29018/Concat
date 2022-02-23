@@ -1,3 +1,7 @@
+/*
+Prints 1000 Numbers one at a time to check how well the amount of operations can be handled
+*/
+
 1 2 + 2 - print cr
 2 2 + 2 - print cr
 3 2 + 2 - print cr

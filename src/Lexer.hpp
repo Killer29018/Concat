@@ -27,6 +27,8 @@ private:
     static void getTokenType(Token& token);
     static void parseWord(Token& token);
     static bool isDelimiter(char c);
+
+    static bool checkComments(bool* start, bool* end, bool* comment, bool* multiLineComment, int index);
 };
 
 #endif

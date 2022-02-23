@@ -48,6 +48,15 @@ rot ( a b c -- b c a)
 Rotate the top 3 elements in the stack
 ```
 
+### Comments
+```
+//
+Single Line Comment
+
+/* .... */
+Multi Line Comment
+```
+
 ### Planned Commands
 ```
 mod
