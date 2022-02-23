@@ -6,11 +6,13 @@
 #include "Tokens.hpp"
 
 #include <vector>
+#include <set>
 
 class Lexer
 {
 private:
     static std::vector<Token> m_Tokens;
+    static std::set<std::string> m_Macros;
     static std::string m_InputString;
     static bool m_Error;
 public:
@@ -26,7 +28,7 @@ private:
 
     static void parseString();
     static void getTokenType(Token& token);
-    static void parseWord(Token& token);
+    static void parseWord(Token& token, const char* word);
     static bool isDelimiter(char c);
 
     static bool checkComments(bool* start, bool* end, bool* comment, bool* multiLineComment, int index);

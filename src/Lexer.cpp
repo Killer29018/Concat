@@ -12,6 +12,7 @@
 #include "Keywords.hpp"
 
 std::vector<Token> Lexer::m_Tokens;
+std::set<std::string> Lexer::m_Macros;
 std::string Lexer::m_InputString = "";
 bool Lexer::m_Error = false;
 
@@ -128,16 +129,18 @@ void Lexer::getTokenType(Token& token)
     {
         token.type = Keywords.at(word);
     }
+    else if (m_Macros.find(word) != m_Macros.end())
+    {
+    }
     else
     {
-        parseWord(token);
+        parseWord(token, word);
     }
-
 
     delete[] word;
 }
 
-void Lexer::parseWord(Token& token)
+void Lexer::parseWord(Token& token, const char* word)
 {
     int length = token.endIndex - token.startIndex;
     if (*token.startIndex >= '0' && *token.startIndex <= '9')
@@ -156,8 +159,18 @@ void Lexer::parseWord(Token& token)
     }
     else
     {
-        fprintf(stderr, "[COMPILER ERROR] %ld:%ld Unknown word %.*s\n", token.line, token.column, length, token.startIndex);
-        m_Error = true;
+        Token* top = &m_Tokens.at(m_Tokens.size() - 1);
+        if (top->type == TOKEN_MACRO)
+        {
+            token.type = TOKEN_MACRO;
+            m_Macros.emplace(word);
+            m_Tokens.pop_back();
+        }
+        else
+        {
+            fprintf(stderr, "[COMPILER ERROR] %ld:%ld Unknown word %.*s\n", token.line, token.column, length, token.startIndex);
+            m_Error = true;
+        }
     }
 }
 

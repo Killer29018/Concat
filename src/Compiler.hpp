@@ -9,6 +9,7 @@ class Compiler
 {
 private:
     static std::vector<Token>* m_Tokens;
+    static std::unordered_map<std::string, std::vector<Token>> m_Macros;
 public:
     static void addTokens(std::vector<Token>& tokens);
     static void startCompiler();

@@ -3,20 +3,22 @@
 
 #include "Tokens.hpp"
 
-const int KeywordCount = 12;
+const int KeywordCount = 14;
 const std::unordered_map<std::string, TokenType> Keywords({
-    { "+",      TOKEN_ADD },
-    { "-",      TOKEN_SUBTRACT },
-    { "*",      TOKEN_MULTIPLY },
-    { "/",      TOKEN_DIVIDE },
-    { "cr",     TOKEN_CR },
-    { "print",  TOKEN_PRINT },
-    { "dup",    TOKEN_DUP },
-    { ".",      TOKEN_DOT },
-    { "swap",   TOKEN_SWAP },
-    { "over",   TOKEN_OVER },
-    { "rot",    TOKEN_ROT },
-    { "mod",    TOKEN_MOD },
+    { "+",          TOKEN_ADD },
+    { "-",          TOKEN_SUBTRACT },
+    { "*",          TOKEN_MULTIPLY },
+    { "/",          TOKEN_DIVIDE },
+    { "cr",         TOKEN_CR },
+    { "print",      TOKEN_PRINT },
+    { "dup",        TOKEN_DUP },
+    { ".",          TOKEN_DOT },
+    { "swap",       TOKEN_SWAP },
+    { "over",       TOKEN_OVER },
+    { "rot",        TOKEN_ROT },
+    { "mod",        TOKEN_MOD },
+    { "macro",      TOKEN_MACRO },
+    { "end",        TOKEN_END },
 });
 
 

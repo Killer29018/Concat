@@ -20,6 +20,8 @@ enum TokenType
     TOKEN_OVER,
     TOKEN_ROT,
     TOKEN_MOD,
+    TOKEN_MACRO,
+    TOKEN_END,
 
     TOKEN_COUNT
 };
@@ -39,6 +41,8 @@ const std::vector<const char*> TokenString
     "TOKEN_OVER",
     "TOKEN_ROT",
     "TOKEN_MOD",
+    "TOKEN_MACRO",
+    "TOKEN_END",
 };
 
 struct Token

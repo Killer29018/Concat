@@ -6,6 +6,7 @@
 #include <cstdlib>
 
 std::vector<Token>* Compiler::m_Tokens;
+std::unordered_map<std::string, std::vector<Token>> Compiler::m_Macros;
 
 void Compiler::addTokens(std::vector<Token>& tokens)
 {
@@ -87,6 +88,8 @@ void Compiler::startCompiler()
         case TOKEN_MOD:
             code.code = OP_MOD;
             VM::addCode(code);
+            break;
+        case TOKEN_MACRO:
             break;
         default:
             assert(false); // UNREACHABLE

@@ -4,7 +4,12 @@
 A language that could be considered similar to Forth or [Porth](https://gitlab.com/tsoding/porth)
 
 ## Current Instructions
-
+### Format
+```
+( 'input' -- 'output' )
+'input' represents the current values at the top of the stack
+'output' represents what the top of the stack will look like after the operation
+```
 ### IO
 ```
 print ( a -- )
@@ -31,6 +36,9 @@ Pop the top two values and then push the product
 
 / (a b -- b/a)
 Pop the top two values and then push the division
+
+mod ( a b -- b%a )
+Get the Modulos of the top two values
 ```
 
 ### Stack Operations
@@ -59,8 +67,6 @@ Multi Line Comment
 
 ### Planned Commands
 ```
-mod
-
 if <condition> do <body> <else> <condition> do <endif>
 while <condition> then <body> endwhile
 

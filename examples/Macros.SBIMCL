@@ -1,0 +1,4 @@
+macro hello 10 end
+
+hello print cr
+
