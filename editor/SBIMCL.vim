@@ -9,6 +9,9 @@ highlight link SBIMCL_PreProc PreProc
 syntax keyword SBIMCL_Keyword dup swap over rot print cr mod
 highlight link SBIMCL_Keyword Keyword 
 
+syntax match SBIMCL_Constants "\v([0-9]+) "
+highlight link SBIMCL_Constants Constant
+
 syntax match SBIMCL_Operator "\v\*"
 syntax match SBIMCL_Operator "\v/"
 syntax match SBIMCL_Operator "\v\+"

@@ -1,15 +1,16 @@
 /* A Basic Program to check whether Swap Over and Rot work correctly */
 
+macro space 32 . end
+
 // Output 10 20
-10 20 swap print 32 . print cr
+10 20 swap print space print cr
 
 /* 10 20 10 20 10 */
-10 20 over dup print 32 .
+10 20 over dup print space
 
-swap print 32 .
+swap print space
 
 20 rot
-print 32 .
-print 32 .
+print space
+print space
 print cr
-

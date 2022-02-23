@@ -3,6 +3,12 @@
 
 A language that could be considered similar to Forth or [Porth](https://gitlab.com/tsoding/porth)
 
+### Future Features
+- [ ] Save the intermediary Opcode to a binary format to speed up compilation (Preferred over ASM)
+- [ ] Possibly Write ASM code to compile the language ()
+- [ ] Variables, Constants and continuous Memory access
+- [ ] Functions
+
 ## Current Instructions
 ### Format
 ```
@@ -64,11 +70,14 @@ Single Line Comment
 /* .... */
 Multi Line Comment
 ```
+### Macros
+````
+macro <name> <body...> end
+Whenever 'name' occurs in the program it gets expanded into <body...>
+````
 
 ### Planned Commands
 ```
 if <condition> do <body> <else> <condition> do <endif>
 while <condition> then <body> endwhile
-
-macro <body> endmacro
 ```

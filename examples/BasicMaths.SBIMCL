@@ -2,25 +2,34 @@
 A Basic program to show of the basic Math Operations and show a simple program
 */
 
+macro space 32 . end
+macro op_+ 43 . end
+macro op_- 45 . end
+macro op_* 42 . end
+macro op_/ 47 . end
+macro op_mod 47 . end
+
+macro op_= 61 . end
+
 21 // Value A
 2  // Value B
 
 // A + B = C
 over over
-over print 32 . 43 . 32 . dup print 32 . 61 . 32 . + print cr
+over print space op_+ space dup print space op_= space + print cr
 
 // A - B = C
 over over
-over print 32 . 45 . 32 . dup print 32 . 61 . 32 . - print cr
+over print space op_- space dup print space op_= space - print cr
 
 // A * B = C
 over over
-over print 32 . 42 . 32 . dup print 32 . 61 . 32 . * print cr
+over print space op_* space dup print space op_= space * print cr
 
 // A / B = C
 over over
-over print 32 . 47 . 32 . dup print 32 . 61 . 32 . / print cr
+over print space op_/ space dup print space op_= space / print cr
 
 // A % B = C
 over over
-over print 32 . 37 . 32 . dup print 32 . 61 . 32 . mod print cr
+over print space op_mod space dup print space op_= space mod print cr
