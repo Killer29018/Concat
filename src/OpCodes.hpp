@@ -46,7 +46,8 @@ struct OpCode
     OpCodeEnum code;
     Value value;
 
-    size_t line, column;
+    size_t line;
+    size_t column;
 };
 
 #endif

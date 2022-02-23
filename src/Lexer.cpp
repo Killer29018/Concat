@@ -12,22 +12,13 @@
 #include "Keywords.hpp"
 
 std::vector<Token> Lexer::m_Tokens;
-std::string Lexer::m_InputString;
+std::string Lexer::m_InputString = "";
+bool Lexer::m_Error = false;
 
 void Lexer::lexFile(const char* filePath)
 {
     std::ifstream file;
     file.open(filePath, std::ios::out);
-
-    // file.seekg(0, std::ios::end);
-    // size_t fileSize = file.tellg();
-
-    // m_InputString = new char[fileSize];
-
-    // file.seekg(0, std::ios::beg);
-    // file.read(m_InputString, fileSize);
-
-    // file.close();
 
     std::stringstream ss;
     ss << file.rdbuf();
@@ -41,7 +32,6 @@ void Lexer::lexFile(const char* filePath)
 
 void Lexer::lexString(const char* inputString)
 {
-    // strcpy(m_InputString, inputString);
     m_InputString = inputString;
     parseString();
 }
@@ -61,7 +51,6 @@ void Lexer::printTokens()
 
 void Lexer::deallocate()
 {
-    // delete[] m_InputString;
 }
 
 void Lexer::parseString()
@@ -88,7 +77,6 @@ void Lexer::parseString()
         }
         else if ((start && isDelimiter(m_InputString[i])) || end)
         {
-            // t.endIndex = (m_InputString + i);
             t.endIndex = (&m_InputString[0] + i);
             t.line = currentLine;
             start = false;
@@ -123,7 +111,10 @@ void Lexer::parseString()
         m_Tokens.push_back(t);
     }
 
-    Compiler::addTokens(m_Tokens);
+    if (!m_Error)
+        Compiler::addTokens(m_Tokens);
+    else
+        exit(-1);
 }
 
 void Lexer::getTokenType(Token& token)
@@ -155,8 +146,8 @@ void Lexer::parseWord(Token& token)
         strtol(token.startIndex, &end, 0);
         if (end != token.endIndex)
         {
-            fprintf(stderr, "%lu:%lu Failed to pass integer constant %.*s\n", token.line, token.column, length, token.startIndex);
-            exit(-1);
+            fprintf(stderr, "[COMPILER ERROR] %ld:%ld Failed to pass integer constant %.*s\n", token.line, token.column, length, token.startIndex);
+            m_Error = true;
         }
         else
         {
@@ -165,8 +156,8 @@ void Lexer::parseWord(Token& token)
     }
     else
     {
-        fprintf(stderr, "%lu:%lu Unknown word %.*s\n", token.line, token.column, length, token.startIndex);
-        exit(-1);
+        fprintf(stderr, "[COMPILER ERROR] %ld:%ld Unknown word %.*s\n", token.line, token.column, length, token.startIndex);
+        m_Error = true;
     }
 }
 

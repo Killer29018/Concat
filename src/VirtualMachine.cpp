@@ -246,6 +246,6 @@ void VM::operation(const Value& a, const Value& b, const OpCode& code)
 
 void VM::runtimeError(const char* msg, OpCode& code)
 {
-    printf("[RUNTIME ERROR] %ld:%ld %s\n", code.line, code.column, msg);
+    fprintf(stderr, "[RUNTIME ERROR] %ld:%ld %s\n", code.line, code.column, msg);
     exit(-1);
 }
