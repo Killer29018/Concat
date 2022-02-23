@@ -11,15 +11,26 @@ enum TokenType
     TOKEN_SUBTRACT,
     TOKEN_MULTIPLY,
     TOKEN_DIVIDE,
-    TOKEN_CR,
+    TOKEN_MOD,
+
+    TOKEN_EQUAL,
+    TOKEN_NOT_EQUAL,
+    TOKEN_GREATER,
+    TOKEN_LESS,
+    TOKEN_GREATER_EQUAL,
+    TOKEN_LESS_EQUAL,
+
     TOKEN_INT,
+
+    TOKEN_CR,
     TOKEN_PRINT,
-    TOKEN_DUP,
     TOKEN_DOT,
+
+    TOKEN_DUP,
     TOKEN_SWAP,
     TOKEN_OVER,
     TOKEN_ROT,
-    TOKEN_MOD,
+
     TOKEN_MACRO,
     TOKEN_END,
 
@@ -32,15 +43,26 @@ const std::vector<const char*> TokenString
     "TOKEN_SUBTRACT",
     "TOKEN_MULTIPLY",
     "TOKEN_DIVIDE",
-    "TOKEN_CR",
+    "TOKEN_MOD",
+
+    "TOKEN_EQUAL",
+    "TOKEN_NOT_EQUAL",
+    "TOKEN_GREATER",
+    "TOKEN_LESS",
+    "TOKEN_GREATER_EQUAL",
+    "TOKEN_LESS_EQUAL",
+
     "TOKEN_INT",
+
+    "TOKEN_CR",
     "TOKEN_PRINT",
-    "TOKEN_DUP",
     "TOKEN_DOT",
+
+    "TOKEN_DUP",
     "TOKEN_SWAP",
     "TOKEN_OVER",
     "TOKEN_ROT",
-    "TOKEN_MOD",
+
     "TOKEN_MACRO",
     "TOKEN_END",
 };

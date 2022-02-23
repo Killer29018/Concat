@@ -40,6 +40,13 @@ void Compiler::startCompiler()
         case TOKEN_DIVIDE: addBasicOpcode(code, ip, OP_DIVIDE); break;
         case TOKEN_MOD: addBasicOpcode(code, ip, OP_MOD); break;
 
+        case TOKEN_EQUAL: addBasicOpcode(code, ip, OP_EQUAL); break;
+        case TOKEN_NOT_EQUAL: addBasicOpcode(code, ip, OP_NOT_EQUAL); break;
+        case TOKEN_GREATER: addBasicOpcode(code, ip, OP_GREATER); break;
+        case TOKEN_LESS: addBasicOpcode(code, ip, OP_LESS); break;
+        case TOKEN_GREATER_EQUAL: addBasicOpcode(code, ip, OP_GREATER_EQUAL); break;
+        case TOKEN_LESS_EQUAL: addBasicOpcode(code, ip, OP_LESS_EQUAL); break;
+
         case TOKEN_INT:
             {
             code.code = OP_PUSH_INT;

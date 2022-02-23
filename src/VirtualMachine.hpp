@@ -25,11 +25,11 @@ private:
 
     static void printValueDebug(size_t index);
 
-    static void operation(const Value& a, const Value& b, const OpCode& code);
+    static void operation(const OpCode& op, size_t& ip);
 
     static Value pop() { Value v = m_Stack.top(); m_Stack.pop(); return v; }
 
-    static void runtimeError(const char* msg, OpCode& op);
+    static void runtimeError(const char* msg, const OpCode& op);
 };
 
 #endif

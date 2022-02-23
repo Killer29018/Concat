@@ -53,59 +53,29 @@ void VM::simulate()
         OpCode& op = m_OpCodes[ip];
         switch (op.code)
         {
-        case OP_ADD:
-            {
-                if (m_Stack.size() < 2)
-                    runtimeError("Not enough items on the stack", op);
+        case OP_ADD: operation(op, ip); break;
+        case OP_SUBTRACT: operation(op, ip); break;
+        case OP_MULTIPLY: operation(op, ip); break;
+        case OP_DIVIDE: operation(op, ip); break;
+        case OP_MOD: operation(op, ip); break;
 
-                const Value b = pop();
-                const Value a = pop();
-                operation(a, b, op);
-                ip++;
-                break;
-            }
-        case OP_SUBTRACT:
-            {
-                if (m_Stack.size() < 2)
-                    runtimeError("Not enough items on the stack", op);
+        case OP_EQUAL: operation(op, ip); break;
+        case OP_NOT_EQUAL: operation(op, ip); break;
+        case OP_GREATER: operation(op, ip); break;
+        case OP_LESS: operation(op, ip); break;
+        case OP_GREATER_EQUAL: operation(op, ip); break;
+        case OP_LESS_EQUAL: operation(op, ip); break;
 
-                const Value b = pop();
-                const Value a = pop();
-                operation(a, b, op);
-                ip++;
-                break;
-            }
-        case OP_MULTIPLY:
-            {
-                if (m_Stack.size() < 2)
-                    runtimeError("Not enough items on the stack", op);
-
-                const Value b = pop();
-                const Value a = pop();
-                operation(a, b, op);
-                ip++;
-                break;
-            }
-        case OP_DIVIDE:
-            {
-                if (m_Stack.size() < 2)
-                    runtimeError("Not enough items on the stack", op);
-
-                const Value b = pop();
-                const Value a = pop();
-                operation(a, b, op);
-                ip++;
-                break;
-            }
-        case OP_CR:
-            {
-                printf("\n");
-                ip++;
-                break;
-            }
         case OP_PUSH_INT:
             {
                 m_Stack.push(op.value);
+                ip++;
+                break;
+            }
+
+        case OP_CR:
+            {
+                printf("\n");
                 ip++;
                 break;
             }
@@ -119,6 +89,17 @@ void VM::simulate()
                 ip++;
                 break;
             }
+        case OP_DOT:
+            {
+                if (m_Stack.empty())
+                    runtimeError("Not enough items on the stack", op);
+
+                const Value a = pop();
+                printf("%c", a.as.v_Int);
+                ip++;
+                break;
+            }
+
         case OP_DUP:
             {
                 if (m_Stack.empty())
@@ -127,16 +108,6 @@ void VM::simulate()
                 const Value a = pop();
                 m_Stack.push(a);
                 m_Stack.push(a);
-                ip++;
-                break;
-            }
-        case OP_DOT:
-            {
-                if (m_Stack.empty())
-                    runtimeError("Not enough items on the stack", op);
-
-                const Value a = pop();
-                printf("%c", a.as.v_Int);
                 ip++;
                 break;
             }
@@ -183,17 +154,6 @@ void VM::simulate()
 
                 break;
             }
-        case OP_MOD:
-            {
-                if (m_Stack.size() < 2)
-                    runtimeError("Not enough items on the stack", op);
-                const Value b = pop();
-                const Value a = pop();
-
-                operation(a, b, op);
-                ip++;
-                break;
-            }
         default:
             assert(false); // UNREACHABLE
         }
@@ -213,38 +173,42 @@ void VM::printValueDebug(size_t index)
     }
 }
 
-void VM::operation(const Value& a, const Value& b, const OpCode& code)
+void VM::operation(const OpCode& op, size_t& ip)
 {
+    if (m_Stack.size() < 2)
+        runtimeError("Not enough items on the stack", op);
+
+    Value b = pop();
+    Value a = pop();
+
     assert(a.type == b.type); // TYPES ARE EQUAL
 
     Value v;
     v.type = a.type;
 
-    switch (code.code)
+    switch (op.code)
     {
-    case OP_ADD:
-        addValue(a, b, v);
-        break;
-    case OP_SUBTRACT:
-        subtractValue(a, b, v);
-        break;
-    case OP_MULTIPLY:
-        multiplyValue(a, b, v);
-        break;
-    case OP_DIVIDE:
-        divideValue(a, b, v);
-        break;
-    case OP_MOD:
-        modValue(a, b, v);
-        break;
+    case OP_ADD:        value_add(a, b, v); break;
+    case OP_SUBTRACT:   value_subtract(a, b, v); break;
+    case OP_MULTIPLY:   value_multiply(a, b, v); break;
+    case OP_DIVIDE:     value_divide(a, b, v); break;
+    case OP_MOD:        value_mod(a, b, v); break;
+
+    case OP_EQUAL:          value_equal(a, b, v); break;
+    case OP_NOT_EQUAL:      value_not_equal(a, b, v); break;
+    case OP_GREATER:        value_greater(a, b, v); break;
+    case OP_LESS:           value_less(a, b, v); break;
+    case OP_GREATER_EQUAL:  value_greater_equal(a, b, v); break;
+    case OP_LESS_EQUAL:     value_less_equal(a, b, v); break;
     default:
         assert(false); // UNREACHABLE
     }
 
     m_Stack.push(v);
+    ip++;
 }
 
-void VM::runtimeError(const char* msg, OpCode& code)
+void VM::runtimeError(const char* msg, const OpCode& code)
 {
     fprintf(stderr, "[RUNTIME ERROR] %ld:%ld %s\n", code.line, code.column, msg);
     exit(-1);

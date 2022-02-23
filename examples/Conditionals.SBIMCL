@@ -1,0 +1,23 @@
+/*
+
+    INFO
+    Testing Conditionals
+
+    == Equal
+    != Not Equal
+    > Greater Than
+    < Less Than
+    >= Greater Than or equal to
+    <= Less than or equal to
+*/
+
+macro space 32 . end
+macro a 20 end
+macro b 20 end
+
+a b == print space
+a b != print space
+a b >  print space
+a b <  print space
+a b >= print space
+a b <= print space

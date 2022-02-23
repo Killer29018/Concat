@@ -1,6 +1,7 @@
 #ifndef COMPILER_HPP
 #define COMPILER_HPP
 
+#include "OpCodes.hpp"
 #include "Tokens.hpp"
 
 #include <vector>

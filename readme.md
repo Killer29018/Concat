@@ -47,6 +47,27 @@ mod ( a b -- b%a )
 Get the Modulos of the top two values
 ```
 
+### Condtionals
+```
+== (a b -- a==b)
+Pop the top two values and then push a == b
+
+!= (a b -- a!=b)
+Pop the top two values and then push a != b
+
+> (a b -- a>b)
+Pop the top two values and then push a > b
+
+< (a b -- a<b)
+Pop the top two values and then push a < b
+
+>= (a b -- a>=b)
+Pop the top two values and then push a >= b
+
+<= (a b -- a<=b)
+Pop the top two values and then push a <= b
+```
+
 ### Stack Operations
 ```
 dup ( a -- a a )
