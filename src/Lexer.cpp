@@ -131,6 +131,7 @@ void Lexer::getTokenType(Token& token)
     }
     else if (m_Macros.find(word) != m_Macros.end())
     {
+        token.type = TOKEN_MACRO;
     }
     else
     {

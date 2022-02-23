@@ -1,4 +1,5 @@
 macro hello 10 end
+macro space 32 . end
 
+hello print space
 hello print cr
-
