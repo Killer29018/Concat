@@ -16,6 +16,8 @@ public:
 private:
     Compiler() {}
     ~Compiler() {}
+
+    static void addBasicOpcode(OpCode& code, size_t& ip, OpCodeEnum opcode);
 };
 
 #endif

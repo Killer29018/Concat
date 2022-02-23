@@ -31,7 +31,7 @@ private:
     static void parseWord(Token& token, const char* word);
     static bool isDelimiter(char c);
 
-    static bool checkComments(bool* start, bool* end, bool* comment, bool* multiLineComment, int index);
+    static bool checkComments(bool* start, bool* end, bool* comment, bool* multiLineComment, size_t index);
 };
 
 #endif

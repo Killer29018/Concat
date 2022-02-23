@@ -45,7 +45,6 @@ void Lexer::printTokens()
         Token& t = m_Tokens[i];
 
         int length = t.endIndex - t.startIndex;
-        size_t line = t.line;
         printf("%.4lu | %.4lu:%.4lu | %-20s | %.*s\n", i, t.line, t.column, TokenString[t.type], length, t.startIndex);
     }
 }
@@ -187,7 +186,7 @@ bool Lexer::isDelimiter(char c)
     }
 }
 
-bool Lexer::checkComments(bool* start, bool* end, bool* comments, bool* multiLineComment, int index)
+bool Lexer::checkComments(bool* start, bool* end, bool* comments, bool* multiLineComment, size_t index)
 {
     bool skip = false;
     if (m_InputString[index] == '/' && index < m_InputString.size())

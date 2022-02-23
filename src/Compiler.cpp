@@ -34,31 +34,12 @@ void Compiler::startCompiler()
 
         switch (t.type)
         {
-        case TOKEN_ADD:
-            code.code = OP_ADD;
-            VM::addCode(code);
-            ip++;
-            break;
-        case TOKEN_SUBTRACT:
-            code.code = OP_SUBTRACT;
-            VM::addCode(code);
-            ip++;
-            break;
-        case TOKEN_MULTIPLY:
-            code.code = OP_MULTIPLY;
-            VM::addCode(code);
-            ip++;
-            break;
-        case TOKEN_DIVIDE:
-            code.code = OP_DIVIDE;
-            VM::addCode(code);
-            ip++;
-            break;
-        case TOKEN_CR:
-            code.code = OP_CR;
-            VM::addCode(code);
-            ip++;
-            break;
+        case TOKEN_ADD: addBasicOpcode(code, ip, OP_ADD); break;
+        case TOKEN_SUBTRACT: addBasicOpcode(code, ip, OP_SUBTRACT); break;
+        case TOKEN_MULTIPLY: addBasicOpcode(code, ip, OP_MULTIPLY); break;
+        case TOKEN_DIVIDE: addBasicOpcode(code, ip, OP_DIVIDE); break;
+        case TOKEN_MOD: addBasicOpcode(code, ip, OP_MOD); break;
+
         case TOKEN_INT:
             {
             code.code = OP_PUSH_INT;
@@ -69,41 +50,16 @@ void Compiler::startCompiler()
             ip++;
             break;
             }
-        case TOKEN_PRINT:
-            code.code = OP_PRINT;
-            VM::addCode(code);
-            ip++;
-            break;
-        case TOKEN_DUP:
-            code.code = OP_DUP;
-            VM::addCode(code);
-            ip++;
-            break;
-        case TOKEN_DOT:
-            code.code = OP_DOT;
-            VM::addCode(code);
-            ip++;
-            break;
-        case TOKEN_SWAP:
-            code.code = OP_SWAP;
-            VM::addCode(code);
-            ip++;
-            break;
-        case TOKEN_OVER:
-            code.code = OP_OVER;
-            VM::addCode(code);
-            ip++;
-            break;
-        case TOKEN_ROT:
-            code.code = OP_ROT;
-            VM::addCode(code);
-            ip++;
-            break;
-        case TOKEN_MOD:
-            code.code = OP_MOD;
-            VM::addCode(code);
-            ip++;
-            break;
+
+        case TOKEN_CR: addBasicOpcode(code, ip, OP_CR); break;
+        case TOKEN_PRINT: addBasicOpcode(code, ip, OP_PRINT); break;
+        case TOKEN_DOT: addBasicOpcode(code, ip, OP_DOT); break;
+
+        case TOKEN_DUP: addBasicOpcode(code, ip, OP_DUP); break;
+        case TOKEN_SWAP: addBasicOpcode(code, ip, OP_SWAP); break;
+        case TOKEN_OVER: addBasicOpcode(code, ip, OP_OVER); break;
+        case TOKEN_ROT: addBasicOpcode(code, ip, OP_ROT); break;
+
         case TOKEN_MACRO:
             {
                 std::string wordString = word;
@@ -150,10 +106,18 @@ void Compiler::startCompiler()
             }
         case TOKEN_END:
             assert(false); // UNREACHABLE - Should Be consumed
+
         default:
             assert(false); // UNREACHABLE
         }
 
         delete[] word;
     }
+}
+
+void Compiler::addBasicOpcode(OpCode& code, size_t& ip, OpCodeEnum opcode)
+{
+    code.code = opcode;
+    VM::addCode(code);
+    ip++;
 }
