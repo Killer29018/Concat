@@ -23,6 +23,8 @@ void Compiler::startCompiler()
         Token& t = m_Tokens->at(i);
 
         code.value = { TYPE_NULL, 0 };
+        code.line = t.line;
+        code.column = t.column;
 
         switch (t.type)
         {

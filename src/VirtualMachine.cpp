@@ -1,6 +1,7 @@
 #include "VirtualMachine.hpp"
 
 #include <cstdio>
+#include <cstdlib>
 #include <cassert>
 
 std::vector<OpCode> VM::m_OpCodes;
@@ -54,7 +55,8 @@ void VM::simulate()
         {
         case OP_ADD:
             {
-                assert(!m_Stack.empty());
+                if (m_Stack.size() < 2)
+                    runtimeError("Not enough items on the stack", op);
 
                 const Value b = pop();
                 const Value a = pop();
@@ -64,7 +66,8 @@ void VM::simulate()
             }
         case OP_SUBTRACT:
             {
-                assert(!m_Stack.empty());
+                if (m_Stack.size() < 2)
+                    runtimeError("Not enough items on the stack", op);
 
                 const Value b = pop();
                 const Value a = pop();
@@ -74,7 +77,8 @@ void VM::simulate()
             }
         case OP_MULTIPLY:
             {
-                assert(!m_Stack.empty());
+                if (m_Stack.size() < 2)
+                    runtimeError("Not enough items on the stack", op);
 
                 const Value b = pop();
                 const Value a = pop();
@@ -84,7 +88,8 @@ void VM::simulate()
             }
         case OP_DIVIDE:
             {
-                assert(!m_Stack.empty());
+                if (m_Stack.size() < 2)
+                    runtimeError("Not enough items on the stack", op);
 
                 const Value b = pop();
                 const Value a = pop();
@@ -106,7 +111,8 @@ void VM::simulate()
             }
         case OP_PRINT:
             {
-                assert(!m_Stack.empty());
+                if (m_Stack.empty())
+                    runtimeError("Not enough items on the stack", op);
 
                 const Value a = pop();
                 printf("%d", a.as.v_Int);
@@ -115,7 +121,8 @@ void VM::simulate()
             }
         case OP_DUP:
             {
-                assert(!m_Stack.empty());
+                if (m_Stack.empty())
+                    runtimeError("Not enough items on the stack", op);
 
                 const Value a = pop();
                 m_Stack.push(a);
@@ -125,7 +132,8 @@ void VM::simulate()
             }
         case OP_DOT:
             {
-                assert(!m_Stack.empty());
+                if (m_Stack.empty())
+                    runtimeError("Not enough items on the stack", op);
 
                 const Value a = pop();
                 printf("%c", a.as.v_Int);
@@ -134,7 +142,8 @@ void VM::simulate()
             }
         case OP_SWAP:
             {
-                assert(m_Stack.size() >= 2);
+                if (m_Stack.size() < 2)
+                    runtimeError("Not enough items on the stack", op);
 
                 const Value a = pop();
                 const Value b = pop();
@@ -146,7 +155,8 @@ void VM::simulate()
             }
         case OP_OVER:
             {
-                assert(m_Stack.size() >= 2);
+                if (m_Stack.size() < 2)
+                    runtimeError("Not enough items on the stack", op);
 
                 const Value a = pop();
                 const Value b = pop();
@@ -159,7 +169,8 @@ void VM::simulate()
             }
         case OP_ROT:
             {
-                assert(m_Stack.size() >= 3);
+                if (m_Stack.size() < 3)
+                    runtimeError("Not enough items on the stack", op);
 
                 const Value a = pop();
                 const Value b = pop();
@@ -174,7 +185,8 @@ void VM::simulate()
             }
         case OP_MOD:
             {
-                assert(m_Stack.size() >= 2);
+                if (m_Stack.size() < 2)
+                    runtimeError("Not enough items on the stack", op);
                 const Value b = pop();
                 const Value a = pop();
 
@@ -230,4 +242,10 @@ void VM::operation(const Value& a, const Value& b, const OpCode& code)
     }
 
     m_Stack.push(v);
+}
+
+void VM::runtimeError(const char* msg, OpCode& code)
+{
+    printf("[RUNTIME ERROR] %ld:%ld %s\n", code.line, code.column, msg);
+    exit(-1);
 }
