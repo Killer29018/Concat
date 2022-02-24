@@ -88,6 +88,12 @@ void Compiler::startCompiler()
                     while ((ip + ipOffset) < m_Tokens->size())
                     {
                         ipOffset++;
+
+                        if ((ip + ipOffset) == m_Tokens->size())
+                        {
+                            printf("[COMPILER ERROR] %ld:%ld Macro Unexpectedly ended\n", t.line, t.column);
+                        }
+
                         if (m_Tokens->at(ip + ipOffset).type == TOKEN_END)
                         {
                             ipOffset++;
@@ -98,10 +104,6 @@ void Compiler::startCompiler()
                             macroTokens.push_back(m_Tokens->at(ip + ipOffset));
                         }
 
-                        if ((ip + ipOffset) == m_Tokens->size())
-                        {
-                            printf("[COMPILER ERROR] %ld:%ld Macro Unexpectedly ended\n", t.line, t.column);
-                        }
                     }
 
                     m_Macros.insert({ word, macroTokens });
@@ -111,8 +113,14 @@ void Compiler::startCompiler()
 
                 break;
             }
-        case TOKEN_END:
-            assert(false); // UNREACHABLE - Should Be consumed
+        case TOKEN_IF: addBasicOpcode(code, ip, OP_IF); break;
+        case TOKEN_THEN: // TODO Check for corresponding end
+           code.code = OP_THEN;
+           code.value = { TYPE_IP_OFFSET, 0 };
+           VM::addCode(code);
+           ip++;
+           break;
+        case TOKEN_END: addBasicOpcode(code, ip, OP_END); break;
 
         default:
             assert(false); // UNREACHABLE

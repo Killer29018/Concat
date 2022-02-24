@@ -47,7 +47,9 @@ int main(int argc, char** argv)
     }
 
     if (inputfile.size() != 0)
+    {
         Program::startProgramFromFile(inputfile.c_str());
+    }
     else
     {
         printf("File is a required option");

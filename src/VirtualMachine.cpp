@@ -85,7 +85,7 @@ void VM::simulate()
                     runtimeError("Not enough items on the stack", op);
 
                 const Value a = pop();
-                printf("%d", a.as.v_Int);
+                printf("%d", a.vInt);
                 ip++;
                 break;
             }
@@ -95,7 +95,7 @@ void VM::simulate()
                     runtimeError("Not enough items on the stack", op);
 
                 const Value a = pop();
-                printf("%c", a.as.v_Int);
+                printf("%c", a.vInt);
                 ip++;
                 break;
             }
@@ -154,6 +154,54 @@ void VM::simulate()
 
                 break;
             }
+        case OP_IF:
+            ip++;
+            break;
+        case OP_THEN:
+            {
+                if (m_Stack.size() < 1)
+                    runtimeError("Not enough items on the stack", op);
+
+                const Value a = pop();
+
+                if (a.type != TYPE_INT)
+                    runtimeError("Invalid type", op);
+
+                bool equal = a.vInt;
+
+                if (equal)
+                {
+                    ip++;
+                }
+                else
+                {
+                    if (op.value.vIpOffset != 0)
+                    {
+                        ip += op.value.vIpOffset;
+                    }
+                    else
+                    {
+                        size_t ipOffset = 0;
+                        while ((ip + ipOffset) < m_OpCodes.size())
+                        {
+                            ipOffset++;
+
+                            if (m_OpCodes[(ip + ipOffset)].code == OP_END)
+                            {
+                                op.value.vIpOffset = ipOffset;
+                                ip += ipOffset;
+                                break;
+                            }
+                        }
+                    }
+                }
+
+            break;
+            }
+        case OP_END:
+            ip++;
+            break;
+
         default:
             assert(false); // UNREACHABLE
         }
@@ -166,7 +214,7 @@ void VM::printValueDebug(size_t index)
     switch (code.value.type)
     {
     case TYPE_INT:
-        printf("%.4lu | %.30s | %d\n", index, OpCodeString[code.code], code.value.as.v_Int);
+        printf("%.4lu | %.30s | %d\n", index, OpCodeString[code.code], code.value.vInt);
         break;
     default:
         assert(false); // UNREACHABLE
@@ -188,18 +236,18 @@ void VM::operation(const OpCode& op, size_t& ip)
 
     switch (op.code)
     {
-    case OP_ADD:        value_add(a, b, v); break;
-    case OP_SUBTRACT:   value_subtract(a, b, v); break;
-    case OP_MULTIPLY:   value_multiply(a, b, v); break;
-    case OP_DIVIDE:     value_divide(a, b, v); break;
-    case OP_MOD:        value_mod(a, b, v); break;
+    case OP_ADD:        value_add(a, b, v, op); break;
+    case OP_SUBTRACT:   value_subtract(a, b, v, op); break;
+    case OP_MULTIPLY:   value_multiply(a, b, v, op); break;
+    case OP_DIVIDE:     value_divide(a, b, v, op); break;
+    case OP_MOD:        value_mod(a, b, v, op); break;
 
-    case OP_EQUAL:          value_equal(a, b, v); break;
-    case OP_NOT_EQUAL:      value_not_equal(a, b, v); break;
-    case OP_GREATER:        value_greater(a, b, v); break;
-    case OP_LESS:           value_less(a, b, v); break;
-    case OP_GREATER_EQUAL:  value_greater_equal(a, b, v); break;
-    case OP_LESS_EQUAL:     value_less_equal(a, b, v); break;
+    case OP_EQUAL:          value_equal(a, b, v, op); break;
+    case OP_NOT_EQUAL:      value_not_equal(a, b, v, op); break;
+    case OP_GREATER:        value_greater(a, b, v, op); break;
+    case OP_LESS:           value_less(a, b, v, op); break;
+    case OP_GREATER_EQUAL:  value_greater_equal(a, b, v, op); break;
+    case OP_LESS_EQUAL:     value_less_equal(a, b, v, op); break;
     default:
         assert(false); // UNREACHABLE
     }
