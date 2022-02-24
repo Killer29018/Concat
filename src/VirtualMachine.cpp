@@ -111,6 +111,15 @@ void VM::simulate()
                 ip++;
                 break;
             }
+        case OP_DROP:
+            {
+                if (m_Stack.empty())
+                    runtimeError("Not enough items on the stack", op);
+
+                pop();
+                ip++;
+                break;
+            }
         case OP_SWAP:
             {
                 if (m_Stack.size() < 2)

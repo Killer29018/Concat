@@ -27,6 +27,7 @@ enum OpCodeEnum
     OP_DOT,
 
     OP_DUP,
+    OP_DROP,
     OP_SWAP,
     OP_OVER,
     OP_ROT,
@@ -60,6 +61,7 @@ const std::vector<const char*> OpCodeString
     "OP_DOT",
 
     "OP_DUP",
+    "OP_DROP",
     "OP_SWAP",
     "OP_OVER",
     "OP_ROT",

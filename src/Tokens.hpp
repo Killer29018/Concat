@@ -27,6 +27,7 @@ enum TokenType
     TOKEN_DOT,
 
     TOKEN_DUP,
+    TOKEN_DROP,
     TOKEN_SWAP,
     TOKEN_OVER,
     TOKEN_ROT,
@@ -62,6 +63,7 @@ const std::vector<const char*> TokenString
     "TOKEN_DOT",
 
     "TOKEN_DUP",
+    "TOKEN_DROP",
     "TOKEN_SWAP",
     "TOKEN_OVER",
     "TOKEN_ROT",

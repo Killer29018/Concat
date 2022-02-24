@@ -28,7 +28,7 @@ macro fizzbuzz
     dup rot
     /* print print print */
     if == then
-        if dup 1 == then endif
+        if dup 1 == then drop endif
 
         if 0 == then print endif
     endif
