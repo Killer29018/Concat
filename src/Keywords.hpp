@@ -3,7 +3,7 @@
 
 #include "Tokens.hpp"
 
-const int KeywordCount = 24;
+const int KeywordCount = 30;
 const std::unordered_map<std::string, TokenType> Keywords({
     { "+",          TOKEN_ADD },
     { "-",          TOKEN_SUBTRACT },
@@ -17,6 +17,14 @@ const std::unordered_map<std::string, TokenType> Keywords({
     { "<",          TOKEN_LESS},
     { ">=",         TOKEN_GREATER_EQUAL},
     { "<=",         TOKEN_LESS_EQUAL},
+
+    // And or and not provide same usage as there bitwise counterpart
+    { "and",        TOKEN_LAND}, 
+    { "or",         TOKEN_LOR},
+    { "invert",     TOKEN_INVERT},
+    { "land",       TOKEN_LAND},
+    { "lor",        TOKEN_LOR},
+    { "lnot",       TOKEN_LNOT},
 
     { "cr",         TOKEN_CR },
     { "print",      TOKEN_PRINT },

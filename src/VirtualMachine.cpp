@@ -65,6 +65,31 @@ void VM::simulate()
         case OP_LESS: operation(op, ip); break;
         case OP_GREATER_EQUAL: operation(op, ip); break;
         case OP_LESS_EQUAL: operation(op, ip); break;
+                            
+        case OP_INVERT:
+            {
+                const Value a = pop();
+                Value v;
+                v.type = a.type;
+
+                value_invert(a, v, op);
+                m_Stack.push(v);
+                ip++;
+                break;
+            }
+        case OP_LAND: operation(op, ip); break;
+        case OP_LOR: operation(op, ip); break;
+        case OP_LNOT:
+            {
+                const Value a = pop();
+                Value v;
+                v.type = a.type;
+
+                value_lnot(a, v, op);
+                m_Stack.push(v);
+                ip++;
+                break;
+            }
 
         case OP_PUSH_INT:
             {
@@ -267,6 +292,9 @@ void VM::operation(const OpCode& op, size_t& ip)
     case OP_LESS:           value_less(a, b, v, op); break;
     case OP_GREATER_EQUAL:  value_greater_equal(a, b, v, op); break;
     case OP_LESS_EQUAL:     value_less_equal(a, b, v, op); break;
+
+    case OP_LAND:  value_land(a, b, v, op); break;
+    case OP_LOR:   value_lor(a, b, v, op); break;
     default:
         assert(false); // UNREACHABLE
     }

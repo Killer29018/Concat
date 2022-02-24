@@ -146,7 +146,7 @@ void Lexer::parseWord(Token& token, const char* word)
     if (*token.startIndex >= '0' && *token.startIndex <= '9')
     {
         char* end;
-        strtol(token.startIndex, &end, 0);
+        strtol(token.startIndex, &end, 10);
         if (end != token.endIndex)
         {
             fprintf(stderr, "[COMPILER ERROR] %ld:%ld Failed to pass integer constant %.*s\n", token.line, token.column, length, token.startIndex);

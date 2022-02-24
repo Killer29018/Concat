@@ -7,6 +7,7 @@ syntax match SBIMCL_PreProc "\(^macro\s\)\@<=\S\+"
 highlight link SBIMCL_PreProc PreProc
 
 syntax keyword SBIMCL_Keyword dup swap over rot print cr mod if then endif
+syntax keyword SBIMCL_Keyword and or invert land lor lnot
 highlight link SBIMCL_Keyword Keyword 
 
 syntax match SBIMCL_Constants "\v([0-9]+) "

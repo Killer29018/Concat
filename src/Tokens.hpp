@@ -20,6 +20,11 @@ enum TokenType
     TOKEN_GREATER_EQUAL,
     TOKEN_LESS_EQUAL,
 
+    TOKEN_INVERT,
+    TOKEN_LAND,
+    TOKEN_LOR,
+    TOKEN_LNOT,
+
     TOKEN_INT,
 
     TOKEN_CR,
@@ -55,6 +60,11 @@ const std::vector<const char*> TokenString
     "TOKEN_LESS",
     "TOKEN_GREATER_EQUAL",
     "TOKEN_LESS_EQUAL",
+
+    "TOKEN_INVERT",
+    "TOKEN_LAND",
+    "TOKEN_LOR",
+    "TOKEN_LNOT",
 
     "TOKEN_INT",
 

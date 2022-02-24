@@ -20,6 +20,11 @@ enum OpCodeEnum
     OP_GREATER_EQUAL,
     OP_LESS_EQUAL,
 
+    OP_INVERT,
+    OP_LAND,
+    OP_LOR,
+    OP_LNOT,
+
     OP_PUSH_INT,
 
     OP_CR,
@@ -53,6 +58,11 @@ const std::vector<const char*> OpCodeString
     "OP_LESS",
     "OP_GREATER_EQUAL",
     "OP_LESS_EQUAL",
+
+    "OP_INVERT",
+    "OP_LAND",
+    "OP_LOR",
+    "OP_LNOT",
 
     "OP_PUSH_INT",
 

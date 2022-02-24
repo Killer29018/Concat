@@ -168,3 +168,64 @@ void value_less_equal(const Value& a, const Value& b, Value& rV, const OpCode& c
         assert(false); // UNREACHABLE
     }
 }
+
+void value_invert(const Value& a, Value& rV, const OpCode& code)
+{
+    if (a.type != TYPE_INT)
+        VM::runtimeError("Type not supported for checking if less or equal", code);
+
+    switch (a.type)
+    {
+    case TYPE_INT:
+        if (a.vInt != 0) rV.vInt = 0;
+        else rV.vInt = 1;
+        break;
+    default:
+        assert(false); // UNREACHABLE
+    }
+}
+
+void value_land(const Value& a, const Value& b, Value& rV, const OpCode& code)
+{
+    if (a.type != TYPE_INT)
+        VM::runtimeError("Type not supported for checking if less or equal", code);
+
+    switch (a.type)
+    {
+    case TYPE_INT:
+        rV.vInt = (a.vInt & b.vInt);
+        break;
+    default:
+        assert(false); // UNREACHABLE
+    }
+}
+
+void value_lor(const Value& a, const Value& b, Value& rV, const OpCode& code)
+{
+    if (a.type != TYPE_INT)
+        VM::runtimeError("Type not supported for checking if less or equal", code);
+
+    switch (a.type)
+    {
+    case TYPE_INT:
+        rV.vInt = (a.vInt | b.vInt);
+        break;
+    default:
+        assert(false); // UNREACHABLE
+    }
+}
+
+void value_lnot(const Value& a, Value& rV, const OpCode& code)
+{
+    if (a.type != TYPE_INT)
+        VM::runtimeError("Type not supported for checking if less or equal", code);
+
+    switch (a.type)
+    {
+    case TYPE_INT:
+        rV.vInt = ~(a.vInt);
+        break;
+    default:
+        assert(false); // UNREACHABLE
+    }
+}

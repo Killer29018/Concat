@@ -42,4 +42,9 @@ void value_less(const Value& a, const Value& b, Value& rV, const OpCode& code);
 void value_greater_equal(const Value& a, const Value& b, Value& rV, const OpCode& code);
 void value_less_equal(const Value& a, const Value& b, Value& rV, const OpCode& code);
 
+void value_invert(const Value& a, Value& rV, const OpCode& code);
+void value_land(const Value& a, const Value& b, Value& rV, const OpCode& code);
+void value_lor(const Value& a, const Value& b, Value& rV, const OpCode& code);
+void value_lnot(const Value& a, Value& rV, const OpCode& code);
+
 #endif
