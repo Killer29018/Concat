@@ -6,7 +6,7 @@ syntax keyword SBIMCL_PreProc macro endmacro
 syntax match SBIMCL_PreProc "\(^macro\s\)\@<=\S\+"
 highlight link SBIMCL_PreProc PreProc
 
-syntax keyword SBIMCL_Keyword dup swap over rot print cr mod if endif
+syntax keyword SBIMCL_Keyword dup swap over rot print cr mod if then endif
 highlight link SBIMCL_Keyword Keyword 
 
 syntax match SBIMCL_Constants "\v([0-9]+) "

@@ -1,0 +1,68 @@
+/*
+    Fizz buzz between 1 and 20 made with no loops
+*/
+macro space 32 . endmacro
+
+macro fizz 
+    if 3 mod 0 == dup then
+        70 .
+        73 .
+        90 .
+        90 .
+    endif
+endmacro
+
+macro buzz
+    if 5 mod 0 == dup then
+        66 .
+        85 .
+        90 .
+        90 .
+    endif
+endmacro
+
+
+macro fizzbuzz
+    dup fizz
+    over buzz
+    dup rot
+    /* print print print */
+    if == then
+        if dup 1 == then endif
+
+        if 0 == then print endif
+    endif
+    cr
+endmacro
+
+1 fizzbuzz
+2 fizzbuzz
+3 fizzbuzz
+4 fizzbuzz
+5 fizzbuzz
+6 fizzbuzz
+7 fizzbuzz
+8 fizzbuzz
+9 fizzbuzz
+10 fizzbuzz
+11 fizzbuzz
+12 fizzbuzz
+13 fizzbuzz
+14 fizzbuzz
+15 fizzbuzz
+16 fizzbuzz
+17 fizzbuzz
+18 fizzbuzz
+19 fizzbuzz
+20 fizzbuzz
+21 fizzbuzz
+22 fizzbuzz
+23 fizzbuzz
+24 fizzbuzz
+25 fizzbuzz
+26 fizzbuzz
+27 fizzbuzz
+28 fizzbuzz
+29 fizzbuzz
+30 fizzbuzz
+cr
