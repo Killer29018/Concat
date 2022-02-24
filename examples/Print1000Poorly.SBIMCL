@@ -3,7 +3,7 @@ Prints 1000 Numbers one at a time to check how well the amount of operations can
 */
 
 /* macro randomCommands 2 + 50 * 50 / 2 - end */
-macro randomCommands 2 + 2 - end
+macro randomCommands 2 + 2 - endmacro
 
 1 randomCommands print cr
 2 randomCommands print cr

@@ -11,9 +11,9 @@
     <= Less than or equal to
 */
 
-macro space 32 . end
-macro a 21 end
-macro b 20 end
+macro space 32 . endmacro
+macro a 21 endmacro
+macro b 20 endmacro
 
 a b == print space
 a b != print space
@@ -25,8 +25,8 @@ cr
 
 if a b >= then
     69 print cr
-end
+endif
 
 if a b != then
     420 print cr
-end
+endif

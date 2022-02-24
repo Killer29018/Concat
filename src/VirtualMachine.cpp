@@ -186,7 +186,7 @@ void VM::simulate()
                         {
                             ipOffset++;
 
-                            if (m_OpCodes[(ip + ipOffset)].code == OP_END)
+                            if (m_OpCodes[(ip + ipOffset)].code == OP_ENDIF)
                             {
                                 op.value.vIpOffset = ipOffset;
                                 ip += ipOffset;
@@ -198,7 +198,7 @@ void VM::simulate()
 
             break;
             }
-        case OP_END:
+        case OP_ENDIF:
             ip++;
             break;
 

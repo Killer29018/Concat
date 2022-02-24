@@ -94,7 +94,7 @@ void Compiler::startCompiler()
                             printf("[COMPILER ERROR] %ld:%ld Macro Unexpectedly ended\n", t.line, t.column);
                         }
 
-                        if (m_Tokens->at(ip + ipOffset).type == TOKEN_END)
+                        if (m_Tokens->at(ip + ipOffset).type == TOKEN_END_MACRO)
                         {
                             ipOffset++;
                             break;
@@ -120,7 +120,7 @@ void Compiler::startCompiler()
            VM::addCode(code);
            ip++;
            break;
-        case TOKEN_END: addBasicOpcode(code, ip, OP_END); break;
+        case TOKEN_ENDIF: addBasicOpcode(code, ip, OP_ENDIF); break;
 
         default:
             assert(false); // UNREACHABLE

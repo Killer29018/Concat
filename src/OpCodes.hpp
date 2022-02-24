@@ -33,7 +33,7 @@ enum OpCodeEnum
 
     OP_IF,
     OP_THEN,
-    OP_END,
+    OP_ENDIF,
 
     OP_COUNT
 };
@@ -66,7 +66,7 @@ const std::vector<const char*> OpCodeString
 
     "OP_IF",
     "OP_THEN",
-    "OP_END",
+    "OP_ENDIF",
 };
 
 struct OpCode
