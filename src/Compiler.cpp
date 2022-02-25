@@ -104,6 +104,7 @@ void Compiler::startCompiler()
                             m_Tokens->insert(m_Tokens->begin() + ip + 1, tokens[i]);
                         }
                         ip++;
+                        break;
                     }
                     size_t ipOffset = 0;
                     std::vector<Token> macroTokens;
@@ -233,7 +234,7 @@ void Compiler::startCompiler()
                         {
                             endwhileCount++;
                         }
-                        if (m_Tokens->at(ip - ipOffset).type == TOKEN_WHILE)
+                        else if (m_Tokens->at(ip - ipOffset).type == TOKEN_WHILE)
                         {
                             if (endwhileCount == 0)
                             {
@@ -247,14 +248,14 @@ void Compiler::startCompiler()
                     }
 
                     code.code = OP_ENDWHILE;
-                    code.value = { TYPE_IP_OFFSET, ipOffset };
+                    code.value = { TYPE_IP_OFFSET, 0 };
                     VM::addCode(code);
                     ip++;
                     break;
                 }
 
             default:
-                                 assert(false); // UNREACHABLE
+                assert(false); // UNREACHABLE
         }
 
         delete[] word;

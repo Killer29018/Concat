@@ -223,6 +223,7 @@ void VM::simulate()
                             if (ifCount == 0)
                             {
                                 op.value.vIpOffset = ipOffset;
+                                break;
                             }
                             else
                             {
@@ -279,6 +280,7 @@ void VM::simulate()
                             if (whileCount == 0)
                             {
                                 op.value.vIpOffset = ipOffset + 1;
+                                break;
                             }
                             else
                             {
@@ -300,6 +302,33 @@ void VM::simulate()
             }
         case OP_ENDWHILE: 
             {
+                if(op.value.vIpOffset == 0)
+                {
+                    size_t ipOffset = 0;
+                    size_t endWhileCount = 0;
+                    while ((ip - ipOffset) > 0)
+                    {
+                        ipOffset++;
+
+                        if (m_OpCodes[(ip - ipOffset)].code == OP_ENDWHILE)
+                        {
+                            endWhileCount++;
+                        }
+                        else if (m_OpCodes[(ip - ipOffset)].code == OP_WHILE)
+                        {
+                            if (endWhileCount == 0)
+                            {
+                                op.value.vIpOffset = ipOffset;
+                                break;
+                            }
+                            else
+                            {
+                                endWhileCount--;
+                            }
+                        }
+                    }
+                }
+
                 ip -= op.value.vIpOffset;
                 break;
             }

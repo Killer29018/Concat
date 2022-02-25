@@ -1,0 +1,44 @@
+/*
+    Fizz buzz between 1 and 1000 made with while loops
+*/
+macro space 32 . endmacro
+
+macro fizz 
+    if 3 mod 0 == dup then
+        70 .
+        73 .
+        90 .
+        90 .
+    endif
+endmacro
+
+macro buzz
+    if 5 mod 0 == dup then
+        66 .
+        85 .
+        90 .
+        90 .
+    endif
+endmacro
+
+
+macro fizzbuzz
+    dup fizz
+    over buzz
+    // over over
+    over over
+    // print print
+    if 0 == swap 0 == and then
+        rot
+        print
+    endif
+    if 1 == swap 1 == or then
+        drop
+    endif
+    cr
+endmacro
+
+3 while dup 1000 <= do
+    dup fizzbuzz
+    1 +
+endwhile

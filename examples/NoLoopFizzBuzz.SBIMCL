@@ -1,5 +1,5 @@
 /*
-    Fizz buzz between 1 and 20 made with no loops
+    Fizz buzz between 1 and 1000 made with no loops
 */
 macro space 32 . endmacro
 
