@@ -43,8 +43,9 @@ enum TokenType
     TOKEN_ENDMACRO,
 
     TOKEN_IF,
-    TOKEN_ELSEIF,
     TOKEN_THEN,
+    TOKEN_ELSEIF,
+    TOKEN_ELSE,
     TOKEN_ENDIF,
 
     TOKEN_WHILE,
@@ -92,8 +93,9 @@ const std::vector<const char*> TokenString
     "TOKEN_ENDMACRO",
 
     "TOKEN_IF",
-    "TOKEN_ENDIF",
     "TOKEN_THEN",
+    "TOKEN_ELSEIF",
+    "TOKEN_ELSE",
     "TOKEN_ENDIF",
 
     "TOKEN_WHILE",

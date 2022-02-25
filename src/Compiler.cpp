@@ -141,19 +141,12 @@ void Compiler::startCompiler()
             case TOKEN_ENDMACRO: addBasicOpcode(code, ip, OP_IF); break;
 
             case TOKEN_IF: addBasicOpcode(code, ip, OP_IF); break;
-            case TOKEN_ELSEIF: 
-               {
-                   code.code = OP_ELSEIF;
-                   code.value = { TYPE_IP_OFFSET, 0 };
-                   VM::addCode(code);
-                   ip++;
-                   break;
-               }
             case TOKEN_THEN:
                 {
                     size_t ipOffset = 0;
                     size_t ifCount = 0;
 
+                    // INFO: Check for correspoding if or elseif
                     while ((ip - ipOffset) > 0)
                     {
                         ipOffset++;
@@ -217,6 +210,113 @@ void Compiler::startCompiler()
                     ip++;
                     break;
                 }
+            case TOKEN_ELSEIF: 
+               {
+                    size_t ipOffset = 0;
+                    size_t ifCount = 0;
+
+                    // INFO: Check for correspoding if
+                    while ((ip - ipOffset) > 0)
+                    {
+                        ipOffset++;
+
+                        if (m_Tokens->at(ip - ipOffset).type == TOKEN_ENDIF)
+                        {
+                            ifCount++;
+                        }
+                        else if (m_Tokens->at(ip - ipOffset).type == TOKEN_IF)
+                        {
+                            if (ifCount == 0)
+                            {
+                                break;
+                            }
+                            else
+                            {
+                                ifCount--;
+                            }
+                        }
+
+                        if ((ip - ipOffset) == 0)
+                        {
+                            Error::compilerError(t, "elseif has no corresponding if");
+                        }
+                    }
+
+                    ipOffset = 0;
+                    ifCount = 0;
+
+                    // INFO: Check for corresponding then
+                    while ((ip + ipOffset) < m_Tokens->size())
+                    {
+                        ipOffset++;
+
+                        if ((ip + ipOffset) == m_Tokens->size())
+                        {
+                            Error::compilerError(t, "elseif has no corresponding then");
+                        }
+
+                        if (m_Tokens->at(ip + ipOffset).type == TOKEN_IF ||
+                            m_Tokens->at(ip + ipOffset).type == TOKEN_ELSEIF)
+                        {
+                            ifCount++;
+                        }
+                        if (m_Tokens->at(ip + ipOffset).type == TOKEN_THEN)
+                        {
+                            if (ifCount == 0)
+                            {
+                                break;
+                            }
+                            else
+                            {
+                                ifCount--;
+                            }
+                        }
+                    }
+
+
+                   code.code = OP_ELSEIF;
+                   code.value = { TYPE_IP_OFFSET, 0 };
+                   VM::addCode(code);
+                   ip++;
+                   break;
+               }
+            case TOKEN_ELSE:
+               {
+                   size_t ipOffset = 0;
+                   size_t ifCount = 0;
+
+                   // INFO: Check for correspoding if
+                   while ((ip - ipOffset) > 0)
+                   {
+                       ipOffset++;
+
+                       if (m_Tokens->at(ip - ipOffset).type == TOKEN_ENDIF)
+                       {
+                           ifCount++;
+                       }
+                       else if (m_Tokens->at(ip - ipOffset).type == TOKEN_IF)
+                       {
+                           if (ifCount == 0)
+                           {
+                               break;
+                           }
+                           else
+                           {
+                               ifCount--;
+                           }
+                       }
+                       if ((ip - ipOffset) == 0)
+                       {
+                           Error::compilerError(t, "else has no corresponding if");
+                       }
+                   }
+
+                   code.code = OP_ELSE;
+                   code.value = { TYPE_IP_OFFSET, 0 };
+                   VM::addCode(code);
+                   ip++;
+                   break;
+               }
             case TOKEN_ENDIF: addBasicOpcode(code, ip, OP_ENDIF); break;
 
             case TOKEN_WHILE: addBasicOpcode(code, ip, OP_WHILE); break;
@@ -229,6 +329,7 @@ void Compiler::startCompiler()
                     {
                         ipOffset++;
 
+                        // INFO: Check for correspoding while
                         if (m_Tokens->at(ip - ipOffset).type == TOKEN_DO || 
                             m_Tokens->at(ip - ipOffset).type == TOKEN_ENDWHILE)
                         {
