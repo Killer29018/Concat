@@ -71,11 +71,10 @@ void VM::simulate()
         case OP_INVERT:
             {
                 const Value a = pop();
-                Value v;
-                v.type = a.type;
+                Value rV;
 
-                value_invert(a, v, op);
-                m_Stack.push(v);
+                Value::Invert(a, rV, op);
+                m_Stack.push(rV);
                 ip++;
                 break;
             }
@@ -84,11 +83,10 @@ void VM::simulate()
         case OP_LNOT:
             {
                 const Value a = pop();
-                Value v;
-                v.type = a.type;
+                Value rV;
 
-                value_lnot(a, v, op);
-                m_Stack.push(v);
+                Value::Lnot(a, rV, op);
+                m_Stack.push(rV);
                 ip++;
                 break;
             }
@@ -276,25 +274,24 @@ void VM::operation(const OpCode& op, size_t& ip)
     Value a = pop();
 
     Value v;
-    v.type = a.type;
 
     switch (op.code)
     {
-    case OP_ADD:        value_add(a, b, v, op); break;
-    case OP_SUBTRACT:   value_subtract(a, b, v, op); break;
-    case OP_MULTIPLY:   value_multiply(a, b, v, op); break;
-    case OP_DIVIDE:     value_divide(a, b, v, op); break;
-    case OP_MOD:        value_mod(a, b, v, op); break;
+    case OP_ADD:        Value::Add(a, b, v, op); break;
+    case OP_SUBTRACT:   Value::Subtract(a, b, v, op); break;
+    case OP_MULTIPLY:   Value::Multiply(a, b, v, op); break;
+    case OP_DIVIDE:     Value::Divide(a, b, v, op); break;
+    case OP_MOD:        Value::Mod(a, b, v, op); break;
 
-    case OP_EQUAL:          value_equal(a, b, v, op); break;
-    case OP_NOT_EQUAL:      value_not_equal(a, b, v, op); break;
-    case OP_GREATER:        value_greater(a, b, v, op); break;
-    case OP_LESS:           value_less(a, b, v, op); break;
-    case OP_GREATER_EQUAL:  value_greater_equal(a, b, v, op); break;
-    case OP_LESS_EQUAL:     value_less_equal(a, b, v, op); break;
+    case OP_EQUAL:          Value::Equal(a, b, v, op); break;
+    case OP_NOT_EQUAL:      Value::Not_equal(a, b, v, op); break;
+    case OP_GREATER:        Value::Greater(a, b, v, op); break;
+    case OP_LESS:           Value::Less(a, b, v, op); break;
+    case OP_GREATER_EQUAL:  Value::Greater_equal(a, b, v, op); break;
+    case OP_LESS_EQUAL:     Value::Less_equal(a, b, v, op); break;
 
-    case OP_LAND:  value_land(a, b, v, op); break;
-    case OP_LOR:   value_lor(a, b, v, op); break;
+    case OP_LAND:  Value::Land(a, b, v, op); break;
+    case OP_LOR:   Value::Lor(a, b, v, op); break;
     default:
         assert(false); // UNREACHABLE
     }

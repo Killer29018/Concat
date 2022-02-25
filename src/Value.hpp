@@ -18,6 +18,7 @@ enum ValueType
 
 struct Value
 {
+public:
     ValueType type;
     union
     {
@@ -25,6 +26,24 @@ struct Value
         int32_t vBool;
         int32_t vIpOffset;
     };
+public:
+    static void Add(const Value& a, const Value& b, Value& rV, const OpCode& op);
+    static void Subtract(const Value& a, const Value& b, Value& rV, const OpCode& op);
+    static void Multiply(const Value& a, const Value& b, Value& rV, const OpCode& op);
+    static void Divide(const Value& a, const Value& b, Value& rV, const OpCode& op);
+    static void Mod(const Value& a, const Value& b, Value& rV, const OpCode& op);
+
+    static void Equal(const Value& a, const Value& b, Value& rV, const OpCode& op);
+    static void Not_equal(const Value& a, const Value& b, Value& rV, const OpCode& op);
+    static void Greater(const Value& a, const Value& b, Value& rV, const OpCode& op);
+    static void Less(const Value& a, const Value& b, Value& rV, const OpCode& op);
+    static void Greater_equal(const Value& a, const Value& b, Value& rV, const OpCode& op);
+    static void Less_equal(const Value& a, const Value& b, Value& rV, const OpCode& op);
+
+    static void Invert(const Value& a, Value& rV, const OpCode& op);
+    static void Land(const Value& a, const Value& b, Value& rV, const OpCode& op);
+    static void Lor(const Value& a, const Value& b, Value& rV, const OpCode& op);
+    static void Lnot(const Value& a, Value& rV, const OpCode& op);
 };
 
 const std::vector<const char*> ValueTypeString
@@ -35,22 +54,5 @@ const std::vector<const char*> ValueTypeString
     "IpOffset"
 };
 
-void value_add(const Value& a, const Value& b, Value& rV, const OpCode& op);
-void value_subtract(const Value& a, const Value& b, Value& rV, const OpCode& op);
-void value_multiply(const Value& a, const Value& b, Value& rV, const OpCode& op);
-void value_divide(const Value& a, const Value& b, Value& rV, const OpCode& op);
-void value_mod(const Value& a, const Value& b, Value& rV, const OpCode& op);
-
-void value_equal(const Value& a, const Value& b, Value& rV, const OpCode& op);
-void value_not_equal(const Value& a, const Value& b, Value& rV, const OpCode& op);
-void value_greater(const Value& a, const Value& b, Value& rV, const OpCode& op);
-void value_less(const Value& a, const Value& b, Value& rV, const OpCode& op);
-void value_greater_equal(const Value& a, const Value& b, Value& rV, const OpCode& op);
-void value_less_equal(const Value& a, const Value& b, Value& rV, const OpCode& op);
-
-void value_invert(const Value& a, Value& rV, const OpCode& op);
-void value_land(const Value& a, const Value& b, Value& rV, const OpCode& op);
-void value_lor(const Value& a, const Value& b, Value& rV, const OpCode& op);
-void value_lnot(const Value& a, Value& rV, const OpCode& op);
 
 #endif
