@@ -4,6 +4,8 @@
 #include <cassert>
 #include <cstdint>
 
+#include <vector>
+
 struct OpCode;
 
 enum ValueType
@@ -23,28 +25,29 @@ struct Value
     };
 };
 
-// void addValue(const Value& a, const Value& b, Value& rV);
-// void subtractValue(const Value& a, const Value& b, Value& rV);
-// void multiplyValue(const Value& a, const Value& b, Value& rV);
-// void divideValue(const Value& a, const Value& b, Value& rV);
-// void modValue(const Value& a, const Value& b, Value& rV);
+const std::vector<const char*> ValueTypeString
+{
+    "NULL",
+    "INT",
+    "IpOffset"
+};
 
-void value_add(const Value& a, const Value& b, Value& rV, const OpCode& code);
-void value_subtract(const Value& a, const Value& b, Value& rV, const OpCode& code);
-void value_multiply(const Value& a, const Value& b, Value& rV, const OpCode& code);
-void value_divide(const Value& a, const Value& b, Value& rV, const OpCode& code);
-void value_mod(const Value& a, const Value& b, Value& rV, const OpCode& code);
+void value_add(const Value& a, const Value& b, Value& rV, const OpCode& op);
+void value_subtract(const Value& a, const Value& b, Value& rV, const OpCode& op);
+void value_multiply(const Value& a, const Value& b, Value& rV, const OpCode& op);
+void value_divide(const Value& a, const Value& b, Value& rV, const OpCode& op);
+void value_mod(const Value& a, const Value& b, Value& rV, const OpCode& op);
 
-void value_equal(const Value& a, const Value& b, Value& rV, const OpCode& code);
-void value_not_equal(const Value& a, const Value& b, Value& rV, const OpCode& code);
-void value_greater(const Value& a, const Value& b, Value& rV, const OpCode& code);
-void value_less(const Value& a, const Value& b, Value& rV, const OpCode& code);
-void value_greater_equal(const Value& a, const Value& b, Value& rV, const OpCode& code);
-void value_less_equal(const Value& a, const Value& b, Value& rV, const OpCode& code);
+void value_equal(const Value& a, const Value& b, Value& rV, const OpCode& op);
+void value_not_equal(const Value& a, const Value& b, Value& rV, const OpCode& op);
+void value_greater(const Value& a, const Value& b, Value& rV, const OpCode& op);
+void value_less(const Value& a, const Value& b, Value& rV, const OpCode& op);
+void value_greater_equal(const Value& a, const Value& b, Value& rV, const OpCode& op);
+void value_less_equal(const Value& a, const Value& b, Value& rV, const OpCode& op);
 
-void value_invert(const Value& a, Value& rV, const OpCode& code);
-void value_land(const Value& a, const Value& b, Value& rV, const OpCode& code);
-void value_lor(const Value& a, const Value& b, Value& rV, const OpCode& code);
-void value_lnot(const Value& a, Value& rV, const OpCode& code);
+void value_invert(const Value& a, Value& rV, const OpCode& op);
+void value_land(const Value& a, const Value& b, Value& rV, const OpCode& op);
+void value_lor(const Value& a, const Value& b, Value& rV, const OpCode& op);
+void value_lnot(const Value& a, Value& rV, const OpCode& op);
 
 #endif

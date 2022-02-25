@@ -4,6 +4,8 @@
 #include <cstdlib>
 #include <cassert>
 
+#include "Error.hpp"
+
 std::vector<OpCode> VM::m_OpCodes;
 std::stack<Value> VM::m_Stack;
 
@@ -107,7 +109,7 @@ void VM::simulate()
         case OP_PRINT:
             {
                 if (m_Stack.empty())
-                    runtimeError("Not enough items on the stack", op);
+                    Error::stackTooSmallError(op, 1);
 
                 const Value a = pop();
                 printf("%d", a.vInt);
@@ -117,7 +119,7 @@ void VM::simulate()
         case OP_DOT:
             {
                 if (m_Stack.empty())
-                    runtimeError("Not enough items on the stack", op);
+                    Error::stackTooSmallError(op, 1);
 
                 const Value a = pop();
                 printf("%c", a.vInt);
@@ -128,7 +130,7 @@ void VM::simulate()
         case OP_DUP:
             {
                 if (m_Stack.empty())
-                    runtimeError("Not enough items on the stack", op);
+                    Error::stackTooSmallError(op, 1);
 
                 const Value a = pop();
                 m_Stack.push(a);
@@ -139,7 +141,7 @@ void VM::simulate()
         case OP_DROP:
             {
                 if (m_Stack.empty())
-                    runtimeError("Not enough items on the stack", op);
+                    Error::stackTooSmallError(op, 1);
 
                 pop();
                 ip++;
@@ -148,7 +150,7 @@ void VM::simulate()
         case OP_SWAP:
             {
                 if (m_Stack.size() < 2)
-                    runtimeError("Not enough items on the stack", op);
+                    Error::stackTooSmallError(op, 2);
 
                 const Value a = pop();
                 const Value b = pop();
@@ -161,7 +163,7 @@ void VM::simulate()
         case OP_OVER:
             {
                 if (m_Stack.size() < 2)
-                    runtimeError("Not enough items on the stack", op);
+                    Error::stackTooSmallError(op, 2);
 
                 const Value a = pop();
                 const Value b = pop();
@@ -175,7 +177,7 @@ void VM::simulate()
         case OP_ROT:
             {
                 if (m_Stack.size() < 3)
-                    runtimeError("Not enough items on the stack", op);
+                    Error::stackTooSmallError(op, 3);
 
                 const Value a = pop();
                 const Value b = pop();
@@ -193,13 +195,13 @@ void VM::simulate()
             break;
         case OP_THEN:
             {
-                if (m_Stack.size() < 1)
-                    runtimeError("Not enough items on the stack", op);
+                if (m_Stack.empty())
+                    Error::stackTooSmallError(op, 1);
 
                 const Value a = pop();
 
                 if (a.type != TYPE_INT)
-                    runtimeError("Invalid type", op);
+                    Error::runtimeError(op, "Invalid Type. %s was expected but found %s instead", ValueTypeString[TYPE_INT], ValueTypeString[a.type]);
 
                 bool equal = a.vInt;
 
@@ -268,7 +270,7 @@ void VM::printValueDebug(size_t index)
 void VM::operation(const OpCode& op, size_t& ip)
 {
     if (m_Stack.size() < 2)
-        runtimeError("Not enough items on the stack", op);
+        Error::stackTooSmallError(op, 2);
 
     Value b = pop();
     Value a = pop();
@@ -303,8 +305,3 @@ void VM::operation(const OpCode& op, size_t& ip)
     ip++;
 }
 
-void VM::runtimeError(const char* msg, const OpCode& code)
-{
-    fprintf(stderr, "[RUNTIME ERROR] %ld:%ld %s\n", code.line, code.column, msg);
-    exit(-1);
-}

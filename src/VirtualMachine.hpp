@@ -19,7 +19,6 @@ public:
     static void printOpCodes();
 
     static void simulate();
-    static void runtimeError(const char* msg, const OpCode& op);
 private:
     VM() = default;
     ~VM() = default;
@@ -29,7 +28,6 @@ private:
     static void operation(const OpCode& op, size_t& ip);
 
     static Value pop() { Value v = m_Stack.top(); m_Stack.pop(); return v; }
-
 };
 
 #endif
