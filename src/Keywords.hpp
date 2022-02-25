@@ -3,7 +3,7 @@
 
 #include "Tokens.hpp"
 
-const int KeywordCount = 30;
+const int KeywordCount = 32;
 const std::unordered_map<std::string, TokenType> Keywords({
     { "+",          TOKEN_ADD },
     { "-",          TOKEN_SUBTRACT },
@@ -25,6 +25,9 @@ const std::unordered_map<std::string, TokenType> Keywords({
     { "land",       TOKEN_LAND},
     { "lor",        TOKEN_LOR},
     { "lnot",       TOKEN_LNOT},
+
+    { "true",       TOKEN_TRUE },
+    { "false",      TOKEN_FALSE },
 
     { "cr",         TOKEN_CR },
     { "print",      TOKEN_PRINT },

@@ -55,13 +55,31 @@ void Compiler::startCompiler()
 
         case TOKEN_INT:
             {
-            code.code = OP_PUSH_INT;
-            int32_t value = atoi(word);
-            code.value = { TYPE_INT, value };
+                code.code = OP_PUSH_INT;
+                int32_t value = atoi(word);
+                code.value = { TYPE_INT, value };
 
-            VM::addCode(code);
-            ip++;
-            break;
+                VM::addCode(code);
+                ip++;
+                break;
+            }
+        case TOKEN_TRUE:
+            {
+                code.code = OP_TRUE;
+                code.value = { TYPE_BOOL, 1 };
+
+                VM::addCode(code);
+                ip++;
+                break;
+            }
+        case TOKEN_FALSE:
+            {
+                code.code = OP_FALSE;
+                code.value = { TYPE_BOOL, 0 };
+
+                VM::addCode(code);
+                ip++;
+                break;
             }
 
         case TOKEN_CR: addBasicOpcode(code, ip, OP_CR); break;

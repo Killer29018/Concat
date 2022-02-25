@@ -92,6 +92,8 @@ void VM::simulate()
             }
 
         case OP_PUSH_INT:
+        case OP_TRUE:
+        case OP_FALSE:
             {
                 m_Stack.push(op.value);
                 ip++;

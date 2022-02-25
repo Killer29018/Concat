@@ -129,15 +129,11 @@ void Value::Equal(const Value& a, const Value& b, Value& rV, const OpCode& op)
         rV.type = TYPE_BOOL;
         rV.vBool = (a.vBool == b.vBool);
     }
-    else if (a.type == TYPE_INT && b.type == TYPE_BOOL)
+    else if ((a.type == TYPE_BOOL || b.type == TYPE_BOOL) && 
+             (a.type == TYPE_INT  || b.type == TYPE_INT ))
     {
         rV.type = TYPE_BOOL;
-        rV.vBool = (a.vInt == b.vBool);
-    }
-    else if (a.type == TYPE_BOOL && b.type == TYPE_INT)
-    {
-        rV.type = TYPE_BOOL;
-        rV.vBool = (a.vBool == b.vInt);
+        rV.vBool = (a.vInt == b.vInt);
     }
     else
     {
@@ -165,9 +161,6 @@ void Value::Not_equal(const Value& a, const Value& b, Value& rV, const OpCode& o
             Error::runtimeError(op, "Invalid Type. %s or %s was expected but found %s instead", ValueTypeString[TYPE_INT], ValueTypeString[TYPE_BOOL], ValueTypeString[b.type]);
     }
 
-    if (a.type != b.type)
-        Error::runtimeError(op, "Types were expected to be equal but found %s and %s instead", ValueTypeString[a.type], ValueTypeString[b.type]);
-
     if (a.type == TYPE_INT && b.type == TYPE_INT)
     {
         rV.type = TYPE_BOOL;
@@ -177,6 +170,12 @@ void Value::Not_equal(const Value& a, const Value& b, Value& rV, const OpCode& o
     {
         rV.type = TYPE_BOOL;
         rV.vBool = (a.vBool != b.vBool);
+    }
+    else if ((a.type == TYPE_BOOL || b.type == TYPE_BOOL) && 
+             (a.type == TYPE_INT  || b.type == TYPE_INT ))
+    {
+        rV.type = TYPE_BOOL;
+        rV.vBool = (a.vInt == b.vInt);
     }
     else
     {

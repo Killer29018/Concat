@@ -25,9 +25,15 @@ endmacro
 macro fizzbuzz
     dup fizz
     over buzz
-    dup rot
-    if == swap 0 == and then
+    // over over
+    over over
+    // print print
+    if 0 == swap 0 == and then
+        rot
         print
+    endif
+    if 1 == swap 1 == or then
+        drop
     endif
     cr
 endmacro

@@ -26,6 +26,8 @@ enum OpCodeEnum
     OP_LNOT,
 
     OP_PUSH_INT,
+    OP_TRUE,
+    OP_FALSE,
 
     OP_CR,
     OP_PRINT,
@@ -65,6 +67,8 @@ const std::vector<const char*> OpCodeString
     "OP_LNOT",
 
     "OP_PUSH_INT",
+    "OP_TRUE",
+    "OP_FALSE",
 
     "OP_CR",
     "OP_PRINT",
