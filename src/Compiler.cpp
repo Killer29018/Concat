@@ -1,9 +1,10 @@
 #include "Compiler.hpp"
 
-#include "VirtualMachine.hpp"
-
 #include <cstring>
 #include <cstdlib>
+
+#include "VirtualMachine.hpp"
+#include "Error.hpp"
 
 std::vector<Token>* Compiler::m_Tokens;
 std::unordered_map<std::string, std::vector<Token>> Compiler::m_Macros;
@@ -97,7 +98,7 @@ void Compiler::startCompiler()
 
                         if ((ip + ipOffset) == m_Tokens->size())
                         {
-                            printf("[COMPILER ERROR] %ld:%ld Macro Unexpectedly ended\n", t.line, t.column);
+                            Error::compilerError(t, "Macro unexpectedely ended");
                         }
 
                         if (m_Tokens->at(ip + ipOffset).type == TOKEN_END_MACRO)

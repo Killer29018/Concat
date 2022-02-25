@@ -11,10 +11,7 @@ class Error
 public:
     static void runtimeError(const OpCode& code, const char* fmt, ...) FMTARGS(2);
 
-    static void invalidTypeError(const OpCode& code, const char* fmt, ...) FMTARGS(2);
-    static void invalidTypeError(const OpCode& codeA, const OpCode& codeB, const char* fmt, ...) FMTARGS(3);
-
-    static void compilerError();
+    static void compilerError(const Token& token, const char* fmt, ...) FMTARGS(2);
     static void stackTooSmallError(const OpCode& code, int expectedSize);
 private:
     Error() = default;

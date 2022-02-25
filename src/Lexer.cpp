@@ -8,6 +8,7 @@
 #include <fstream>
 #include <sstream>
 
+#include "Error.hpp"
 #include "Compiler.hpp"
 #include "Keywords.hpp"
 
@@ -149,7 +150,7 @@ void Lexer::parseWord(Token& token, const char* word)
         strtol(token.startIndex, &end, 10);
         if (end != token.endIndex)
         {
-            fprintf(stderr, "[COMPILER ERROR] %ld:%ld Failed to pass integer constant %.*s\n", token.line, token.column, length, token.startIndex);
+            Error::compilerError(token, "Failed to pass integer constant %.*s", length, token.startIndex);
             m_Error = true;
         }
         else
@@ -168,7 +169,7 @@ void Lexer::parseWord(Token& token, const char* word)
         }
         else
         {
-            fprintf(stderr, "[COMPILER ERROR] %ld:%ld Unknown word %.*s\n", token.line, token.column, length, token.startIndex);
+            Error::compilerError(token, "Unknown word %.*s", length, token.startIndex);
             m_Error = true;
         }
     }

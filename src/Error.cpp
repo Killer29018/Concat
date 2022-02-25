@@ -12,17 +12,14 @@ void Error::runtimeError(const OpCode& code, const char* fmt, ...)
     exit(-1);
 }
 
-void Error::invalidTypeError(const OpCode& code, const char* fmt, ...)
+void Error::compilerError(const Token& token, const char* fmt, ...)
 {
-
+    va_list args;
+    va_start(args, fmt);
+    printError("COMPILER ERROR", "'N/A'", token.line, token.column, fmt, args);
+    va_end(args);
+    exit(-1);
 }
-
-void Error::invalidTypeError(const OpCode& codeA, const OpCode& codeB, const char* fmt, ...)
-{
-
-}
-
-void Error::compilerError() {}
 
 void Error::stackTooSmallError(const OpCode& code, int expectedSize)
 {
