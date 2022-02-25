@@ -194,6 +194,40 @@ void VM::simulate()
         case OP_IF:
             ip++;
             break;
+        case OP_ELSEIF:
+            {
+                if (op.value.vIpOffset == 0)
+                {
+                    size_t ipOffset = 0;
+                    size_t ifCount = 0;
+                    while ((ip + ipOffset) < m_OpCodes.size())
+                    {
+                        ipOffset++;
+
+                        if (m_OpCodes[(ip + ipOffset)].code == OP_IF)
+                        {
+                            ifCount++;
+                        }
+                        else if (m_OpCodes[(ip + ipOffset)].code == OP_ENDIF)
+                        {
+                            if (ifCount == 0)
+                            {
+                                op.value.vIpOffset = ipOffset;
+                                break;
+                            }
+                            else
+                            {
+                                ifCount--;
+                            }
+                        }
+                    }
+                }
+                
+                ip += op.value.vIpOffset;
+
+                ip++;
+                break;
+            }
         case OP_THEN:
             {
                 if (m_Stack.empty())
@@ -223,6 +257,18 @@ void VM::simulate()
                             if (ifCount == 0)
                             {
                                 op.value.vIpOffset = ipOffset;
+                                break;
+                            }
+                            else
+                            {
+                                ifCount--;
+                            }
+                        }
+                        else if (m_OpCodes[(ip + ipOffset)].code == OP_ELSEIF)
+                        {
+                            if (ifCount == 0)
+                            {
+                                op.value.vIpOffset = ipOffset + 1;
                                 break;
                             }
                             else

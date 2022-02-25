@@ -40,6 +40,7 @@ enum OpCodeEnum
     OP_ROT,
 
     OP_IF,
+    OP_ELSEIF,
     OP_THEN,
     OP_ENDIF,
 
@@ -85,6 +86,7 @@ const std::vector<const char*> OpCodeString
     "OP_ROT",
 
     "OP_IF",
+    "OP_ENDIF",
     "OP_THEN",
     "OP_ENDIF",
 

@@ -12,7 +12,7 @@
 */
 
 macro space 32 . endmacro
-macro a 21 endmacro
+macro a 19 endmacro
 macro b 20 endmacro
 
 a b == print space
@@ -23,10 +23,18 @@ a b >= print space
 a b <= print space
 cr
 
-if a b >= then
-    69 print cr
-endif
+// if a b >= then
+//     69 print cr
+// endif
 
-if a b != then
-    420 print cr
+// if a b != then
+//     420 print cr
+// endif
+
+if a 20 > then
+    a print cr
+elseif a 21 == then
+    a print cr
+elseif a 22 == then
+    a print cr
 endif

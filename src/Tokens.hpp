@@ -40,9 +40,10 @@ enum TokenType
     TOKEN_ROT,
 
     TOKEN_MACRO,
-    TOKEN_END_MACRO,
+    TOKEN_ENDMACRO,
 
     TOKEN_IF,
+    TOKEN_ELSEIF,
     TOKEN_THEN,
     TOKEN_ENDIF,
 
@@ -88,9 +89,10 @@ const std::vector<const char*> TokenString
     "TOKEN_ROT",
 
     "TOKEN_MACRO",
-    "TOKEN_END_MACRO",
+    "TOKEN_ENDMACRO",
 
     "TOKEN_IF",
+    "TOKEN_ENDIF",
     "TOKEN_THEN",
     "TOKEN_ENDIF",
 
