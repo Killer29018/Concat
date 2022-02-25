@@ -12,6 +12,7 @@ enum ValueType
 {
     TYPE_NULL,
     TYPE_INT,
+    TYPE_BOOL,
     TYPE_IP_OFFSET,
 };
 
@@ -21,6 +22,7 @@ struct Value
     union
     {
         int32_t vInt;
+        int32_t vBool;
         int32_t vIpOffset;
     };
 };
@@ -29,6 +31,7 @@ const std::vector<const char*> ValueTypeString
 {
     "NULL",
     "INT",
+    "BOOL",
     "IpOffset"
 };
 

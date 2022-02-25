@@ -200,8 +200,8 @@ void VM::simulate()
 
                 const Value a = pop();
 
-                if (a.type != TYPE_INT)
-                    Error::runtimeError(op, "Invalid Type. %s was expected but found %s instead", ValueTypeString[TYPE_INT], ValueTypeString[a.type]);
+                if (a.type != TYPE_BOOL)
+                    Error::runtimeError(op, "Invalid Type. %s was expected but found %s instead", ValueTypeString[TYPE_BOOL], ValueTypeString[a.type]);
 
                 bool equal = a.vInt;
 
@@ -274,8 +274,6 @@ void VM::operation(const OpCode& op, size_t& ip)
 
     Value b = pop();
     Value a = pop();
-
-    assert(a.type == b.type); // TYPES ARE EQUAL
 
     Value v;
     v.type = a.type;
