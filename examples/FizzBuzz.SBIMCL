@@ -23,22 +23,19 @@ endmacro
 
 
 macro fizzbuzz
-    dup fizz
-    over buzz
-    // over over
-    over over
-    // print print
-    if 0 == swap 0 == and then
-        rot
-        print
-    endif
-    if 1 == swap 1 == or then
-        drop
-    endif
-    cr
+    1 while dup 1000 < do
+        dup
+        dup fizz
+        over buzz
+
+        if 0 == swap 0 == and then
+            print
+        endif
+
+        cr
+
+        1 +
+    endwhile
 endmacro
 
-3 while dup 1000 <= do
-    dup fizzbuzz
-    1 +
-endwhile
+fizzbuzz
