@@ -3,7 +3,7 @@
 
 #include "Tokens.hpp"
 
-const int KeywordCount = 32;
+const int KeywordCount = 35;
 const std::unordered_map<std::string, TokenType> Keywords({
     { "+",          TOKEN_ADD },
     { "-",          TOKEN_SUBTRACT },
@@ -41,9 +41,14 @@ const std::unordered_map<std::string, TokenType> Keywords({
 
     { "macro",      TOKEN_MACRO },
     { "endmacro",   TOKEN_END_MACRO },
+
     { "if",         TOKEN_IF },
     { "then",       TOKEN_THEN },
     { "endif",      TOKEN_ENDIF },
+
+    { "while",      TOKEN_WHILE },
+    { "do",         TOKEN_DO },
+    { "endwhile",   TOKEN_ENDWHILE },
 });
 
 

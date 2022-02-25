@@ -190,6 +190,7 @@ void VM::simulate()
 
                 break;
             }
+
         case OP_IF:
             ip++;
             break;
@@ -203,52 +204,108 @@ void VM::simulate()
                 if (a.type != TYPE_BOOL)
                     Error::runtimeError(op, "Invalid Type. %s was expected but found %s instead", ValueTypeString[TYPE_BOOL], ValueTypeString[a.type]);
 
-                bool equal = a.vInt;
+                bool boolTrue = a.vBool;
 
-                if (equal)
+                if (op.value.vIpOffset == 0)
                 {
-                    ip++;
-                }
-                else
-                {
-                    if (op.value.vIpOffset != 0)
+                    size_t ipOffset = 0;
+                    size_t ifCount = 0;
+                    while ((ip + ipOffset) < m_OpCodes.size())
                     {
-                        ip += op.value.vIpOffset;
-                    }
-                    else
-                    {
-                        size_t ipOffset = 0;
-                        size_t ifCount = 0;
-                        while ((ip + ipOffset) < m_OpCodes.size())
+                        ipOffset++;
+
+                        if (m_OpCodes[(ip + ipOffset)].code == OP_IF)
                         {
-                            ipOffset++;
-
-                            if (m_OpCodes[(ip + ipOffset)].code == OP_IF)
+                            ifCount++;
+                        }
+                        else if (m_OpCodes[(ip + ipOffset)].code == OP_ENDIF)
+                        {
+                            if (ifCount == 0)
                             {
-                                ifCount++;
+                                op.value.vIpOffset = ipOffset;
                             }
-                            else if (m_OpCodes[(ip + ipOffset)].code == OP_ENDIF)
+                            else
                             {
-                                if (ifCount == 0)
-                                {
-                                    op.value.vIpOffset = ipOffset;
-                                    ip += ipOffset;
-                                    break;
-                                }
-                                else
-                                    ifCount--;
+                                ifCount--;
                             }
                         }
                     }
                 }
 
-            break;
+                if (boolTrue)
+                {
+                    ip++;
+                }
+                else
+                {
+                    ip += op.value.vIpOffset;
+                }
+
+                break;
             }
         case OP_ENDIF:
             ip++;
             break;
 
+        case OP_WHILE:
+            ip++;
+            break;
+        case OP_DO:
+            {
+                if (m_Stack.empty())
+                    Error::stackTooSmallError(op, 1);
+
+                const Value a = pop();
+
+                if (a.type != TYPE_BOOL)
+                    Error::runtimeError(op, "Invalid Type. %s was expected but found %s instead", ValueTypeString[TYPE_BOOL], ValueTypeString[a.type]);
+
+                bool boolTrue = a.vBool;
+
+                if(op.value.vIpOffset == 0)
+                {
+                    size_t ipOffset = 0;
+                    size_t whileCount = 0;
+                    while ((ip + ipOffset) < m_OpCodes.size())
+                    {
+                        ipOffset++;
+
+                        if (m_OpCodes[(ip + ipOffset)].code == OP_WHILE)
+                        {
+                            whileCount++;
+                        }
+                        else if (m_OpCodes[(ip + ipOffset)].code == OP_ENDWHILE)
+                        {
+                            if (whileCount == 0)
+                            {
+                                op.value.vIpOffset = ipOffset + 1;
+                            }
+                            else
+                            {
+                                whileCount--;
+                            }
+                        }
+                    }
+                }
+
+                if (boolTrue)
+                {
+                    ip++;
+                }
+                else
+                {
+                    ip += op.value.vIpOffset;
+                }
+                break;
+            }
+        case OP_ENDWHILE: 
+            {
+                ip -= op.value.vIpOffset;
+                break;
+            }
+
         default:
+            Error::runtimeError(op, "Opcode not supported %s", OpCodeString[op.code]);
             assert(false); // UNREACHABLE
         }
     }

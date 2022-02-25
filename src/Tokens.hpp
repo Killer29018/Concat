@@ -41,9 +41,14 @@ enum TokenType
 
     TOKEN_MACRO,
     TOKEN_END_MACRO,
+
     TOKEN_IF,
     TOKEN_THEN,
     TOKEN_ENDIF,
+
+    TOKEN_WHILE,
+    TOKEN_DO,
+    TOKEN_ENDWHILE,
 
     TOKEN_COUNT
 };
@@ -84,9 +89,14 @@ const std::vector<const char*> TokenString
 
     "TOKEN_MACRO",
     "TOKEN_END_MACRO",
+
     "TOKEN_IF",
     "TOKEN_THEN",
     "TOKEN_ENDIF",
+
+    "TOKEN_WHILE",
+    "TOKEN_DO",
+    "TOKEN_ENDWHILE",
 };
 
 struct Token

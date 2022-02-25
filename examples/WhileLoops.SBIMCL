@@ -1,0 +1,7 @@
+0 while dup 10 <= do
+    if dup 2 mod 0 == then
+        420 print cr
+    endif
+
+    1 +
+endwhile
