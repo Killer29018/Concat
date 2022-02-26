@@ -12,10 +12,14 @@ public:
     static bool printDebugOpcodes;
 public:
     // static void startProgram(const char* )
-    static void startProgramFromFile(const char* filename);
+    static void createProgram(bool runMode, const char* filename);
+    static void runProgramFromFile(const char* filename);
+    static void buildProgramFromFile(const char* filename);
 private:
     Program() {}
     ~Program() {}
+
+    static void createOpcodes(const char* filename);
 };
 
 #endif

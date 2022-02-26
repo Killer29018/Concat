@@ -19,6 +19,8 @@ public:
     static void printOpCodes();
 
     static void simulate();
+
+    static void build();
 private:
     VM() = default;
     ~VM() = default;

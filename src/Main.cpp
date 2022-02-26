@@ -13,7 +13,6 @@
 
 int main(int argc, char** argv)
 {
-    std::string inputfile = "";
     cxxopts::Options options("SBIMCL", "Stack Based Interpreted Maybe Compiled Language");
     options.add_options()
         ("print-tokens", "Print Debug Tokens", cxxopts::value<bool>()->default_value("false"))
@@ -27,7 +26,10 @@ int main(int argc, char** argv)
     {
         std::cout << "Stack Based Interpreted Maybe Compiled Language\n";
         std::cout << "Usage: \n";
-        std::cout << "  SBIMCL [<OPTIONS>] <filepath>\n";
+        std::cout << "  SBIMCL <MODE> [<OPTIONS>] <filepath>\n";
+        std::cout << "  MODE\n";
+        std::cout << "    run                   Run either a source file or Compiled File\n";
+        std::cout << "    build                 Build a source file into a Compiled file\n";
         std::cout << "  OPTIONS\n";
         std::cout << "        --print-tokens    Print Debug Tokens\n";
         std::cout << "        --print-opcodes   Print Debug Opcodes\n";
@@ -41,19 +43,40 @@ int main(int argc, char** argv)
     bool debugOpcodes = result["print-opcodes"].as<bool>();
     Program::printDebugOpcodes = debugOpcodes;
 
+    std::string inputfile = "";
+    bool runmode = false;
+
+    if (argc != 3)
+    {
+        printf("Both mode and filepath are required");
+        exit(0);
+    }
+
+    if (!strcmp(argv[1], "run"))
+    {
+        runmode = true;
+    }
+    else if (!strcmp(argv[1], "build"))
+    {
+        runmode = false;
+    }
+    else
+    {
+        printf("Unrecognised mode");
+        exit(0);
+    }
+
     if (std::filesystem::is_regular_file(argv[argc - 1]))
     {
         inputfile = argv[argc - 1];
     }
-
-    if (inputfile.size() != 0)
-    {
-        Program::startProgramFromFile(inputfile.c_str());
-    }
     else
     {
         printf("File is a required option");
+        exit(0);
     }
+
+    Program::createProgram(runmode, inputfile.c_str());
 
     return 0;
 }

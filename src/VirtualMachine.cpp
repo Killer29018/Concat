@@ -421,6 +421,11 @@ void VM::simulate()
     }
 }
 
+void VM::build()
+{
+
+}
+
 void VM::printValueDebug(size_t index)
 {
     OpCode& code = m_OpCodes[index];
