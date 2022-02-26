@@ -1,0 +1,8 @@
+--------------------------------------------------
+IntError.SBIMCL
+--stdout--
+b''
+--stderr--
+b"[COMPILER ERROR] 'N/A':2:1 Failed to pass integer constant 1a\n"
+--------------------------------------------------
+

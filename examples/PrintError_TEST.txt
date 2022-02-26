@@ -1,0 +1,8 @@
+--------------------------------------------------
+PrintError.SBIMCL
+--stdout--
+b'1010'
+--stderr--
+b"[RUNTIME ERROR] 'N/A':1:19 Not enough items on the stack. Atleast 1 item/s expected\n"
+--------------------------------------------------
+
