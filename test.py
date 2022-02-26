@@ -24,9 +24,9 @@ def build(path):
         output += ("-" * 50) + "\n"
         output += f + ".SBIMCL\n"
         output += "--stdout--\n"
-        output += str(stdout) + "\n"
+        output += stdout.decode("utf-8") + "\n"
         output += "--stderr--\n"
-        output += str(stderr) + "\n"
+        output += stderr.decode("utf-8") + "\n"
         output += ("-" * 50) + "\n"
         output += "\n"
 
@@ -55,9 +55,9 @@ def run(path):
         output += ("-" * 50) + "\n"
         output += f + ".SBIMCL\n"
         output += "--stdout--\n"
-        output += str(stdout) + "\n"
+        output += stdout.decode("utf-8") + "\n"
         output += "--stderr--\n"
-        output += str(stderr) + "\n"
+        output += stderr.decode("utf-8") + "\n"
         output += ("-" * 50) + "\n"
         output += "\n"
 
@@ -70,13 +70,17 @@ def run(path):
             passedCount += 1
         else:
             print(f"FILE: {programFileName} Failed")
-            failed.append(programFileName)
+            failed.append([programFileName, output, fileoutput])
 
     print(f"{passedCount} out of {totalCount} succeeded")
     if passedCount != totalCount:
         print("Failed tests:")
         for f in failed:
-            print(f)
+            print(f"{'*' * 50}")
+            print(f"{f[0]}")
+            print(f"Output\n{f[1]}")
+            print(f"Expected\n{f[2]}")
+            print(f"{'*' * 50}\n")
 
     # pass
 

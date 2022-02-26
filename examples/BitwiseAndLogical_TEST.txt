@@ -1,8 +1,10 @@
 --------------------------------------------------
 BitwiseAndLogical.SBIMCL
 --stdout--
-b'420\n'
+420
+
 --stderr--
-b"[RUNTIME ERROR] 'N/A':17:21 Invalid Type. BOOL was expected but found INT instead\n"
+[RUNTIME ERROR] 'N/A':17:21 Invalid Type. BOOL was expected but found INT instead
+
 --------------------------------------------------
 

@@ -8,6 +8,7 @@
 
 std::vector<Token>* Compiler::m_Tokens;
 std::unordered_map<std::string, std::vector<Token>> Compiler::m_Macros;
+bool Compiler::m_Error = false;
 
 // TODO: Have 'then' check if 'if', 'endif' exist. Currently they are not required
 
@@ -118,6 +119,7 @@ void Compiler::startCompiler()
                         if ((ip + ipOffset) == m_Tokens->size())
                         {
                             Error::compilerError(t, "macro has no corresponding endmacro");
+                            m_Error = true;
                         }
 
                         if (m_Tokens->at(ip + ipOffset).type == TOKEN_ENDMACRO)
@@ -171,6 +173,7 @@ void Compiler::startCompiler()
                         if ((ip - ipOffset) == 0)
                         {
                             Error::compilerError(t, "then has no corresponding if");
+                            m_Error = true;
                         }
                     }
 
@@ -184,6 +187,7 @@ void Compiler::startCompiler()
                         if ((ip + ipOffset) == m_Tokens->size())
                         {
                             Error::compilerError(t, "then has no corresponding endif");
+                            m_Error = true;
                         }
 
                         if (m_Tokens->at(ip + ipOffset).type == TOKEN_IF)
@@ -239,6 +243,7 @@ void Compiler::startCompiler()
                         if ((ip - ipOffset) == 0)
                         {
                             Error::compilerError(t, "elseif has no corresponding if");
+                            m_Error = true;
                         }
                     }
 
@@ -253,6 +258,7 @@ void Compiler::startCompiler()
                         if ((ip + ipOffset) == m_Tokens->size())
                         {
                             Error::compilerError(t, "elseif has no corresponding then");
+                            m_Error = true;
                         }
 
                         if (m_Tokens->at(ip + ipOffset).type == TOKEN_IF ||
@@ -308,6 +314,7 @@ void Compiler::startCompiler()
                        if ((ip - ipOffset) == 0)
                        {
                            Error::compilerError(t, "else has no corresponding if");
+                            m_Error = true;
                        }
                    }
 
@@ -349,6 +356,7 @@ void Compiler::startCompiler()
                         if ((ip - ipOffset) == 0)
                         {
                             Error::compilerError(t, "do has no corresponding while");
+                            m_Error = true;
                         }
                     }
 
@@ -362,6 +370,7 @@ void Compiler::startCompiler()
                         if ((ip + ipOffset) == m_Tokens->size())
                         {
                             Error::compilerError(t, "while has no corresponding endwhile");
+                            m_Error = true;
                         }
 
                         if (m_Tokens->at(ip + ipOffset).type == TOKEN_WHILE)
@@ -399,6 +408,7 @@ void Compiler::startCompiler()
                         if ((ip - ipOffset) == 0 && m_Tokens->at(0).type != TOKEN_WHILE)
                         {
                             Error::compilerError(t, "Could not find starting While");
+                            m_Error = true;
                         }
 
                         if (m_Tokens->at(ip - ipOffset).type == TOKEN_ENDWHILE)
@@ -431,6 +441,9 @@ void Compiler::startCompiler()
 
         delete[] word;
     }
+
+    if (m_Error)
+        exit(-1);
 }
 
 void Compiler::addBasicOpcode(OpCode& code, size_t& ip, OpCodeEnum opcode)

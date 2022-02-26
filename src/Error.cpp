@@ -18,7 +18,6 @@ void Error::compilerError(const Token& token, const char* fmt, ...)
     va_start(args, fmt);
     printError("COMPILER ERROR", "'N/A'", token.line, token.column, fmt, args);
     va_end(args);
-    exit(-1);
 }
 
 void Error::stackTooSmallError(const OpCode& code, int expectedSize)
