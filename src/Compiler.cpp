@@ -62,7 +62,7 @@ void Compiler::startCompiler()
                     int32_t value = atoi(word);
                     code.value = { TYPE_INT, value };
 
-                    VM::addCode(code);
+                    VM::addOpCode(code);
                     ip++;
                     break;
                 }
@@ -71,7 +71,7 @@ void Compiler::startCompiler()
                     code.code = OP_TRUE;
                     code.value = { TYPE_BOOL, 1 };
 
-                    VM::addCode(code);
+                    VM::addOpCode(code);
                     ip++;
                     break;
                 }
@@ -80,7 +80,7 @@ void Compiler::startCompiler()
                     code.code = OP_FALSE;
                     code.value = { TYPE_BOOL, 0 };
 
-                    VM::addCode(code);
+                    VM::addOpCode(code);
                     ip++;
                     break;
                 }
@@ -210,7 +210,7 @@ void Compiler::startCompiler()
 
                     code.code = OP_THEN;
                     code.value = { TYPE_IP_OFFSET, 0 };
-                    VM::addCode(code);
+                    VM::addOpCode(code);
                     ip++;
                     break;
                 }
@@ -282,7 +282,7 @@ void Compiler::startCompiler()
 
                    code.code = OP_ELSEIF;
                    code.value = { TYPE_IP_OFFSET, 0 };
-                   VM::addCode(code);
+                   VM::addOpCode(code);
                    ip++;
                    break;
                }
@@ -320,7 +320,7 @@ void Compiler::startCompiler()
 
                    code.code = OP_ELSE;
                    code.value = { TYPE_IP_OFFSET, 0 };
-                   VM::addCode(code);
+                   VM::addOpCode(code);
                    ip++;
                    break;
                }
@@ -392,7 +392,7 @@ void Compiler::startCompiler()
 
                     code.code = OP_DO;
                     code.value = { TYPE_IP_OFFSET, 0 };
-                    VM::addCode(code);
+                    VM::addOpCode(code);
                     ip++;
                     break;
                 }
@@ -430,7 +430,7 @@ void Compiler::startCompiler()
 
                     code.code = OP_ENDWHILE;
                     code.value = { TYPE_IP_OFFSET, 0 };
-                    VM::addCode(code);
+                    VM::addOpCode(code);
                     ip++;
                     break;
                 }
@@ -449,6 +449,6 @@ void Compiler::startCompiler()
 void Compiler::addBasicOpcode(OpCode& code, size_t& ip, OpCodeEnum opcode)
 {
     code.code = opcode;
-    VM::addCode(code);
+    VM::addOpCode(code);
     ip++;
 }

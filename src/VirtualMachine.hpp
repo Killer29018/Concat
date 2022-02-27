@@ -13,7 +13,7 @@ private:
     static std::stack<Value> m_Stack;
 public:
     static void addOpCode(OpCodeEnum code);
-    static void addCode(const OpCode& code);
+    static void addOpCode(const OpCode& code);
     static void pushInt(int32_t value);
 
     static void printOpCodes();

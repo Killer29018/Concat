@@ -19,7 +19,7 @@ void VM::addOpCode(OpCodeEnum code)
     m_OpCodes.emplace_back(op);
 }
 
-void VM::addCode(const OpCode& code)
+void VM::addOpCode(const OpCode& code)
 {
     m_OpCodes.push_back(code);
 }
@@ -425,7 +425,7 @@ void VM::simulate()
 
 void VM::build(const char* filename)
 {
-    Builder::BuildCompiled(filename, &m_OpCodes);
+    Builder::buildCompiled(filename, &m_OpCodes);
 }
 
 void VM::printValueDebug(size_t index)

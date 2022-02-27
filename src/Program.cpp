@@ -4,6 +4,8 @@
 
 #include <filesystem>
 
+#include "Builder.hpp"
+
 bool Program::printDebugTokens =false;
 bool Program::printDebugOpcodes = false;
 
@@ -36,7 +38,19 @@ void Program::runProgramFromFile(const char* filename)
     std::filesystem::path path(filename);
 
     if (path.extension() == ".SBIMCL")
+    {
         createOpcodes(filename);
+    }
+    else if (path.extension() == ".SBIMCL_BIN")
+    {
+        if (printDebugTokens)
+        {
+            printf("Tokens are unavailable when run fromming Compiled File");
+            exit(0);
+        }
+
+        Builder::loadCompiled(filename);
+    }
     else
     {
         fprintf(stderr, "Unrecognised filetype for %s\n", filename);

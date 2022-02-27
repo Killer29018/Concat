@@ -3,7 +3,12 @@
 #include <filesystem>
 #include <cstring>
 
-void Builder::BuildCompiled(const char* filename, std::vector<OpCode>* OpCodes)
+#include "VirtualMachine.hpp"
+
+size_t Builder::s_HeaderSize = (sizeof(size_t) * 2); // Doesnt include filename
+size_t Builder::s_BodySize = sizeof(OpCodeEnum) + sizeof(ValueType) + sizeof(VALUE_TYPE) + (2 * sizeof(size_t));
+
+void Builder::buildCompiled(const char* filename, std::vector<OpCode>* OpCodes)
 {
     std::filesystem::path path(filename);
 
@@ -14,68 +19,105 @@ void Builder::BuildCompiled(const char* filename, std::vector<OpCode>* OpCodes)
     std::ofstream file;
     file.open(path.generic_string().c_str(), std::ios::out | std::ios::binary);
 
-    size_t header = sizeof(size_t) + filenameOnly.size() + sizeof(size_t);
-    size_t body = sizeof(OpCodeEnum) + sizeof(ValueType) + sizeof(VALUE_TYPE) + (2 * sizeof(size_t));
-    size_t size = header + body;
+    size_t header = s_HeaderSize + filenameOnly.size();
+    size_t size = header + (s_BodySize * OpCodes->size());
 
-    int index = 0;
+    size_t index = 0;
 
-    char* text = (char*)malloc(sizeof(char) * size);
-    addSizeT(text, index, filenameOnly.size());
-    file.write(filenameOnly.c_str(), filenameOnly.size());
-    index += filenameOnly.size();
-    addSizeT(text, index, OpCodes->size());
+    char* buffer = (char*)malloc(sizeof(char) * size);
+    size_t length = filenameOnly.size();
+    addElement(buffer, index, length);
+    strncpy(buffer + index, filenameOnly.c_str(), length);
+    index += length;
+    addElement(buffer, index, OpCodes->size());
 
     for (size_t i = 0; i < OpCodes->size(); i++)
     {
         OpCode& op = OpCodes->at(i);
 
-        uint32_t opType = static_cast<uint32_t>(op.code);
-        uint32_t valueType = static_cast<uint32_t>(op.value.type);
-        VALUE_TYPE value = op.value.vInt;
-        size_t line = op.line;
-        size_t column = op.column;
+        writeOpCode(buffer, op, index);
+    }
+    file.write(buffer, size);
 
-        addUint32(text, index, opType); 
-        addUint32(text, index, valueType); 
-        addValue(text, index, value);
-        addSizeT(text, index, line);
-        addSizeT(text, index, column);
+    file.close();
 
-        file.write(text, size);
+    delete[] buffer;
+}
+
+void Builder::loadCompiled(const char* sourcePath)
+{
+    std::filesystem::path path(sourcePath);
+
+    std::string sourceNameOnly = path.stem().generic_string();
+
+    std::ifstream file;
+    file.open(path.generic_string().c_str(), std::ios::in | std::ios::binary);
+
+    char* buffer = (char*)malloc(sizeof(char) * sizeof(size_t));
+    file.read(buffer, sizeof(size_t));
+    size_t filenameLength;
+    readElement(buffer, filenameLength);
+
+    char* filename = (char*)malloc(sizeof(char) * filenameLength);
+    buffer = (char*)realloc(buffer, sizeof(char) * filenameLength);
+    file.read(buffer, filenameLength);
+    strncpy(filename, buffer, filenameLength);
+
+    buffer = (char*)realloc(buffer, sizeof(char) * sizeof(size_t));
+    file.read(buffer, sizeof(size_t));
+    size_t opcodesLength;
+
+    readElement(buffer, opcodesLength);
+
+    buffer = (char*)realloc(buffer, sizeof(char) * s_BodySize);
+    for (size_t i = 0; i < opcodesLength; i++)
+    {
+        file.read(buffer, sizeof(char) * s_BodySize);
+        OpCode op;
+
+        readOpCode(buffer, op);
+
+        VM::addOpCode(op);
     }
 
     file.close();
 
-    free(text);
+    delete[] buffer;
+    delete[] filename;
 }
 
-void Builder::addSizeT(char* output, int& index, size_t value)
+void Builder::writeOpCode(char* buffer, const OpCode& op, size_t& index)
 {
-    for (size_t i = 1; i <= sizeof(value); i++) 
-    {
-        output[index + (sizeof(value) - i)] = value & 0xFF;
-        value = value >> 8;
-    }
-    index += sizeof(value);
+    uint32_t opType = static_cast<uint32_t>(op.code);
+    uint32_t valueType = static_cast<uint32_t>(op.value.type);
+    VALUE_TYPE value = op.value.vInt;
+    size_t line = op.line;
+    size_t column = op.column;
+
+    addElement(buffer, index, opType); 
+    addElement(buffer, index, valueType); 
+    addElement(buffer, index, value);
+    addElement(buffer, index, line);
+    addElement(buffer, index, column);
 }
 
-void Builder::addUint32(char* output, int& index, uint32_t value)
+void Builder::readOpCode(char* buffer, OpCode& op)
 {
-    for (size_t i = 1; i <= sizeof(value); i++) 
-    {
-        output[index + (sizeof(value) - i)] = value & 0xFF;
-        value = value >> 8;
-    }
-    index += sizeof(value);
-}
+    uint32_t opType, valueType;
+    VALUE_TYPE value;
+    size_t line, column;
 
-void Builder::addValue(char* output, int& index, VALUE_TYPE value)
-{
-    for (size_t i = 1; i <= sizeof(value); i++) 
-    {
-        output[index + (sizeof(value) - i)] = value & 0xFF;
-        value = value >> 8;
-    }
-    index += sizeof(value);
+    size_t index = 0;
+
+    readElement(buffer, index, opType);
+    readElement(buffer, index, valueType);
+    readElement(buffer, index, value);
+    readElement(buffer, index, line);
+    readElement(buffer, index, column);
+
+    op.code = static_cast<OpCodeEnum>(opType);
+    op.value.type = static_cast<ValueType>(valueType);
+    op.value.vInt = value;
+    op.line = line;
+    op.column = column;
 }
