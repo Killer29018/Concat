@@ -5,8 +5,8 @@
 
 #include "VirtualMachine.hpp"
 
-size_t Builder::s_HeaderSize = (sizeof(size_t) * 2); // Doesnt include filename
-size_t Builder::s_BodySize = sizeof(OpCodeEnum) + sizeof(ValueType) + sizeof(VALUE_TYPE) + (2 * sizeof(size_t));
+size_t Builder::s_HeaderSize = (Size_tSize * 2); // Doesnt include filename
+size_t Builder::s_BodySize = EnumSize + EnumSize + sizeof(VALUE_TYPE) + (2 * Size_tSize);
 
 void Builder::buildCompiled(const char* filename, std::vector<OpCode>* OpCodes)
 {
@@ -26,10 +26,10 @@ void Builder::buildCompiled(const char* filename, std::vector<OpCode>* OpCodes)
 
     char* buffer = (char*)malloc(sizeof(char) * size);
     size_t length = filenameOnly.size();
-    addElement(buffer, index, length);
+    addElement(buffer, index, length, Size_tSize);
     strncpy(buffer + index, filenameOnly.c_str(), length);
     index += length;
-    addElement(buffer, index, OpCodes->size());
+    addElement(buffer, index, OpCodes->size(), Size_tSize);
 
     for (size_t i = 0; i < OpCodes->size(); i++)
     {
@@ -53,21 +53,21 @@ void Builder::loadCompiled(const char* sourcePath)
     std::ifstream file;
     file.open(path.generic_string().c_str(), std::ios::in | std::ios::binary);
 
-    char* buffer = (char*)malloc(sizeof(char) * sizeof(size_t));
-    file.read(buffer, sizeof(size_t));
+    char* buffer = (char*)malloc(sizeof(char) * Size_tSize);
+    file.read(buffer, Size_tSize);
     size_t filenameLength;
-    readElement(buffer, filenameLength);
+    readElement(buffer, filenameLength, Size_tSize);
 
     char* filename = (char*)malloc(sizeof(char) * filenameLength);
     buffer = (char*)realloc(buffer, sizeof(char) * filenameLength);
     file.read(buffer, filenameLength);
     strncpy(filename, buffer, filenameLength);
 
-    buffer = (char*)realloc(buffer, sizeof(char) * sizeof(size_t));
-    file.read(buffer, sizeof(size_t));
+    buffer = (char*)realloc(buffer, sizeof(char) * Size_tSize);
+    file.read(buffer, Size_tSize);
     size_t opcodesLength;
 
-    readElement(buffer, opcodesLength);
+    readElement(buffer, opcodesLength, Size_tSize);
 
     buffer = (char*)realloc(buffer, sizeof(char) * s_BodySize);
     for (size_t i = 0; i < opcodesLength; i++)
@@ -88,32 +88,34 @@ void Builder::loadCompiled(const char* sourcePath)
 
 void Builder::writeOpCode(char* buffer, const OpCode& op, size_t& index)
 {
-    uint32_t opType = static_cast<uint32_t>(op.code);
-    uint32_t valueType = static_cast<uint32_t>(op.value.type);
+    EnumType opType = static_cast<EnumType>(op.code);
+    EnumType valueType = static_cast<EnumType>(op.value.type);
     VALUE_TYPE value = op.value.vInt;
     size_t line = op.line;
     size_t column = op.column;
 
-    addElement(buffer, index, opType); 
-    addElement(buffer, index, valueType); 
-    addElement(buffer, index, value);
-    addElement(buffer, index, line);
-    addElement(buffer, index, column);
+    addElement(buffer, index, opType, EnumSize); 
+    addElement(buffer, index, valueType, EnumSize); 
+    addElement(buffer, index, value, sizeof(value));
+    addElement(buffer, index, line, Size_tSize);
+    addElement(buffer, index, column, Size_tSize);
 }
 
 void Builder::readOpCode(char* buffer, OpCode& op)
 {
-    uint32_t opType, valueType;
-    VALUE_TYPE value;
-    size_t line, column;
+    uint32_t opType = 0;
+    uint32_t valueType = 0;
+    VALUE_TYPE value = 0;
+    size_t line = 0;
+    size_t column = 0;
 
     size_t index = 0;
 
-    readElement(buffer, index, opType);
-    readElement(buffer, index, valueType);
-    readElement(buffer, index, value);
-    readElement(buffer, index, line);
-    readElement(buffer, index, column);
+    readElement(buffer, index, opType, EnumSize);
+    readElement(buffer, index, valueType, EnumSize);
+    readElement(buffer, index, value, sizeof(value));
+    readElement(buffer, index, line, Size_tSize);
+    readElement(buffer, index, column, Size_tSize);
 
     op.code = static_cast<OpCodeEnum>(opType);
     op.value.type = static_cast<ValueType>(valueType);

@@ -9,6 +9,10 @@
 //Currently Compilation wont work between compilers due to requirement
 //on sizeof
 
+#define EnumType uint32_t
+#define EnumSize sizeof(uint32_t)
+#define Size_tSize sizeof(uint32_t)
+
 class Builder
 {
 private:
@@ -25,32 +29,32 @@ private:
     static void readOpCode(char* buffer, OpCode& op);
 
     template<typename T>
-    static void addElement(char * output, size_t& index, T value)
+    static void addElement(char * output, size_t& index, T value, size_t size)
     {
-        for (size_t i = 1; i <= sizeof(value); i++) 
+        for (size_t i = 1; i <= size; i++) 
         {
-            output[index + (sizeof(value) - i)] = value & 0xFF;
+            output[index + (size - i)] = value & 0xFF;
             value >>= 8;
         }
-        index += sizeof(value);
+        index += size;
     }
 
     template<typename T>
-    static void readElement(char* output, size_t& index, T& value)
+    static void readElement(char* output, size_t& index, T& value, size_t size)
     {
-        for (size_t i = 0; i < sizeof(value); i++)
+        for (size_t i = 0; i < size; i++)
         {
             value <<= 8;
             uint8_t element = output[index + i] & 0xFF;
             value |= element;
         }
-        index += sizeof(value);
+        index += size;
     }
     
     template<typename T>
-    static void readElement(char* output, T& value)
+    static void readElement(char* output, T& value, size_t size)
     {
-        for (size_t i = 0; i < sizeof(value); i++)
+        for (size_t i = 0; i < size; i++)
         {
             value <<= 8;
             uint8_t element = output[i] & 0xFF;

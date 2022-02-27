@@ -260,6 +260,7 @@ void Value::Invert(const Value& a, Value& rV, const OpCode& op)
     if (a.type != TYPE_BOOL)
         Error::runtimeError(op, "Invalid Type. %s was expected but found %s instead", ValueTypeString[TYPE_BOOL], ValueTypeString[a.type]);
 
+    rV.type = TYPE_BOOL;
     rV.vBool = !a.vBool;
 }
 
