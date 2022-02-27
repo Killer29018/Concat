@@ -27,7 +27,7 @@ public:
         VALUE_TYPE vInt;
         VALUE_TYPE vBool;
         VALUE_TYPE vIpOffset;
-    };
+    } as;
 public:
     static void Add(const Value& a, const Value& b, Value& rV, const OpCode& op);
     static void Subtract(const Value& a, const Value& b, Value& rV, const OpCode& op);

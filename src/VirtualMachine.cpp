@@ -114,7 +114,7 @@ void VM::simulate()
                     Error::stackTooSmallError(op, 1);
 
                 const Value a = pop();
-                printf("%d", a.vInt);
+                printf("%d", a.as.vInt);
                 ip++;
                 break;
             }
@@ -124,7 +124,7 @@ void VM::simulate()
                     Error::stackTooSmallError(op, 1);
 
                 const Value a = pop();
-                printf("%c", a.vInt);
+                printf("%c", a.as.vInt);
                 ip++;
                 break;
             }
@@ -206,9 +206,9 @@ void VM::simulate()
                 if (a.type != TYPE_BOOL)
                     Error::runtimeError(op, "Invalid Type. %s was expected but found %s instead", ValueTypeString[TYPE_BOOL], ValueTypeString[a.type]);
 
-                bool boolTrue = a.vBool;
+                bool boolTrue = a.as.vBool;
 
-                if (op.value.vIpOffset == 0)
+                if (op.value.as.vIpOffset == 0)
                 {
                     size_t ipOffset = 0;
                     size_t ifCount = 0;
@@ -224,7 +224,7 @@ void VM::simulate()
                         {
                             if (ifCount == 0)
                             {
-                                op.value.vIpOffset = ipOffset;
+                                op.value.as.vIpOffset = ipOffset;
                                 break;
                             }
                             else
@@ -237,7 +237,7 @@ void VM::simulate()
                         {
                             if (ifCount == 0)
                             {
-                                op.value.vIpOffset = ipOffset + 1;
+                                op.value.as.vIpOffset = ipOffset + 1;
                                 break;
                             }
                             else
@@ -254,14 +254,14 @@ void VM::simulate()
                 }
                 else
                 {
-                    ip += op.value.vIpOffset;
+                    ip += op.value.as.vIpOffset;
                 }
 
                 break;
             }
         case OP_ELSEIF:
             {
-                if (op.value.vIpOffset == 0)
+                if (op.value.as.vIpOffset == 0)
                 {
                     size_t ipOffset = 0;
                     size_t ifCount = 0;
@@ -277,7 +277,7 @@ void VM::simulate()
                         {
                             if (ifCount == 0)
                             {
-                                op.value.vIpOffset = ipOffset;
+                                op.value.as.vIpOffset = ipOffset;
                                 break;
                             }
                             else
@@ -288,14 +288,14 @@ void VM::simulate()
                     }
                 }
                 
-                ip += op.value.vIpOffset;
+                ip += op.value.as.vIpOffset;
 
                 ip++;
                 break;
             }
         case OP_ELSE:
             {
-                if (op.value.vIpOffset == 0)
+                if (op.value.as.vIpOffset == 0)
                 {
                     size_t ipOffset = 0;
                     size_t ifCount = 0;
@@ -311,7 +311,7 @@ void VM::simulate()
                         {
                             if (ifCount == 0)
                             {
-                                op.value.vIpOffset = ipOffset;
+                                op.value.as.vIpOffset = ipOffset;
                                 break;
                             }
                             else
@@ -322,7 +322,7 @@ void VM::simulate()
                     }
                 }
                 
-                ip += op.value.vIpOffset;
+                ip += op.value.as.vIpOffset;
 
                 ip++;
                 break;
@@ -344,9 +344,9 @@ void VM::simulate()
                 if (a.type != TYPE_BOOL)
                     Error::runtimeError(op, "Invalid Type. %s was expected but found %s instead", ValueTypeString[TYPE_BOOL], ValueTypeString[a.type]);
 
-                bool boolTrue = a.vBool;
+                bool boolTrue = a.as.vBool;
 
-                if(op.value.vIpOffset == 0)
+                if(op.value.as.vIpOffset == 0)
                 {
                     size_t ipOffset = 0;
                     size_t whileCount = 0;
@@ -362,7 +362,7 @@ void VM::simulate()
                         {
                             if (whileCount == 0)
                             {
-                                op.value.vIpOffset = ipOffset + 1;
+                                op.value.as.vIpOffset = ipOffset + 1;
                                 break;
                             }
                             else
@@ -379,13 +379,13 @@ void VM::simulate()
                 }
                 else
                 {
-                    ip += op.value.vIpOffset;
+                    ip += op.value.as.vIpOffset;
                 }
                 break;
             }
         case OP_ENDWHILE: 
             {
-                if(op.value.vIpOffset == 0)
+                if(op.value.as.vIpOffset == 0)
                 {
                     size_t ipOffset = 0;
                     size_t endWhileCount = 0;
@@ -401,7 +401,7 @@ void VM::simulate()
                         {
                             if (endWhileCount == 0)
                             {
-                                op.value.vIpOffset = ipOffset;
+                                op.value.as.vIpOffset = ipOffset;
                                 break;
                             }
                             else
@@ -412,7 +412,7 @@ void VM::simulate()
                     }
                 }
 
-                ip -= op.value.vIpOffset;
+                ip -= op.value.as.vIpOffset;
                 break;
             }
 
@@ -434,7 +434,7 @@ void VM::printValueDebug(size_t index)
     switch (code.value.type)
     {
     case TYPE_INT:
-        printf("%.4lu | %.30s | %d\n", index, OpCodeString[code.code], code.value.vInt);
+        printf("%.4lu | %.30s | %d\n", index, OpCodeString[code.code], code.value.as.vInt);
         break;
     default:
         assert(false); // UNREACHABLE

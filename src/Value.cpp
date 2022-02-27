@@ -18,7 +18,7 @@ void Value::Add(const Value& a, const Value& b, Value& rV, const OpCode& op)
     if (a.type == TYPE_INT && b.type == TYPE_INT)
     {
         rV.type = TYPE_INT;
-        rV.vInt = a.vInt + b.vInt;
+        rV.as.vInt = a.as.vInt + b.as.vInt;
     }
     else
     {
@@ -36,7 +36,7 @@ void Value::Subtract(const Value& a, const Value& b, Value& rV, const OpCode& op
     if (a.type == TYPE_INT && b.type == TYPE_INT)
     {
         rV.type = TYPE_INT;
-        rV.vInt = a.vInt - b.vInt;
+        rV.as.vInt = a.as.vInt - b.as.vInt;
     }
     else
     {
@@ -54,7 +54,7 @@ void Value::Multiply(const Value& a, const Value& b, Value& rV, const OpCode& op
     if (a.type == TYPE_INT && b.type == TYPE_INT)
     {
         rV.type = TYPE_INT;
-        rV.vInt = a.vInt * b.vInt;
+        rV.as.vInt = a.as.vInt * b.as.vInt;
     }
     else
     {
@@ -72,7 +72,7 @@ void Value::Divide(const Value& a, const Value& b, Value& rV, const OpCode& op)
     if (a.type == TYPE_INT && b.type == TYPE_INT)
     {
         rV.type = TYPE_INT;
-        rV.vInt = a.vInt / b.vInt;
+        rV.as.vInt = a.as.vInt / b.as.vInt;
     }
     else
     {
@@ -90,7 +90,7 @@ void Value::Mod(const Value& a, const Value& b, Value& rV, const OpCode& op)
     if (a.type == TYPE_INT && b.type == TYPE_INT)
     {
         rV.type = TYPE_INT;
-        rV.vInt = a.vInt % b.vInt;
+        rV.as.vInt = a.as.vInt % b.as.vInt;
     }
     else
     {
@@ -122,18 +122,18 @@ void Value::Equal(const Value& a, const Value& b, Value& rV, const OpCode& op)
     if (a.type == TYPE_INT && b.type == TYPE_INT)
     {
         rV.type = TYPE_BOOL;
-        rV.vBool = (a.vInt == b.vInt);
+        rV.as.vBool = (a.as.vInt == b.as.vInt);
     }
     else if (a.type == TYPE_BOOL && b.type == TYPE_BOOL)
     {
         rV.type = TYPE_BOOL;
-        rV.vBool = (a.vBool == b.vBool);
+        rV.as.vBool = (a.as.vBool == b.as.vBool);
     }
     else if ((a.type == TYPE_BOOL || b.type == TYPE_BOOL) && 
              (a.type == TYPE_INT  || b.type == TYPE_INT ))
     {
         rV.type = TYPE_BOOL;
-        rV.vBool = (a.vInt == b.vInt);
+        rV.as.vBool = (a.as.vInt == b.as.vInt);
     }
     else
     {
@@ -164,18 +164,18 @@ void Value::Not_equal(const Value& a, const Value& b, Value& rV, const OpCode& o
     if (a.type == TYPE_INT && b.type == TYPE_INT)
     {
         rV.type = TYPE_BOOL;
-        rV.vBool = (a.vInt != b.vInt);
+        rV.as.vBool = (a.as.vInt != b.as.vInt);
     }
     else if (a.type == TYPE_BOOL && b.type == TYPE_BOOL)
     {
         rV.type = TYPE_BOOL;
-        rV.vBool = (a.vBool != b.vBool);
+        rV.as.vBool = (a.as.vBool != b.as.vBool);
     }
     else if ((a.type == TYPE_BOOL || b.type == TYPE_BOOL) && 
              (a.type == TYPE_INT  || b.type == TYPE_INT ))
     {
         rV.type = TYPE_BOOL;
-        rV.vBool = (a.vInt == b.vInt);
+        rV.as.vBool = (a.as.vInt == b.as.vInt);
     }
     else
     {
@@ -193,7 +193,7 @@ void Value::Greater(const Value& a, const Value& b, Value& rV, const OpCode& op)
     if (a.type == TYPE_INT && b.type == TYPE_INT)
     {
         rV.type = TYPE_BOOL;
-        rV.vBool = (a.vInt > b.vInt);
+        rV.as.vBool = (a.as.vInt > b.as.vInt);
     }
     else
     {
@@ -211,7 +211,7 @@ void Value::Less(const Value& a, const Value& b, Value& rV, const OpCode& op)
     if (a.type == TYPE_INT && b.type == TYPE_INT)
     {
         rV.type = TYPE_BOOL;
-        rV.vBool = (a.vInt < b.vInt);
+        rV.as.vBool = (a.as.vInt < b.as.vInt);
     }
     else
     {
@@ -229,7 +229,7 @@ void Value::Greater_equal(const Value& a, const Value& b, Value& rV, const OpCod
     if (a.type == TYPE_INT && b.type == TYPE_INT)
     {
         rV.type = TYPE_BOOL;
-        rV.vBool = (a.vInt >= b.vInt);
+        rV.as.vBool = (a.as.vInt >= b.as.vInt);
     }
     else
     {
@@ -247,7 +247,7 @@ void Value::Less_equal(const Value& a, const Value& b, Value& rV, const OpCode& 
     if (a.type == TYPE_INT && b.type == TYPE_INT)
     {
         rV.type = TYPE_BOOL;
-        rV.vBool = (a.vInt <= b.vInt);
+        rV.as.vBool = (a.as.vInt <= b.as.vInt);
     }
     else
     {
@@ -261,7 +261,7 @@ void Value::Invert(const Value& a, Value& rV, const OpCode& op)
         Error::runtimeError(op, "Invalid Type. %s was expected but found %s instead", ValueTypeString[TYPE_BOOL], ValueTypeString[a.type]);
 
     rV.type = TYPE_BOOL;
-    rV.vBool = !a.vBool;
+    rV.as.vBool = !a.as.vBool;
 }
 
 void Value::Land(const Value& a, const Value& b, Value& rV, const OpCode& op)
@@ -290,12 +290,12 @@ void Value::Land(const Value& a, const Value& b, Value& rV, const OpCode& op)
     if (a.type == TYPE_INT && b.type == TYPE_INT)
     {
         rV.type = TYPE_INT;
-        rV.vBool = (a.vInt & b.vInt);
+        rV.as.vBool = (a.as.vInt & b.as.vInt);
     }
     else if (a.type == TYPE_BOOL && b.type == TYPE_BOOL)
     {
         rV.type = TYPE_BOOL;
-        rV.vBool = (a.vBool && b.vBool);
+        rV.as.vBool = (a.as.vBool && b.as.vBool);
     }
     else
     {
@@ -329,12 +329,12 @@ void Value::Lor(const Value& a, const Value& b, Value& rV, const OpCode& op)
     if (a.type == TYPE_INT && b.type == TYPE_INT)
     {
         rV.type = TYPE_INT;
-        rV.vBool = (a.vInt | b.vInt);
+        rV.as.vBool = (a.as.vInt | b.as.vInt);
     }
     else if (a.type == TYPE_BOOL && b.type == TYPE_BOOL)
     {
         rV.type = TYPE_BOOL;
-        rV.vBool = (a.vBool || b.vBool);
+        rV.as.vBool = (a.as.vBool || b.as.vBool);
     }
     else
     {
@@ -348,5 +348,5 @@ void Value::Lnot(const Value& a, Value& rV, const OpCode& op)
         Error::runtimeError(op, "Invalid Type. %s was expected but found %s instead", ValueTypeString[TYPE_INT], ValueTypeString[a.type]);
 
     rV.type = TYPE_INT;
-    rV.vInt = ~(a.vInt);
+    rV.as.vInt = ~(a.as.vInt);
 }

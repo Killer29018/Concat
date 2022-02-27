@@ -90,7 +90,7 @@ void Builder::writeOpCode(char* buffer, const OpCode& op, size_t& index)
 {
     EnumType opType = static_cast<EnumType>(op.code);
     EnumType valueType = static_cast<EnumType>(op.value.type);
-    VALUE_TYPE value = op.value.vInt;
+    VALUE_TYPE value = op.value.as.vInt;
     size_t line = op.line;
     size_t column = op.column;
 
@@ -119,7 +119,7 @@ void Builder::readOpCode(char* buffer, OpCode& op)
 
     op.code = static_cast<OpCodeEnum>(opType);
     op.value.type = static_cast<ValueType>(valueType);
-    op.value.vInt = value;
+    op.value.as.vInt = value;
     op.line = line;
     op.column = column;
 }
