@@ -10,6 +10,7 @@ class Program
 public:
     static bool printDebugTokens;
     static bool printDebugOpcodes;
+    static bool run;
 public:
     // static void startProgram(const char* )
     static void createProgram(bool runMode, const char* filename);

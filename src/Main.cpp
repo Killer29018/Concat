@@ -15,8 +15,9 @@ int main(int argc, char** argv)
 {
     cxxopts::Options options("SBIMCL", "Stack Based Interpreted Maybe Compiled Language");
     options.add_options()
-        ("print-tokens", "Print Debug Tokens", cxxopts::value<bool>()->default_value("false"))
-        ("print-opcodes", "Print Debug OpCodes", cxxopts::value<bool>()->default_value("false"))
+        ("t,print-tokens", "Print Debug Tokens", cxxopts::value<bool>()->default_value("false"))
+        ("o,print-opcodes", "Print Debug OpCodes", cxxopts::value<bool>()->default_value("false"))
+        ("r,run", "Run", cxxopts::value<bool>()->default_value("false"))
         ("h,help", "Print usage")
     ;
 
@@ -31,22 +32,22 @@ int main(int argc, char** argv)
         std::cout << "    run                   Run either a source file or Compiled File\n";
         std::cout << "    build                 Build a source file into a Compiled file\n";
         std::cout << "  OPTIONS\n";
-        std::cout << "        --print-tokens    Print Debug Tokens\n";
-        std::cout << "        --print-opcodes   Print Debug Opcodes\n";
+        std::cout << "    -t, --print-tokens    Print Debug Tokens\n";
+        std::cout << "    -o, --print-opcodes   Print Debug Opcodes\n";
+        std::cout << "    -r, --run             When building run the program as well\n";
         std::cout << "    -h, --help            Print Help\n";
 
         exit(0);
     }
 
-    bool debugTokens = result["print-tokens"].as<bool>();
-    Program::printDebugTokens = debugTokens;
-    bool debugOpcodes = result["print-opcodes"].as<bool>();
-    Program::printDebugOpcodes = debugOpcodes;
+    Program::printDebugTokens = result["print-tokens"].as<bool>();
+    Program::printDebugOpcodes = result["print-opcodes"].as<bool>();
+    Program::run = result["run"].as<bool>();
 
     std::string inputfile = "";
     bool runmode = false;
 
-    if (argc != 3)
+    if (argc < 3)
     {
         printf("Both mode and filepath are required");
         exit(0);

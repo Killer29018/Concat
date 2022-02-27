@@ -71,7 +71,12 @@ def run(path):
         print("Invalid path")
         exit(-1)
 
-    files = [os.path.splitext(f)[0] for f in os.listdir(path) if os.path.isfile(os.path.join(path, f)) and os.path.splitext(os.path.join(path, f))[1] == ".SBIMCL"]
+    files = [os.path.splitext(f)[0] 
+             for f in os.listdir(path) 
+             if os.path.isfile(os.path.join(path, f)) and 
+             os.path.splitext(os.path.join(path, f))[1] == ".SBIMCL" and
+             os.path.exists(os.path.join(path, "") + os.path.splitext(f)[0] + "_TEST.txt")]
+
     failed = []
     totalCount = len(files)
     count = 0

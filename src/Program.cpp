@@ -8,6 +8,7 @@
 
 bool Program::printDebugTokens =false;
 bool Program::printDebugOpcodes = false;
+bool Program::run = false;
 
 void Program::createProgram(bool runmode, const char* filename)
 {
@@ -31,6 +32,9 @@ void Program::buildProgramFromFile(const char* filename)
     }
 
     VM::build(filename);
+
+    if (run)
+        VM::simulate();
 }
 
 void Program::runProgramFromFile(const char* filename)

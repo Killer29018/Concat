@@ -41,6 +41,8 @@ void Builder::buildCompiled(const char* filename, std::vector<OpCode>* OpCodes)
 
     file.close();
 
+    printf("Created %s\n", path.generic_string().c_str());
+
     delete[] buffer;
 }
 
