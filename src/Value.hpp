@@ -16,15 +16,17 @@ enum ValueType
     TYPE_IP_OFFSET,
 };
 
+typedef int32_t VALUE_TYPE;
+
 struct Value
 {
 public:
     ValueType type;
     union
     {
-        int32_t vInt;
-        int32_t vBool;
-        int32_t vIpOffset;
+        VALUE_TYPE vInt;
+        VALUE_TYPE vBool;
+        VALUE_TYPE vIpOffset;
     };
 public:
     static void Add(const Value& a, const Value& b, Value& rV, const OpCode& op);

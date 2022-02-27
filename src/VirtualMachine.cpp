@@ -6,6 +6,8 @@
 
 #include "Error.hpp"
 
+#include "Builder.hpp"
+
 std::vector<OpCode> VM::m_OpCodes;
 std::stack<Value> VM::m_Stack;
 
@@ -421,9 +423,9 @@ void VM::simulate()
     }
 }
 
-void VM::build()
+void VM::build(const char* filename)
 {
-
+    Builder::BuildCompiled(filename, &m_OpCodes);
 }
 
 void VM::printValueDebug(size_t index)

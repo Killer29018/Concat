@@ -20,7 +20,7 @@ public:
 
     static void simulate();
 
-    static void build();
+    static void build(const char* filename);
 private:
     VM() = default;
     ~VM() = default;

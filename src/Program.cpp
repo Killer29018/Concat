@@ -24,11 +24,11 @@ void Program::buildProgramFromFile(const char* filename)
     }
     else
     {
-        fprintf(stderr, "Unrecognised filetype %s\n", filename);
+        fprintf(stderr, "Unrecognised filetype for %s\n", filename);
         exit(-1);
     }
 
-    VM::build();
+    VM::build(filename);
 }
 
 void Program::runProgramFromFile(const char* filename)
@@ -39,7 +39,7 @@ void Program::runProgramFromFile(const char* filename)
         createOpcodes(filename);
     else
     {
-        fprintf(stderr, "Unrecognised filetype %s\n", filename);
+        fprintf(stderr, "Unrecognised filetype for %s\n", filename);
         exit(-1);
     }
 
