@@ -5,5 +5,10 @@ Macros.SBIMCL
 
 --stderr--
 
+--build stdout--
+10 10
+
+--build stderr--
+
 --------------------------------------------------
 

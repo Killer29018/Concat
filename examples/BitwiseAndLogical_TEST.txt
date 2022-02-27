@@ -6,5 +6,11 @@ BitwiseAndLogical.SBIMCL
 --stderr--
 [RUNTIME ERROR] 'N/A':17:21 Invalid Type. BOOL was expected but found INT instead
 
+--build stdout--
+420
+
+--build stderr--
+[RUNTIME ERROR] 'N/A':17:21 Invalid Type. BOOL was expected but found INT instead
+
 --------------------------------------------------
 

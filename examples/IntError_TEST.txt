@@ -6,5 +6,9 @@ IntError.SBIMCL
 [COMPILER ERROR] 'N/A':2:1 Failed to pass integer constant 1a
 [COMPILER ERROR] 'N/A':3:1 Failed to pass integer constant 1b
 
+--build stdout--
+File is a required option
+--build stderr--
+
 --------------------------------------------------
 

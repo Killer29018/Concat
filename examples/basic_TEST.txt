@@ -6,5 +6,11 @@ basic.SBIMCL
 
 --stderr--
 
+--build stdout--
+69
+69 69
+
+--build stderr--
+
 --------------------------------------------------
 

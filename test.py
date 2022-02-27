@@ -2,38 +2,69 @@ import subprocess
 import os
 import sys
 
-def getFileOutput(file):
-    process = subprocess.Popen(['./SBIMCL', file], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+def buildFile(file):
+    process = subprocess.Popen(['./SBIMCL', 'build', file], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     stdout, stderr = process.communicate()
     return stdout, stderr
+
+def getFileOutput(file):
+    process = subprocess.Popen(['./SBIMCL', 'run', file], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    stdout, stderr = process.communicate()
+    return stdout, stderr
+
+def getOutput(file, stdout, stderr, bStdout, bStderr):
+    output = ""
+    output += ("-" * 50) + "\n"
+    output += file + ".SBIMCL\n"
+
+    output += "--stdout--\n"
+    output += stdout.decode("utf-8") + "\n"
+    output += "--stderr--\n"
+    output += stderr.decode("utf-8") + "\n"
+
+    output += "--build stdout--\n"
+    output += bStdout.decode("utf-8") + "\n"
+    output += "--build stderr--\n"
+    output += bStderr.decode("utf-8") + "\n"
+
+    output += ("-" * 50) + "\n"
+    output += "\n"
+    return output
 
 def build(path):
     if not os.path.isdir(path):
         print("Invalid path")
         exit(-1)
 
+    count = 0;
     files = [os.path.splitext(f)[0] for f in os.listdir(path) if os.path.isfile(os.path.join(path, f)) and os.path.splitext(os.path.join(path, f))[1] == ".SBIMCL"]
+    totalCount = len(files)
     for f in files:
+        count += 1
         path = os.path.join(path, "")
         testFileName = path + f + "_TEST.txt"
         programFileName = path + f + ".SBIMCL"
+        builtFileName = programFileName + "_BIN"
 
-        stdout,stderr = getFileOutput(programFileName)
+        print(f"Checking {f}")
 
-        output = ""
-        output += ("-" * 50) + "\n"
-        output += f + ".SBIMCL\n"
-        output += "--stdout--\n"
-        output += stdout.decode("utf-8") + "\n"
-        output += "--stderr--\n"
-        output += stderr.decode("utf-8") + "\n"
-        output += ("-" * 50) + "\n"
-        output += "\n"
+        print(f"    Creating {builtFileName}")
+        buildFile(programFileName)
+
+        print(f"    Running {programFileName}")
+        stdout, stderr = getFileOutput(programFileName)
+        print(f"    Running {builtFileName}")
+        bStdout, bStderr = getFileOutput(builtFileName)
+
+        output = getOutput(f, stdout, stderr, bStdout, bStderr)
 
         with open(testFileName, "w") as test:
             test.write(output)
 
-            print(f"Built test for {programFileName}")
+            print(f"Built test for {programFileName} ({count} / {totalCount})")
+            print("")
+
+    print("Created {} Test{}".format(count, "" if count == 1 else "s"))
 
 def run(path):
     if not os.path.isdir(path):
@@ -43,33 +74,33 @@ def run(path):
     files = [os.path.splitext(f)[0] for f in os.listdir(path) if os.path.isfile(os.path.join(path, f)) and os.path.splitext(os.path.join(path, f))[1] == ".SBIMCL"]
     failed = []
     totalCount = len(files)
+    count = 0
     passedCount = 0
+    totalCount = len(files)
     for f in files:
+        count += 1
         path = os.path.join(path, "")
         testFileName = path + f + "_TEST.txt"
         programFileName = path + f + ".SBIMCL"
+        builtFileName = programFileName + "_BIN"
 
-        stdout,stderr = getFileOutput(programFileName)
+        buildFile(programFileName)
 
-        output = ""
-        output += ("-" * 50) + "\n"
-        output += f + ".SBIMCL\n"
-        output += "--stdout--\n"
-        output += stdout.decode("utf-8") + "\n"
-        output += "--stderr--\n"
-        output += stderr.decode("utf-8") + "\n"
-        output += ("-" * 50) + "\n"
-        output += "\n"
+        stdout, stderr = getFileOutput(programFileName)
+        bStdout, bStderr = getFileOutput(builtFileName)
+
+        output = getOutput(f, stdout, stderr, bStdout, bStderr)
 
         fileoutput = ""
         with open(testFileName, "r") as test:
             fileoutput = test.read()
 
+        print(f"Checking {f}")
         if output == fileoutput:
-            print(f"FILE: {programFileName} Passed")
+            print(f"    PASSED ({count} / {totalCount})")
             passedCount += 1
         else:
-            print(f"FILE: {programFileName} Failed")
+            print(f"    FAILED ({count} / {totalCount})")
             failed.append([programFileName, output, fileoutput])
 
     print(f"{passedCount} out of {totalCount} succeeded")
