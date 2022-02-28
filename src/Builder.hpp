@@ -5,9 +5,10 @@
 #include <fstream>
 #include <vector>
 
-//TODO Remove requirement for Compiler based sizes for elements.
-//Currently Compilation wont work between compilers due to requirement
-//on sizeof
+/*
+ * File Format:
+ * <FilenameLength> <Filename> <MemoryBufferSize> <OpCodesLength> <OpCodes...>
+ */
 
 #define EnumType uint32_t
 #define EnumSize sizeof(uint32_t)

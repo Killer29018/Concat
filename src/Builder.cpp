@@ -5,7 +5,7 @@
 
 #include "VirtualMachine.hpp"
 
-size_t Builder::s_HeaderSize = (Size_tSize * 2); // Doesnt include filename
+size_t Builder::s_HeaderSize = (Size_tSize * 3); // Doesnt include filename
 size_t Builder::s_BodySize = EnumSize + EnumSize + sizeof(VALUE_TYPE) + (2 * Size_tSize);
 
 void Builder::buildCompiled(const char* filename, std::vector<OpCode>* OpCodes)
@@ -29,6 +29,7 @@ void Builder::buildCompiled(const char* filename, std::vector<OpCode>* OpCodes)
     addElement(buffer, index, length, Size_tSize);
     strncpy(buffer + index, filenameOnly.c_str(), length);
     index += length;
+    addElement(buffer, index, VM::getMemorySize(), Size_tSize);
     addElement(buffer, index, OpCodes->size(), Size_tSize);
 
     for (size_t i = 0; i < OpCodes->size(); i++)
@@ -67,8 +68,12 @@ void Builder::loadCompiled(const char* sourcePath)
 
     buffer = (char*)realloc(buffer, sizeof(char) * Size_tSize);
     file.read(buffer, Size_tSize);
-    size_t opcodesLength;
+    size_t memorySize;
+    readElement(buffer, memorySize, Size_tSize);
+    VM::addMemory(memorySize);
 
+    file.read(buffer, Size_tSize);
+    size_t opcodesLength;
     readElement(buffer, opcodesLength, Size_tSize);
 
     buffer = (char*)realloc(buffer, sizeof(char) * s_BodySize);

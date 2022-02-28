@@ -18,6 +18,7 @@ public:
     static void addOpCode(const OpCode& code);
     static void pushInt(int32_t value);
     static uint32_t addMemory(uint32_t bytes);
+    static size_t getMemorySize() { return m_Memory.size(); }
 
     static void printOpCodes();
 
