@@ -11,10 +11,13 @@ class VM
 private:
     static std::vector<OpCode> m_OpCodes;
     static std::stack<Value> m_Stack;
+
+    static std::vector<uint8_t> m_Memory;
 public:
     static void addOpCode(OpCodeEnum code);
     static void addOpCode(const OpCode& code);
     static void pushInt(int32_t value);
+    static uint32_t addMemory(uint32_t bytes);
 
     static void printOpCodes();
 

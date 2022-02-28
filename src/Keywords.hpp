@@ -3,7 +3,7 @@
 
 #include "Tokens.hpp"
 
-const int KeywordCount = 37;
+const int KeywordCount = 40;
 const std::unordered_map<std::string, TokenType> Keywords({
     { "+",          TOKEN_ADD },
     { "-",          TOKEN_SUBTRACT },
@@ -11,20 +11,24 @@ const std::unordered_map<std::string, TokenType> Keywords({
     { "/",          TOKEN_DIVIDE },
     { "mod",        TOKEN_MOD },
 
-    { "==",         TOKEN_EQUAL},
-    { "!=",         TOKEN_NOT_EQUAL},
-    { ">",          TOKEN_GREATER},
-    { "<",          TOKEN_LESS},
-    { ">=",         TOKEN_GREATER_EQUAL},
-    { "<=",         TOKEN_LESS_EQUAL},
+    { "==",         TOKEN_EQUAL },
+    { "!=",         TOKEN_NOT_EQUAL },
+    { ">",          TOKEN_GREATER },
+    { "<",          TOKEN_LESS },
+    { ">=",         TOKEN_GREATER_EQUAL },
+    { "<=",         TOKEN_LESS_EQUAL },
 
     // And or and not provide same usage as there bitwise counterpart
-    { "and",        TOKEN_LAND}, 
-    { "or",         TOKEN_LOR},
-    { "invert",     TOKEN_INVERT},
-    { "land",       TOKEN_LAND},
-    { "lor",        TOKEN_LOR},
-    { "lnot",       TOKEN_LNOT},
+    { "and",        TOKEN_LAND }, 
+    { "or",         TOKEN_LOR },
+    { "invert",     TOKEN_INVERT },
+    { "land",       TOKEN_LAND },
+    { "lor",        TOKEN_LOR },
+    { "lnot",       TOKEN_LNOT },
+
+    { "var",        TOKEN_VAR },
+    { "!",          TOKEN_READ_MEMORY },
+    { "@",          TOKEN_WRITE_MEMORY },
 
     { "true",       TOKEN_TRUE },
     { "false",      TOKEN_FALSE },

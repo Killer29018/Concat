@@ -8,9 +8,8 @@
 
 std::vector<Token>* Compiler::m_Tokens;
 std::unordered_map<std::string, std::vector<Token>> Compiler::m_Macros;
+std::unordered_map<std::string, VALUE_TYPE> Compiler::m_Variables;
 bool Compiler::m_Error = false;
-
-// TODO: Have 'then' check if 'if', 'endif' exist. Currently they are not required
 
 void Compiler::addTokens(std::vector<Token>& tokens)
 {
@@ -38,28 +37,99 @@ void Compiler::startCompiler()
 
         switch (t.type)
         {
-            case TOKEN_ADD: addBasicOpcode(code, ip, OP_ADD); break;
-            case TOKEN_SUBTRACT: addBasicOpcode(code, ip, OP_SUBTRACT); break;
-            case TOKEN_MULTIPLY: addBasicOpcode(code, ip, OP_MULTIPLY); break;
-            case TOKEN_DIVIDE: addBasicOpcode(code, ip, OP_DIVIDE); break;
-            case TOKEN_MOD: addBasicOpcode(code, ip, OP_MOD); break;
+            case TOKEN_ADD: 
+                addBasicOpcode(code, ip, OP_ADD); break;
+            case TOKEN_SUBTRACT: 
+                addBasicOpcode(code, ip, OP_SUBTRACT); break;
+            case TOKEN_MULTIPLY: 
+                addBasicOpcode(code, ip, OP_MULTIPLY); break;
+            case TOKEN_DIVIDE: 
+                addBasicOpcode(code, ip, OP_DIVIDE); break;
+            case TOKEN_MOD: 
+                addBasicOpcode(code, ip, OP_MOD); break;
 
-            case TOKEN_EQUAL: addBasicOpcode(code, ip, OP_EQUAL); break;
-            case TOKEN_NOT_EQUAL: addBasicOpcode(code, ip, OP_NOT_EQUAL); break;
-            case TOKEN_GREATER: addBasicOpcode(code, ip, OP_GREATER); break;
-            case TOKEN_LESS: addBasicOpcode(code, ip, OP_LESS); break;
-            case TOKEN_GREATER_EQUAL: addBasicOpcode(code, ip, OP_GREATER_EQUAL); break;
-            case TOKEN_LESS_EQUAL: addBasicOpcode(code, ip, OP_LESS_EQUAL); break;
+            case TOKEN_EQUAL: 
+                addBasicOpcode(code, ip, OP_EQUAL); break;
+            case TOKEN_NOT_EQUAL: 
+                addBasicOpcode(code, ip, OP_NOT_EQUAL); break;
+            case TOKEN_GREATER: 
+                addBasicOpcode(code, ip, OP_GREATER); break;
+            case TOKEN_LESS: 
+                addBasicOpcode(code, ip, OP_LESS); break;
+            case TOKEN_GREATER_EQUAL: 
+                addBasicOpcode(code, ip, OP_GREATER_EQUAL); break;
+            case TOKEN_LESS_EQUAL: 
+                addBasicOpcode(code, ip, OP_LESS_EQUAL); break;
 
-            case TOKEN_INVERT: addBasicOpcode(code, ip, OP_INVERT); break;
-            case TOKEN_LAND: addBasicOpcode(code, ip, OP_LAND); break;
-            case TOKEN_LOR: addBasicOpcode(code, ip, OP_LOR); break;
-            case TOKEN_LNOT: addBasicOpcode(code, ip, OP_LNOT); break;
+            case TOKEN_INVERT: 
+                addBasicOpcode(code, ip, OP_INVERT); break;
+            case TOKEN_LAND: 
+                addBasicOpcode(code, ip, OP_LAND); break;
+            case TOKEN_LOR: 
+                addBasicOpcode(code, ip, OP_LOR); break;
+            case TOKEN_LNOT: 
+                addBasicOpcode(code, ip, OP_LNOT); break;
+
+            case TOKEN_VAR:
+                {
+                    std::string wordString = word;
+                    if (m_Variables.find(wordString) != m_Variables.end())
+                    {
+                        code.code = OP_VAR;
+                        VALUE_TYPE ptr = m_Variables.at(word);
+                        code.value = { TYPE_MEM_PTR, ptr };
+                        VM::addOpCode(code);
+                        ip++;
+
+                        break;
+                    }
+                    else
+                    {
+                        if (ip == m_Tokens->size() - 1)
+                        {
+                            Error::compilerError(t, "Unexpected end when declaring variable");
+                            m_Error = true;
+                            ip++;
+                            break;
+                        }
+
+                        Token& next = m_Tokens->at(ip + 1);
+                        if (next.type != TOKEN_INT)
+                        {
+                            Error::compilerError(next, "int was expected while creating variable '%s'", word);
+                            m_Error = true;
+                            ip++;
+                            break;
+                        }
+
+                        size_t length = next.endIndex - next.startIndex;
+                        char* nextWord = new char[length];
+                        strncpy(nextWord, next.startIndex, length);
+
+                        VALUE_TYPE value = atoi(nextWord);
+                        delete[] nextWord;
+
+                        VALUE_TYPE ptr = VM::addMemory(value);
+
+                        code.code = OP_VAR;
+                        code.value = { TYPE_MEM_PTR, ptr };
+
+                        m_Variables[wordString] = ptr;
+                        VM::addOpCode(code);
+
+                        ip += 2;
+                        break;
+                    }
+                }
+            case TOKEN_READ_MEMORY:
+                addBasicOpcode(code, ip, OP_READ_MEMORY); break;
+            case TOKEN_WRITE_MEMORY:
+                addBasicOpcode(code, ip, OP_WRITE_MEMORY); break;
 
             case TOKEN_INT:
                 {
                     code.code = OP_PUSH_INT;
-                    int32_t value = atoi(word);
+                    VALUE_TYPE value = atoi(word);
                     code.value = { TYPE_INT, value };
 
                     VM::addOpCode(code);
@@ -85,15 +155,23 @@ void Compiler::startCompiler()
                     break;
                 }
 
-            case TOKEN_CR: addBasicOpcode(code, ip, OP_CR); break;
-            case TOKEN_PRINT: addBasicOpcode(code, ip, OP_PRINT); break;
-            case TOKEN_DOT: addBasicOpcode(code, ip, OP_DOT); break;
+            case TOKEN_CR: 
+                addBasicOpcode(code, ip, OP_CR); break;
+            case TOKEN_PRINT: 
+                addBasicOpcode(code, ip, OP_PRINT); break;
+            case TOKEN_DOT: 
+                addBasicOpcode(code, ip, OP_DOT); break;
 
-            case TOKEN_DUP: addBasicOpcode(code, ip, OP_DUP); break;
-            case TOKEN_DROP: addBasicOpcode(code, ip, OP_DROP); break;
-            case TOKEN_SWAP: addBasicOpcode(code, ip, OP_SWAP); break;
-            case TOKEN_OVER: addBasicOpcode(code, ip, OP_OVER); break;
-            case TOKEN_ROT: addBasicOpcode(code, ip, OP_ROT); break;
+            case TOKEN_DUP: 
+                addBasicOpcode(code, ip, OP_DUP); break;
+            case TOKEN_DROP: 
+                addBasicOpcode(code, ip, OP_DROP); break;
+            case TOKEN_SWAP: 
+                addBasicOpcode(code, ip, OP_SWAP); break;
+            case TOKEN_OVER: 
+                addBasicOpcode(code, ip, OP_OVER); break;
+            case TOKEN_ROT: 
+                addBasicOpcode(code, ip, OP_ROT); break;
 
             case TOKEN_MACRO:
                 {
@@ -140,9 +218,11 @@ void Compiler::startCompiler()
                     break;
                 }
 
-            case TOKEN_ENDMACRO: addBasicOpcode(code, ip, OP_IF); break;
+            case TOKEN_ENDMACRO: 
+                addBasicOpcode(code, ip, OP_IF); break;
 
-            case TOKEN_IF: addBasicOpcode(code, ip, OP_IF); break;
+            case TOKEN_IF: 
+                addBasicOpcode(code, ip, OP_IF); break;
             case TOKEN_THEN:
                 {
                     size_t ipOffset = 0;
@@ -324,9 +404,11 @@ void Compiler::startCompiler()
                    ip++;
                    break;
                }
-            case TOKEN_ENDIF: addBasicOpcode(code, ip, OP_ENDIF); break;
+            case TOKEN_ENDIF: 
+               addBasicOpcode(code, ip, OP_ENDIF); break;
 
-            case TOKEN_WHILE: addBasicOpcode(code, ip, OP_WHILE); break;
+            case TOKEN_WHILE: 
+               addBasicOpcode(code, ip, OP_WHILE); break;
             case TOKEN_DO:
                 {
                     size_t ipOffset = 0;
@@ -401,7 +483,7 @@ void Compiler::startCompiler()
                     int32_t ipOffset = 0;
                     size_t endwhileCount = 0;
 
-                    while ((ip - ipOffset) >= 0)
+                    while (true)
                     {
                         ipOffset++;
 

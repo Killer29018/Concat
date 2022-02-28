@@ -25,6 +25,10 @@ enum TokenType
     TOKEN_LOR,
     TOKEN_LNOT,
 
+    TOKEN_VAR,
+    TOKEN_READ_MEMORY,
+    TOKEN_WRITE_MEMORY,
+
     TOKEN_INT,
     TOKEN_TRUE,
     TOKEN_FALSE,
@@ -74,6 +78,10 @@ const std::vector<const char*> TokenString
     "TOKEN_LAND",
     "TOKEN_LOR",
     "TOKEN_LNOT",
+
+    "TOKEN_VAR",
+    "TOKEN_READ_MEMORY",
+    "TOKEN_WRITE_MEMORY",
 
     "TOKEN_INT",
     "TOKEN_TRUE",

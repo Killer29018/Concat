@@ -14,6 +14,7 @@ enum ValueType
     TYPE_INT,
     TYPE_BOOL,
     TYPE_IP_OFFSET,
+    TYPE_MEM_PTR,
 };
 
 typedef int32_t VALUE_TYPE;
@@ -27,7 +28,24 @@ public:
         VALUE_TYPE vInt;
         VALUE_TYPE vBool;
         VALUE_TYPE vIpOffset;
+        VALUE_TYPE vMemPtr;
     } as;
+
+    Value() = default;
+
+    Value(ValueType t, VALUE_TYPE value)
+        : type(t)
+    {
+        switch (type)
+        {
+        case TYPE_NULL: break;
+        case TYPE_INT: as.vInt = value; break;
+        case TYPE_BOOL: as.vBool = value; break;
+        case TYPE_IP_OFFSET: as.vIpOffset = value; break;
+        case TYPE_MEM_PTR: as.vMemPtr = value; break;
+        }
+
+    }
 public:
     static void Add(const Value& a, const Value& b, Value& rV, const OpCode& op);
     static void Subtract(const Value& a, const Value& b, Value& rV, const OpCode& op);

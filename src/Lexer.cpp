@@ -13,7 +13,8 @@
 #include "Keywords.hpp"
 
 std::vector<Token> Lexer::m_Tokens;
-std::set<std::string> Lexer::m_Macros;
+std::unordered_set<std::string> Lexer::m_Macros;
+std::unordered_set<std::string> Lexer::m_Var;
 std::string Lexer::m_InputString = "";
 bool Lexer::m_Error = false;
 
@@ -167,10 +168,23 @@ void Lexer::parseWord(Token& token, const char* word)
             m_Macros.emplace(word);
             m_Tokens.pop_back();
         }
+        else if (top->type == TOKEN_VAR)
+        {
+            token.type = TOKEN_VAR;
+            m_Var.emplace(word);
+            m_Tokens.pop_back();
+        }
         else
         {
-            Error::compilerError(token, "Unknown word %.*s", length, token.startIndex);
-            m_Error = true;
+            if (m_Var.find(word) != m_Var.end())
+            {
+                token.type = TOKEN_VAR;
+            }
+            else
+            {
+                Error::compilerError(token, "Unknown word %.*s", length, token.startIndex);
+                m_Error = true;
+            }
         }
     }
 }

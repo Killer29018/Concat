@@ -10,6 +10,7 @@
 
 std::vector<OpCode> VM::m_OpCodes;
 std::stack<Value> VM::m_Stack;
+std::vector<uint8_t> VM::m_Memory;
 
 void VM::addOpCode(OpCodeEnum code)
 {
@@ -31,6 +32,13 @@ void VM::pushInt(int32_t value)
     op.value = { TYPE_INT, value };
     m_OpCodes.emplace_back(op);
 }
+uint32_t VM::addMemory(uint32_t bytes)
+{
+    size_t p = m_Memory.size();
+    for (int i = 0; i < bytes; i++)
+        m_Memory.push_back(0);
+    return p;
+}
 
 void VM::printOpCodes()
 {
@@ -40,6 +48,7 @@ void VM::printOpCodes()
         switch (m_OpCodes[i].code)
         {
         case OP_PUSH_INT: 
+        case OP_VAR:
             printValueDebug(i); break;
         default:
             printf("%.4lu | %.30s\n", i, OpCodeString[m_OpCodes[i].code]);
@@ -92,6 +101,16 @@ void VM::simulate()
                 ip++;
                 break;
             }
+        case OP_VAR:
+            // ip++;
+            assert(false && "Not Implemented");
+            break;
+        case OP_READ_MEMORY:
+            assert(false && "Not Implemented");
+            break;
+        case OP_WRITE_MEMORY:
+            assert(false && "Not Implemented");
+            break;
 
         case OP_PUSH_INT:
         case OP_TRUE:
@@ -435,6 +454,9 @@ void VM::printValueDebug(size_t index)
     {
     case TYPE_INT:
         printf("%.4lu | %.30s | %d\n", index, OpCodeString[code.code], code.value.as.vInt);
+        break;
+    case TYPE_MEM_PTR:
+        printf("%.4lu | %.30s | %d\n", index, OpCodeString[code.code], code.value.as.vMemPtr);
         break;
     default:
         assert(false); // UNREACHABLE

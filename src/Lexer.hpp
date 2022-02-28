@@ -6,13 +6,14 @@
 #include "Tokens.hpp"
 
 #include <vector>
-#include <set>
+#include <unordered_set>
 
 class Lexer
 {
 private:
     static std::vector<Token> m_Tokens;
-    static std::set<std::string> m_Macros;
+    static std::unordered_set<std::string> m_Macros;
+    static std::unordered_set<std::string> m_Var;
     static std::string m_InputString;
     static bool m_Error;
 public:
