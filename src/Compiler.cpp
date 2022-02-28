@@ -7,8 +7,8 @@
 #include "Error.hpp"
 
 std::vector<Token>* Compiler::m_Tokens;
-std::unordered_map<std::string, std::vector<Token>> Compiler::m_Macros;
-std::unordered_map<std::string, VALUE_TYPE> Compiler::m_Variables;
+std::unordered_map<std::string, std::vector<Token>> Compiler::m_Macros {};
+std::unordered_map<std::string, VALUE_TYPE> Compiler::m_Variables {};
 bool Compiler::m_Error = false;
 
 void Compiler::addTokens(std::vector<Token>& tokens)
@@ -21,6 +21,7 @@ void Compiler::startCompiler()
     if (m_Tokens->size() == 0)
         return;
 
+    // printf("%p\n", (void*)&m_Variables);
     OpCode code;
     size_t ip = 0;
     while (ip < m_Tokens->size())
@@ -28,8 +29,11 @@ void Compiler::startCompiler()
         Token& t = m_Tokens->at(ip);
 
         size_t length = t.endIndex - t.startIndex;
-        char* word = new char[length];
+        char* word = new char[length + 1];
         strncpy(word, t.startIndex, length);
+        word[length] = 0x00;
+
+        std::string stringWord(word);
 
         code.value = { TYPE_NULL, 0 };
         code.line = t.line;
@@ -72,8 +76,7 @@ void Compiler::startCompiler()
 
             case TOKEN_VAR:
                 {
-                    std::string wordString = word;
-                    if (m_Variables.find(wordString) != m_Variables.end())
+                    if (m_Variables.find(word) != m_Variables.end())
                     {
                         code.code = OP_VAR;
                         VALUE_TYPE ptr = m_Variables.at(word);
@@ -102,9 +105,10 @@ void Compiler::startCompiler()
                             break;
                         }
 
-                        size_t length = next.endIndex - next.startIndex;
-                        char* nextWord = new char[length];
-                        strncpy(nextWord, next.startIndex, length);
+                        size_t nextLength = next.endIndex - next.startIndex;
+                        char* nextWord = new char[nextLength + 1];
+                        strncpy(nextWord, next.startIndex, nextLength);
+                        nextWord[nextLength] = 0x00;
 
                         VALUE_TYPE value = atoi(nextWord);
                         delete[] nextWord;
@@ -114,8 +118,7 @@ void Compiler::startCompiler()
                         code.code = OP_VAR;
                         code.value = { TYPE_MEM_PTR, ptr };
 
-                        m_Variables[wordString] = ptr;
-                        VM::addOpCode(code);
+                        m_Variables[word] = ptr;
 
                         ip += 2;
                         break;

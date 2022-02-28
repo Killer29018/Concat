@@ -15,6 +15,8 @@ enum ValueType
     TYPE_BOOL,
     TYPE_IP_OFFSET,
     TYPE_MEM_PTR,
+
+    TYPE_COUNT
 };
 
 typedef int32_t VALUE_TYPE;
@@ -38,6 +40,7 @@ public:
     {
         switch (type)
         {
+        case TYPE_COUNT:
         case TYPE_NULL: break;
         case TYPE_INT: as.vInt = value; break;
         case TYPE_BOOL: as.vBool = value; break;
@@ -71,7 +74,8 @@ const std::vector<const char*> ValueTypeString
     "NULL",
     "INT",
     "BOOL",
-    "IpOffset"
+    "IP_OFFSET",
+    "MEM_PTR",
 };
 
 

@@ -1,4 +1,0 @@
-var value 1 // Create "value" as pointer to 1 byte
-
-10 value @ // Write 10 into memory addr given by "value"
-value ! print cr  // Read value and print the value

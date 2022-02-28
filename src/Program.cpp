@@ -77,6 +77,7 @@ void Program::createOpcodes(const char* filename)
     assert(TokenString.size()  == TOKEN_COUNT && "Tokens strings is not the right size");
     assert(Keywords.size()     == KeywordCount && "Keywords size is not correct");
     assert(OpCodeString.size() == OP_COUNT && "OpCode strings is not the right size");
+    assert(ValueTypeString.size() == TYPE_COUNT && "vType string is not the right size");
 
     Lexer::lexFile(filename);
 

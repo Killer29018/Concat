@@ -32,10 +32,11 @@ void VM::pushInt(int32_t value)
     op.value = { TYPE_INT, value };
     m_OpCodes.emplace_back(op);
 }
+
 uint32_t VM::addMemory(uint32_t bytes)
 {
     size_t p = m_Memory.size();
-    for (int i = 0; i < bytes; i++)
+    for (uint32_t i = 0; i < bytes; i++)
         m_Memory.push_back(0);
     return p;
 }
@@ -102,15 +103,47 @@ void VM::simulate()
                 break;
             }
         case OP_VAR:
-            // ip++;
-            assert(false && "Not Implemented");
-            break;
+            {
+                Value rV = op.value;
+                m_Stack.push(rV);
+                ip++;
+
+                break;
+            }
         case OP_READ_MEMORY:
-            assert(false && "Not Implemented");
-            break;
+            {
+                const Value a = pop();
+
+                if (a.type != TYPE_MEM_PTR)
+                {
+                    Error::runtimeError(op, "Invalid Type. %s was expected but found %s instead", ValueTypeString[TYPE_MEM_PTR], ValueTypeString[a.type]);
+                }
+
+                Value rV = loadMemory(a);
+                m_Stack.push(rV);
+                ip++;
+
+                break;
+            }
         case OP_WRITE_MEMORY:
-            assert(false && "Not Implemented");
-            break;
+            {
+                const Value address = pop();
+                const Value value = pop();
+
+                if (address.type != TYPE_MEM_PTR)
+                {
+                    Error::runtimeError(op, "Invalid Type. %s was expected but found %s instead", ValueTypeString[TYPE_MEM_PTR], ValueTypeString[address.type]);
+                }
+
+                if (value.type != TYPE_INT)
+                {
+                    Error::runtimeError(op, "Invalid Type. %s was expected but found %s instead", ValueTypeString[TYPE_INT], ValueTypeString[value.type]);
+                }
+
+                writeMemory(address, value);
+                ip++;
+                break;
+            }
 
         case OP_PUSH_INT:
         case OP_TRUE:
@@ -498,3 +531,25 @@ void VM::operation(const OpCode& op, size_t& ip)
     ip++;
 }
 
+Value VM::loadMemory(const Value& address)
+{
+    VALUE_TYPE v = 0;
+    for (int i = 0; i < 4; i++)
+    {
+        v <<= 8;
+        uint8_t element = m_Memory[address.as.vMemPtr + i];
+        v |= element;
+    }
+
+    return Value(TYPE_INT, v);
+}
+
+void VM::writeMemory(const Value& address, const Value& value)
+{
+    VALUE_TYPE v = value.as.vInt;
+    for (int i = 1; i <= 4; i++)
+    {
+        m_Memory[address.as.vMemPtr + (4 - i)] = v & 0xFF;
+        v >>= 8;
+    }
+}

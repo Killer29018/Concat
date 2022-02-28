@@ -1,0 +1,7 @@
+var value 4 // Create "value" as pointer to 1 byte
+
+10 value @ // Write 10 into memory addr given by "value"
+value ! print cr  // Read value and print the value
+
+value dup ! 10 + swap @ // Read the value and then increment it by 10 and then rewrite it
+value ! print cr // Print the new value
