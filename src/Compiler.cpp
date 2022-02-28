@@ -518,7 +518,7 @@ void Compiler::startCompiler()
                 }
 
             default:
-                assert(false); // UNREACHABLE
+                assert(false && "Unreachable"); // UNREACHABLE
         }
 
         delete[] word;

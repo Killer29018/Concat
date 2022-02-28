@@ -22,7 +22,7 @@ void Value::Add(const Value& a, const Value& b, Value& rV, const OpCode& op)
     }
     else
     {
-        assert(false);
+        assert(false && "Types not checked properly");
     }
 }
 
@@ -40,7 +40,7 @@ void Value::Subtract(const Value& a, const Value& b, Value& rV, const OpCode& op
     }
     else
     {
-        assert(false);
+        assert(false && "Types not checked properly");
     }
 }
 
@@ -58,7 +58,7 @@ void Value::Multiply(const Value& a, const Value& b, Value& rV, const OpCode& op
     }
     else
     {
-        assert(false);
+        assert(false && "Types not checked properly");
     }
 }
 
@@ -76,7 +76,7 @@ void Value::Divide(const Value& a, const Value& b, Value& rV, const OpCode& op)
     }
     else
     {
-        assert(false);
+        assert(false && "Types not checked properly");
     }
 }
 
@@ -94,7 +94,7 @@ void Value::Mod(const Value& a, const Value& b, Value& rV, const OpCode& op)
     }
     else
     {
-        assert(false);
+        assert(false && "Types not checked properly");
     }
 }
 
@@ -137,7 +137,7 @@ void Value::Equal(const Value& a, const Value& b, Value& rV, const OpCode& op)
     }
     else
     {
-        assert(false);
+        assert(false && "Types not checked properly");
     }
 }
 
@@ -179,7 +179,7 @@ void Value::Not_equal(const Value& a, const Value& b, Value& rV, const OpCode& o
     }
     else
     {
-        assert(false);
+        assert(false && "Types not checked properly");
     }
 }
 
@@ -197,7 +197,7 @@ void Value::Greater(const Value& a, const Value& b, Value& rV, const OpCode& op)
     }
     else
     {
-        assert(false);
+        assert(false && "Invalid Types");
     }
 }
 
@@ -215,7 +215,7 @@ void Value::Less(const Value& a, const Value& b, Value& rV, const OpCode& op)
     }
     else
     {
-        assert(false);
+        assert(false && "Invalid Types");
     }
 }
 
@@ -233,7 +233,7 @@ void Value::Greater_equal(const Value& a, const Value& b, Value& rV, const OpCod
     }
     else
     {
-        assert(false);
+        assert(false && "Invalid Types");
     }
 }
 
@@ -251,7 +251,7 @@ void Value::Less_equal(const Value& a, const Value& b, Value& rV, const OpCode& 
     }
     else
     {
-        assert(false);
+        assert(false && "Invalid Types");
     }
 }
 
@@ -299,7 +299,7 @@ void Value::Land(const Value& a, const Value& b, Value& rV, const OpCode& op)
     }
     else
     {
-        assert(false);
+        assert(false && "Invalid Types");
     }
 }
 
@@ -338,7 +338,7 @@ void Value::Lor(const Value& a, const Value& b, Value& rV, const OpCode& op)
     }
     else
     {
-        assert(false);
+        assert(false && "Invalid Types");
     }
 }
 

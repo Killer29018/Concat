@@ -437,7 +437,7 @@ void VM::simulate()
 
         default:
             Error::runtimeError(op, "Opcode not supported %s", OpCodeString[op.code]);
-            assert(false); // UNREACHABLE
+            assert(false && "Unreachable"); // UNREACHABLE
         }
     }
 }
@@ -459,7 +459,7 @@ void VM::printValueDebug(size_t index)
         printf("%.4lu | %.30s | %d\n", index, OpCodeString[code.code], code.value.as.vMemPtr);
         break;
     default:
-        assert(false); // UNREACHABLE
+        assert(false && "Unreachable"); // UNREACHABLE
     }
 }
 
@@ -491,7 +491,7 @@ void VM::operation(const OpCode& op, size_t& ip)
     case OP_LAND:  Value::Land(a, b, v, op); break;
     case OP_LOR:   Value::Lor(a, b, v, op); break;
     default:
-        assert(false); // UNREACHABLE
+        assert(false && "Unreachable"); // UNREACHABLE
     }
 
     m_Stack.push(v);

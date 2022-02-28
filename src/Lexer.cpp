@@ -1,6 +1,5 @@
 #include "Lexer.hpp"
 
-#include <cassert>
 #include <cstring>
 #include <cstdlib>
 #include <cstdio>
