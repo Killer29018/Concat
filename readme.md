@@ -4,10 +4,17 @@
 A language that could be considered similar to Forth or [Porth](https://gitlab.com/tsoding/porth)
 
 ### Future Features
-- [ ] Save the intermediary Opcode to a binary format to speed up compilation (Preferred over ASM)
+- [x] Save the intermediary Opcode to a binary format to speed up compilation (Preferred over ASM)
 - [ ] Possibly Write ASM code to compile the language ()
 - [ ] Variables, Constants and continuous Memory access
 - [ ] Functions
+
+### Currently being added
+```
+@8 !8 for 8 bit access to memory
+<< and >> bitwise operators
++! -! *! /! for writing directly to the pointer
+```
 
 ## Current Instructions
 ### Format
@@ -99,6 +106,4 @@ Whenever 'name' occurs in the program it gets expanded into <body...>
 
 ### Planned Commands
 ```
-if <condition> do <body> <else> <condition> do <endif>
-while <condition> then <body> endwhile
 ```

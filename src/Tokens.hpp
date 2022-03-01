@@ -26,8 +26,9 @@ enum TokenType
     TOKEN_LNOT,
 
     TOKEN_VAR,
-    TOKEN_READ_MEMORY,
-    TOKEN_WRITE_MEMORY,
+
+    TOKEN_READ_MEMORY_32,
+    TOKEN_WRITE_MEMORY_32,
 
     TOKEN_INT,
     TOKEN_TRUE,
@@ -80,6 +81,7 @@ const std::vector<const char*> TokenString
     "TOKEN_LNOT",
 
     "TOKEN_VAR",
+
     "TOKEN_READ_MEMORY",
     "TOKEN_WRITE_MEMORY",
 

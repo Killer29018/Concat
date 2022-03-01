@@ -33,8 +33,8 @@ private:
 
     static void operation(const OpCode& op, size_t& ip);
 
-    static Value loadMemory(const Value& address);
-    static void writeMemory(const Value& address, const Value& value);
+    static Value loadMemory(const Value& address, size_t bytes);
+    static void writeMemory(const Value& address, const Value& value, size_t bytes);
 
     static Value pop() { Value v = m_Stack.top(); m_Stack.pop(); return v; }
 

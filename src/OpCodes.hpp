@@ -26,8 +26,9 @@ enum OpCodeEnum
     OP_LNOT,
 
     OP_VAR,
-    OP_READ_MEMORY,
-    OP_WRITE_MEMORY,
+
+    OP_READ_MEMORY_32,
+    OP_WRITE_MEMORY_32,
 
     OP_PUSH_INT,
     OP_TRUE,
@@ -77,6 +78,7 @@ const std::vector<const char*> OpCodeString
     "OP_LNOT",
 
     "OP_VAR",
+
     "OP_READ_MEMORY",
     "OP_WRITE_MEMORY",
 

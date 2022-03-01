@@ -110,7 +110,8 @@ void VM::simulate()
 
                 break;
             }
-        case OP_READ_MEMORY:
+
+        case OP_READ_MEMORY_32:
             {
                 const Value a = pop();
 
@@ -119,13 +120,13 @@ void VM::simulate()
                     Error::runtimeError(op, "Invalid Type. %s was expected but found %s instead", ValueTypeString[TYPE_MEM_PTR], ValueTypeString[a.type]);
                 }
 
-                Value rV = loadMemory(a);
+                Value rV = loadMemory(a, 4);
                 m_Stack.push(rV);
                 ip++;
 
                 break;
             }
-        case OP_WRITE_MEMORY:
+        case OP_WRITE_MEMORY_32:
             {
                 const Value address = pop();
                 const Value value = pop();
@@ -140,7 +141,7 @@ void VM::simulate()
                     Error::runtimeError(op, "Invalid Type. %s was expected but found %s instead", ValueTypeString[TYPE_INT], ValueTypeString[value.type]);
                 }
 
-                writeMemory(address, value);
+                writeMemory(address, value, 4);
                 ip++;
                 break;
             }
@@ -531,10 +532,10 @@ void VM::operation(const OpCode& op, size_t& ip)
     ip++;
 }
 
-Value VM::loadMemory(const Value& address)
+Value VM::loadMemory(const Value& address, size_t bytes)
 {
     VALUE_TYPE v = 0;
-    for (int i = 0; i < 4; i++)
+    for (size_t i = 0; i < bytes; i++)
     {
         v <<= 8;
         uint8_t element = m_Memory[address.as.vMemPtr + i];
@@ -544,12 +545,12 @@ Value VM::loadMemory(const Value& address)
     return Value(TYPE_INT, v);
 }
 
-void VM::writeMemory(const Value& address, const Value& value)
+void VM::writeMemory(const Value& address, const Value& value, size_t bytes)
 {
     VALUE_TYPE v = value.as.vInt;
-    for (int i = 1; i <= 4; i++)
+    for (size_t i = 1; i <= bytes; i++)
     {
-        m_Memory[address.as.vMemPtr + (4 - i)] = v & 0xFF;
+        m_Memory[address.as.vMemPtr + (bytes - i)] = v & 0xFF;
         v >>= 8;
     }
 }

@@ -27,8 +27,9 @@ const std::unordered_map<std::string, TokenType> Keywords({
     { "lnot",       TOKEN_LNOT },
 
     { "var",        TOKEN_VAR },
-    { "!",          TOKEN_READ_MEMORY },
-    { "@",          TOKEN_WRITE_MEMORY },
+
+    { "!",          TOKEN_READ_MEMORY_32 },
+    { "@",          TOKEN_WRITE_MEMORY_32 },
 
     { "true",       TOKEN_TRUE },
     { "false",      TOKEN_FALSE },

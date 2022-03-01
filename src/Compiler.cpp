@@ -124,10 +124,10 @@ void Compiler::startCompiler()
                         break;
                     }
                 }
-            case TOKEN_READ_MEMORY:
-                addBasicOpcode(code, ip, OP_READ_MEMORY); break;
-            case TOKEN_WRITE_MEMORY:
-                addBasicOpcode(code, ip, OP_WRITE_MEMORY); break;
+            case TOKEN_READ_MEMORY_32:
+                addBasicOpcode(code, ip, OP_READ_MEMORY_32); break;
+            case TOKEN_WRITE_MEMORY_32:
+                addBasicOpcode(code, ip, OP_WRITE_MEMORY_32); break;
 
             case TOKEN_INT:
                 {
