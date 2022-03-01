@@ -67,41 +67,47 @@ void VM::simulate()
         OpCode& op = m_OpCodes[ip];
         switch (op.code)
         {
-        case OP_ADD: operation(op, ip); break;
-        case OP_SUBTRACT: operation(op, ip); break;
-        case OP_MULTIPLY: operation(op, ip); break;
-        case OP_DIVIDE: operation(op, ip); break;
-        case OP_MOD: operation(op, ip); break;
+        case OP_ADD:
+        case OP_SUBTRACT: 
+        case OP_MULTIPLY: 
+        case OP_DIVIDE: 
+        case OP_MOD: 
+            operation(op, ip); break;
 
-        case OP_EQUAL: operation(op, ip); break;
-        case OP_NOT_EQUAL: operation(op, ip); break;
-        case OP_GREATER: operation(op, ip); break;
-        case OP_LESS: operation(op, ip); break;
-        case OP_GREATER_EQUAL: operation(op, ip); break;
-        case OP_LESS_EQUAL: operation(op, ip); break;
+        case OP_EQUAL: 
+        case OP_NOT_EQUAL: 
+        case OP_GREATER: 
+        case OP_LESS: 
+        case OP_GREATER_EQUAL: 
+        case OP_LESS_EQUAL: 
+            operation(op, ip); break;
                             
         case OP_INVERT:
             {
                 const Value a = pop();
                 Value rV;
 
-                Value::Invert(a, rV, op);
+                Value::invert(a, rV, op);
                 m_Stack.push(rV);
                 ip++;
                 break;
             }
-        case OP_LAND: operation(op, ip); break;
-        case OP_LOR: operation(op, ip); break;
         case OP_LNOT:
             {
                 const Value a = pop();
                 Value rV;
 
-                Value::Lnot(a, rV, op);
+                Value::lnot(a, rV, op);
                 m_Stack.push(rV);
                 ip++;
                 break;
             }
+        case OP_LAND:
+        case OP_LOR:
+        case OP_RSHIFT:
+        case OP_LSHIFT:
+            operation(op, ip); break;
+
         case OP_VAR:
             {
                 Value rV = op.value;
@@ -509,21 +515,38 @@ void VM::operation(const OpCode& op, size_t& ip)
 
     switch (op.code)
     {
-    case OP_ADD:        Value::Add(a, b, v, op); break;
-    case OP_SUBTRACT:   Value::Subtract(a, b, v, op); break;
-    case OP_MULTIPLY:   Value::Multiply(a, b, v, op); break;
-    case OP_DIVIDE:     Value::Divide(a, b, v, op); break;
-    case OP_MOD:        Value::Mod(a, b, v, op); break;
+    case OP_ADD:
+        Value::add(a, b, v, op); break;
+    case OP_SUBTRACT:
+        Value::subtract(a, b, v, op); break;
+    case OP_MULTIPLY:
+        Value::multiply(a, b, v, op); break;
+    case OP_DIVIDE:
+        Value::divide(a, b, v, op); break;
+    case OP_MOD:
+        Value::mod(a, b, v, op); break;
 
-    case OP_EQUAL:          Value::Equal(a, b, v, op); break;
-    case OP_NOT_EQUAL:      Value::Not_equal(a, b, v, op); break;
-    case OP_GREATER:        Value::Greater(a, b, v, op); break;
-    case OP_LESS:           Value::Less(a, b, v, op); break;
-    case OP_GREATER_EQUAL:  Value::Greater_equal(a, b, v, op); break;
-    case OP_LESS_EQUAL:     Value::Less_equal(a, b, v, op); break;
+    case OP_EQUAL:
+        Value::equal(a, b, v, op); break;
+    case OP_NOT_EQUAL:
+        Value::not_equal(a, b, v, op); break;
+    case OP_GREATER:
+        Value::greater(a, b, v, op); break;
+    case OP_LESS:
+        Value::less(a, b, v, op); break;
+    case OP_GREATER_EQUAL:
+        Value::greater_equal(a, b, v, op); break;
+    case OP_LESS_EQUAL:
+        Value::less_equal(a, b, v, op); break;
 
-    case OP_LAND:  Value::Land(a, b, v, op); break;
-    case OP_LOR:   Value::Lor(a, b, v, op); break;
+    case OP_LAND:
+        Value::land(a, b, v, op); break;
+    case OP_LOR:
+        Value::lor(a, b, v, op); break;
+    case OP_RSHIFT:
+        Value::rshift(a, b, v, op); break;
+    case OP_LSHIFT:
+        Value::lshift(a, b, v, op); break;
     default:
         assert(false && "Unreachable"); // UNREACHABLE
     }

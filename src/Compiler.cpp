@@ -73,6 +73,10 @@ void Compiler::startCompiler()
                 addBasicOpcode(code, ip, OP_LOR); break;
             case TOKEN_LNOT: 
                 addBasicOpcode(code, ip, OP_LNOT); break;
+            case TOKEN_RSHIFT: 
+                addBasicOpcode(code, ip, OP_RSHIFT); break;
+            case TOKEN_LSHIFT: 
+                addBasicOpcode(code, ip, OP_LSHIFT); break;
 
             case TOKEN_VAR:
                 {

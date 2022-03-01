@@ -21,9 +21,11 @@ enum TokenType
     TOKEN_LESS_EQUAL,
 
     TOKEN_INVERT,
+    TOKEN_LNOT,
     TOKEN_LAND,
     TOKEN_LOR,
-    TOKEN_LNOT,
+    TOKEN_RSHIFT,
+    TOKEN_LSHIFT,
 
     TOKEN_VAR,
 
@@ -76,9 +78,11 @@ const std::vector<const char*> TokenString
     "TOKEN_LESS_EQUAL",
 
     "TOKEN_INVERT",
+    "TOKEN_LNOT",
     "TOKEN_LAND",
     "TOKEN_LOR",
-    "TOKEN_LNOT",
+    "TOKEN_RSHIFT",
+    "TOKEN_LSHIFT",
 
     "TOKEN_VAR",
 

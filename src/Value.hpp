@@ -50,23 +50,25 @@ public:
 
     }
 public:
-    static void Add(const Value& a, const Value& b, Value& rV, const OpCode& op);
-    static void Subtract(const Value& a, const Value& b, Value& rV, const OpCode& op);
-    static void Multiply(const Value& a, const Value& b, Value& rV, const OpCode& op);
-    static void Divide(const Value& a, const Value& b, Value& rV, const OpCode& op);
-    static void Mod(const Value& a, const Value& b, Value& rV, const OpCode& op);
+    static void add(const Value& a, const Value& b, Value& rV, const OpCode& op);
+    static void subtract(const Value& a, const Value& b, Value& rV, const OpCode& op);
+    static void multiply(const Value& a, const Value& b, Value& rV, const OpCode& op);
+    static void divide(const Value& a, const Value& b, Value& rV, const OpCode& op);
+    static void mod(const Value& a, const Value& b, Value& rV, const OpCode& op);
 
-    static void Equal(const Value& a, const Value& b, Value& rV, const OpCode& op);
-    static void Not_equal(const Value& a, const Value& b, Value& rV, const OpCode& op);
-    static void Greater(const Value& a, const Value& b, Value& rV, const OpCode& op);
-    static void Less(const Value& a, const Value& b, Value& rV, const OpCode& op);
-    static void Greater_equal(const Value& a, const Value& b, Value& rV, const OpCode& op);
-    static void Less_equal(const Value& a, const Value& b, Value& rV, const OpCode& op);
+    static void equal(const Value& a, const Value& b, Value& rV, const OpCode& op);
+    static void not_equal(const Value& a, const Value& b, Value& rV, const OpCode& op);
+    static void greater(const Value& a, const Value& b, Value& rV, const OpCode& op);
+    static void less(const Value& a, const Value& b, Value& rV, const OpCode& op);
+    static void greater_equal(const Value& a, const Value& b, Value& rV, const OpCode& op);
+    static void less_equal(const Value& a, const Value& b, Value& rV, const OpCode& op);
 
-    static void Invert(const Value& a, Value& rV, const OpCode& op);
-    static void Land(const Value& a, const Value& b, Value& rV, const OpCode& op);
-    static void Lor(const Value& a, const Value& b, Value& rV, const OpCode& op);
-    static void Lnot(const Value& a, Value& rV, const OpCode& op);
+    static void invert(const Value& a, Value& rV, const OpCode& op);
+    static void lnot(const Value& a, Value& rV, const OpCode& op);
+    static void land(const Value& a, const Value& b, Value& rV, const OpCode& op);
+    static void lor(const Value& a, const Value& b, Value& rV, const OpCode& op);
+    static void rshift(const Value& a, const Value& b, Value& rV, const OpCode& op);
+    static void lshift(const Value& a, const Value& b, Value& rv, const OpCode& op);
 };
 
 const std::vector<const char*> ValueTypeString
