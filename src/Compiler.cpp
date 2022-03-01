@@ -133,6 +133,11 @@ void Compiler::startCompiler()
             case TOKEN_WRITE_MEMORY_32:
                 addBasicOpcode(code, ip, OP_WRITE_MEMORY_32); break;
 
+            case TOKEN_READ_MEMORY_8:
+                addBasicOpcode(code, ip, OP_READ_MEMORY_8); break;
+            case TOKEN_WRITE_MEMORY_8:
+                addBasicOpcode(code, ip, OP_WRITE_MEMORY_8); break;
+
             case TOKEN_INT:
                 {
                     code.code = OP_PUSH_INT;

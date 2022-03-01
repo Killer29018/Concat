@@ -1,0 +1,21 @@
+// 32 Bit Number
+var bit32 4 // Create "value" as pointer to 1 byte
+
+10 bit32 ! // Write 10 into memory addr given by "value"
+bit32 @ print cr  // Read value and print the value
+
+bit32 dup @ 10 + swap ! // Read the value and then increment it by 10 and then rewrite it
+bit32 @ print cr // Print the new value
+
+// 8 Bit Number
+var bit8 1
+
+255 bit8 !8
+bit8 @8 print cr
+
+360 bit8 !8
+bit8 @8 print cr
+
+// Pointer Arithmetic TODO
+// var  10
+

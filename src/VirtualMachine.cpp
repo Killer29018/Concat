@@ -151,6 +151,40 @@ void VM::simulate()
                 ip++;
                 break;
             }
+        case OP_READ_MEMORY_8:
+            {
+                const Value a = pop();
+
+                if (a.type != TYPE_MEM_PTR)
+                {
+                    Error::runtimeError(op, "Invalid Type. %s was expected but found %s instead", ValueTypeString[TYPE_MEM_PTR], ValueTypeString[a.type]);
+                }
+
+                Value rV = loadMemory(a, 1);
+                m_Stack.push(rV);
+                ip++;
+
+                break;
+            }
+        case OP_WRITE_MEMORY_8:
+            {
+                const Value address = pop();
+                const Value value = pop();
+
+                if (address.type != TYPE_MEM_PTR)
+                {
+                    Error::runtimeError(op, "Invalid Type. %s was expected but found %s instead", ValueTypeString[TYPE_MEM_PTR], ValueTypeString[address.type]);
+                }
+
+                if (value.type != TYPE_INT)
+                {
+                    Error::runtimeError(op, "Invalid Type. %s was expected but found %s instead", ValueTypeString[TYPE_INT], ValueTypeString[value.type]);
+                }
+
+                writeMemory(address, value, 1);
+                ip++;
+                break;
+            }
 
         case OP_PUSH_INT:
         case OP_TRUE:
