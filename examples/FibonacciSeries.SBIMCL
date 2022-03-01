@@ -1,0 +1,38 @@
+var n1 4
+var n2 4
+1 n1 @
+
+macro times 46 endmacro
+
+macro printValue // index value -- index
+    // 'index : value'
+    over 1 +
+    print
+    32 . 58 . 32 . // ' : '
+    print cr
+endmacro
+
+times
+0 while over over swap < do
+    n1 ! n2 ! +
+    n2 !
+    over n2 @
+    n1 @
+
+    printValue
+
+    1 +
+endwhile 
+
+/*
+
+n1 = 0
+n2 = 0
+n3 = 0
+
+n3 = n1 + n2
+n2 = n3
+n1 = n2
+print n3
+
+*/
