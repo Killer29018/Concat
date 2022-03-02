@@ -27,6 +27,7 @@ public:
     ValueType type;
     union
     {
+        VALUE_TYPE value;
         VALUE_TYPE vInt;
         VALUE_TYPE vBool;
         VALUE_TYPE vIpOffset;

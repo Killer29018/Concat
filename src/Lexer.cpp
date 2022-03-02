@@ -133,6 +133,10 @@ void Lexer::getTokenType(Token& token)
     {
         token.type = TOKEN_MACRO;
     }
+    else if (m_Var.find(word) != m_Var.end())
+    {
+        token.type = TOKEN_VAR;
+    }
     else
     {
         parseWord(token, word);

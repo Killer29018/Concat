@@ -187,8 +187,7 @@ void Compiler::startCompiler()
 
             case TOKEN_MACRO:
                 {
-                    std::string wordString = word;
-                    if (m_Macros.find(wordString) != m_Macros.end())
+                    if (m_Macros.find(word) != m_Macros.end())
                     {
                         std::vector<Token>& tokens = m_Macros.at(word);
 
@@ -199,34 +198,38 @@ void Compiler::startCompiler()
                         ip++;
                         break;
                     }
-                    size_t ipOffset = 0;
-                    std::vector<Token> macroTokens;
-
-                    while ((ip + ipOffset) < m_Tokens->size())
+                    else
                     {
-                        ipOffset++;
+                        size_t ipOffset = 0;
+                        std::vector<Token> macroTokens;
 
-                        if ((ip + ipOffset) == m_Tokens->size())
-                        {
-                            Error::compilerError(t, "macro has no corresponding endmacro");
-                            m_Error = true;
-                        }
-
-                        if (m_Tokens->at(ip + ipOffset).type == TOKEN_ENDMACRO)
+                        while ((ip + ipOffset) < m_Tokens->size())
                         {
                             ipOffset++;
-                            break;
-                        }
-                        else
-                        {
-                            macroTokens.push_back(m_Tokens->at(ip + ipOffset));
+
+                            if ((ip + ipOffset) == m_Tokens->size())
+                            {
+                                Error::compilerError(t, "macro %s has no corresponding endmacro", word);
+                                m_Error = true;
+                                break;
+                            }
+
+                            if (m_Tokens->at(ip + ipOffset).type == TOKEN_ENDMACRO)
+                            {
+                                ipOffset++;
+                                break;
+                            }
+                            else
+                            {
+                                macroTokens.push_back(m_Tokens->at(ip + ipOffset));
+                            }
+
                         }
 
+                        m_Macros.insert({ word, macroTokens });
+
+                        ip += ipOffset;
                     }
-
-                    m_Macros.insert({ word, macroTokens });
-
-                    ip += ipOffset;
                     break;
                 }
 

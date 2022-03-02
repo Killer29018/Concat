@@ -16,6 +16,44 @@ bit8 @8 print cr
 360 bit8 !8
 bit8 @8 print cr
 
-// Pointer Arithmetic TODO
-// var  10
+// Pointer Arithmetic
 
+// Crude Arrays
+
+macro getPtr // ptr index -- ptr
+    4 * +
+endmacro
+
+macro getPtrRev // ptr index -- ptr
+    4 * swap 4 - swap -
+endmacro
+
+var bit20 80 // 4 Bytes
+var bit20end 0
+
+bit20 print cr
+bit20end print cr
+
+0 while dup 20 < do
+    dup 1 + dup *
+    over bit20 swap getPtr !
+    1 +
+endwhile drop
+
+// Go through forward
+0 while dup 20 < do
+    bit20 over getPtr @ print 32 . 
+    1 + 
+endwhile drop
+
+cr
+
+// Go through in reverse
+0 while dup 20 < do
+    bit20end over getPtrRev @ print 32 .
+    1 + 
+endwhile drop
+cr
+
+bit20 bit20end == print cr
+bit20 bit20end != print cr
