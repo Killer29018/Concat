@@ -170,10 +170,20 @@ void Lexer::parseWord(Token& token, const char* word)
     }
     else if (*token.startIndex == '\'') // Char
     {
-        if (length != 3)
+        // TODO: Allow for escape codes.
+        if (length < 3 || length > 4)
         {
             Error::compilerError(token, "Illformed character literal %.*s", length, token.startIndex);
             m_Error = true;
+        }
+
+        if (length == 4)
+        {
+            if (*(token.startIndex + 1) != '\\')
+            {
+                Error::compilerError(token, "Illformed character literal %.*s", length, token.startIndex);
+                m_Error = true;
+            }
         }
 
         token.type = TOKEN_CHAR;
@@ -218,6 +228,11 @@ bool Lexer::isDelimiter(char c)
     default:
         return false;
     }
+}
+
+char Lexer::parseEscapeCharacter(const char* word, size_t length)
+{
+    assert(false && "Not implemented");
 }
 
 bool Lexer::checkComments(bool* start, bool* end, bool* comments, bool* multiLineComment, size_t index)

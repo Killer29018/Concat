@@ -190,7 +190,10 @@ void Compiler::startCompiler()
             case TOKEN_CHAR:
                 {
                     code.code = OP_PUSH_CHAR;
-                    VALUE_TYPE value = *(word + 1);
+                    char c = *(word + 1);
+                    if (length == 4) c = parseEscapeCharacter(word, length);
+
+                    VALUE_TYPE value = c;
                     code.value = { TYPE_CHAR, value };
 
                     VM::addOpCode(code);
@@ -597,4 +600,9 @@ void Compiler::addBasicOpcode(OpCode& code, size_t& ip, OpCodeEnum opcode)
     code.code = opcode;
     VM::addOpCode(code);
     ip++;
+}
+
+char Compiler::parseEscapeCharacter(const char* word, size_t length)
+{
+
 }

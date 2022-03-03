@@ -9,3 +9,5 @@
 'R' print
 'L' print
 'D' print cr
+
+// '\n' // Not Currently Possible

@@ -24,6 +24,8 @@ private:
     ~Compiler() {}
 
     static void addBasicOpcode(OpCode& code, size_t& ip, OpCodeEnum opcode);
+
+    static char parseEscapeCharacter(const char* word, size_t length);
 };
 
 #endif
