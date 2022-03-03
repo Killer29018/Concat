@@ -3,6 +3,7 @@
 
 #include <vector>
 #include <stack>
+#include <unordered_map>
 
 #include "OpCodes.hpp"
 
@@ -13,6 +14,8 @@ private:
     static std::stack<Value> m_Stack;
 
     static std::vector<uint8_t> m_Memory;
+    static std::unordered_map<VALUE_TYPE, size_t> m_Variables;
+    static int32_t m_CurrentVarIndex;
 public:
     static void addOpCode(OpCodeEnum code);
     static void addOpCode(const OpCode& code);

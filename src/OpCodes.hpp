@@ -27,7 +27,9 @@ enum OpCodeEnum
     OP_RSHIFT,
     OP_LSHIFT,
 
-    OP_VAR,
+    OP_CREATE_VAR,
+    OP_LOAD_VAR,
+    OP_ENDVAR,
 
     OP_READ_MEMORY_32,
     OP_WRITE_MEMORY_32,
@@ -84,7 +86,9 @@ const std::vector<const char*> OpCodeString
     "OP_LSHIFT",
     "OP_RSHIFT",
 
-    "OP_VAR",
+    "OP_CREATE_VAR",
+    "OP_LOAD_VAR",
+    "OP_ENDVAR",
 
     "OP_READ_MEMORY_32",
     "OP_WRITE_MEMORY_32",

@@ -28,6 +28,7 @@ enum TokenType
     TOKEN_LSHIFT,
 
     TOKEN_VAR,
+    TOKEN_ENDVAR,
 
     TOKEN_READ_MEMORY_32,
     TOKEN_WRITE_MEMORY_32,
@@ -88,6 +89,7 @@ const std::vector<const char*> TokenString
     "TOKEN_LSHIFT",
 
     "TOKEN_VAR",
+    "TOKEN_ENDVAR",
 
     "TOKEN_READ_MEMORY_32",
     "TOKEN_WRITE_MEMORY_32",

@@ -11,6 +11,9 @@
 std::vector<OpCode> VM::m_OpCodes;
 std::stack<Value> VM::m_Stack;
 std::vector<uint8_t> VM::m_Memory;
+std::unordered_map<VALUE_TYPE, size_t> VM::m_Variables;
+int32_t VM::m_CurrentVarIndex = -1;
+
 
 void VM::addOpCode(OpCodeEnum code)
 {
@@ -49,7 +52,9 @@ void VM::printOpCodes()
         switch (m_OpCodes[i].code)
         {
         case OP_PUSH_INT: 
-        case OP_VAR:
+        case OP_CREATE_VAR:
+        case OP_LOAD_VAR:
+            printValueDebug(i); break;
             printValueDebug(i); break;
         default:
             printf("%.4lu | %.30s\n", i, OpCodeString[m_OpCodes[i].code]);
@@ -108,17 +113,52 @@ void VM::simulate()
         case OP_LSHIFT:
             operation(op, ip); break;
 
-        case OP_VAR:
+        case OP_CREATE_VAR:
             {
-                Value rV = op.value;
-                m_Stack.push(rV);
+                m_CurrentVarIndex = op.value.as.vMemPtr;
+                m_Variables.insert({ op.value.as.vMemPtr, 0 });
                 ip++;
+                break;
+            }
+        case OP_LOAD_VAR:
+            {
+                size_t index = m_Variables.at(op.value.as.vMemPtr);
+                Value a;
+                a.type = TYPE_MEM_PTR;
+                a.as.vMemPtr = index;
+                m_Stack.push(a);
+                ip++;
+                break;
+            }
+        case OP_ENDVAR: // TODO: Create memory region
+            {
+                if (m_Stack.size() < 1)
+                    Error::stackTooSmallError(op, 1);
 
+                const Value a = pop();
+
+                if (m_CurrentVarIndex == -1)
+                    assert(false && "Unreachable. Should be dealt with in Compiler");
+
+                if (a.type != TYPE_INT)
+                {
+                    Error::runtimeError(op, "Invalid Type. %s was expected but found %s instead", ValueTypeString[TYPE_INT], ValueTypeString[a.type]);
+                }
+
+                uint32_t index = addMemory(a.as.vInt);
+
+                m_Variables.at(m_CurrentVarIndex) = index;
+
+                m_CurrentVarIndex = -1;
+                ip++;
                 break;
             }
 
         case OP_READ_MEMORY_32:
             {
+                if (m_Stack.size() < 1)
+                    Error::stackTooSmallError(op, 1);
+
                 const Value a = pop();
 
                 if (a.type != TYPE_MEM_PTR)
@@ -134,6 +174,9 @@ void VM::simulate()
             }
         case OP_WRITE_MEMORY_32:
             {
+                if (m_Stack.size() < 2)
+                    Error::stackTooSmallError(op, 2);
+
                 const Value address = pop();
                 const Value value = pop();
 
@@ -153,6 +196,9 @@ void VM::simulate()
             }
         case OP_READ_MEMORY_8:
             {
+                if (m_Stack.size() < 1)
+                    Error::stackTooSmallError(op, 1);
+
                 const Value a = pop();
 
                 if (a.type != TYPE_MEM_PTR)
@@ -168,6 +214,9 @@ void VM::simulate()
             }
         case OP_WRITE_MEMORY_8:
             {
+                if (m_Stack.size() < 2)
+                    Error::stackTooSmallError(op, 2);
+
                 const Value address = pop();
                 const Value value = pop();
 

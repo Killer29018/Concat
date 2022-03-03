@@ -1,6 +1,6 @@
-var n1 4
-var n2 4
-1 n1 @
+var n1 4 endvar
+var n2 4 endvar
+1 n1 !
 
 macro times 46 endmacro
 
@@ -14,10 +14,10 @@ endmacro
 
 times
 0 while over over swap < do
-    n1 ! n2 ! +
-    n2 !
-    over n2 @
-    n1 @
+    n1 @ n2 @ +
+    n2 @
+    over n2 !
+    n1 !
 
     printValue
 

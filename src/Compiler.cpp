@@ -8,7 +8,7 @@
 
 std::vector<Token>* Compiler::m_Tokens;
 std::unordered_map<std::string, std::vector<Token>> Compiler::m_Macros {};
-std::unordered_map<std::string, VALUE_TYPE> Compiler::m_Variables {};
+std::set<std::string> Compiler::m_Variables;
 bool Compiler::m_Error = false;
 
 void Compiler::addTokens(std::vector<Token>& tokens)
@@ -82,13 +82,12 @@ void Compiler::startCompiler()
                 {
                     if (m_Variables.find(word) != m_Variables.end())
                     {
-                        code.code = OP_VAR;
-                        VALUE_TYPE ptr = m_Variables.at(word);
-                        code.value = { TYPE_MEM_PTR, ptr };
+                        VALUE_TYPE index = std::distance(m_Variables.begin(), m_Variables.find(word));
+                        // addBasicOpCode(code, ip, OP_LOAD_VAR);
+                        code.code = OP_LOAD_VAR;
+                        code.value = { TYPE_MEM_PTR, index };
                         VM::addOpCode(code);
                         ip++;
-
-                        break;
                     }
                     else
                     {
@@ -100,34 +99,74 @@ void Compiler::startCompiler()
                             break;
                         }
 
-                        Token& next = m_Tokens->at(ip + 1);
-                        if (next.type != TOKEN_INT)
+                        size_t ipOffset = 0;
+                        while ((ip + ipOffset) < m_Tokens->size())
                         {
-                            Error::compilerError(next, "int was expected while creating variable '%s'", word);
+                            ipOffset++;
+
+                            if ((ip + ipOffset) == m_Tokens->size())
+                            {
+                                Error::compilerError(t, "var %s has no corresponding endvar", word);
+                                m_Error = true;
+                                break;
+                            }
+
+                            if (m_Tokens->at(ip + ipOffset).type == TOKEN_ENDVAR)
+                            {
+                                m_Variables.emplace(word);
+                                VALUE_TYPE index = std::distance(m_Variables.begin(), m_Variables.find(word));
+                                // addBasicOpCode(code, ip, OP_LOAD_VAR);
+                                code.code = OP_CREATE_VAR;
+                                code.value = { TYPE_MEM_PTR, index };
+                                VM::addOpCode(code);
+                                break;
+                            }
+                        }
+
+                        ip++;
+                    }
+                    break;
+                }
+            case TOKEN_ENDVAR:
+                {
+                    if (ip == 0)
+                    {
+                        Error::compilerError(t, "could not find var before endvar");
+                        m_Error = true;
+                        ip++;
+                        break;
+                    }
+
+                    size_t ipOffset = 0;
+                    while (true)
+                    {
+                        ipOffset++;
+
+                        if ((ip - ipOffset) == 0 && m_Tokens->at(ip - ipOffset).type != TOKEN_VAR)
+                        {
+                            Error::compilerError(t, "endvar has no corresponding var");
                             m_Error = true;
-                            ip++;
                             break;
                         }
 
-                        size_t nextLength = next.endIndex - next.startIndex;
-                        char* nextWord = new char[nextLength + 1];
-                        strncpy(nextWord, next.startIndex, nextLength);
-                        nextWord[nextLength] = 0x00;
-
-                        VALUE_TYPE value = atoi(nextWord);
-                        delete[] nextWord;
-
-                        VALUE_TYPE ptr = VM::addMemory(value);
-
-                        code.code = OP_VAR;
-                        code.value = { TYPE_MEM_PTR, ptr };
-
-                        m_Variables[word] = ptr;
-
-                        ip += 2;
-                        break;
+                        if (m_Tokens->at(ip - ipOffset).type == TOKEN_VAR)
+                        {
+                            break;
+                        }
+                        else if (m_Tokens->at(ip - ipOffset).type == TOKEN_ENDVAR)
+                        {
+                            Error::compilerError(t, "unexpected endvar before var");
+                            m_Error = true;
+                            break;
+                        }
                     }
+
+                    ip++;
+                    code.code = OP_ENDVAR;
+                    VM::addOpCode(code);
+                    break;
                 }
+
             case TOKEN_READ_MEMORY_32:
                 addBasicOpcode(code, ip, OP_READ_MEMORY_32); break;
             case TOKEN_WRITE_MEMORY_32:
@@ -233,8 +272,8 @@ void Compiler::startCompiler()
                     break;
                 }
 
-            case TOKEN_ENDMACRO: 
-                addBasicOpcode(code, ip, OP_IF); break;
+            case TOKEN_ENDMACRO: // Unreachable
+                assert(false && "Unreachable");
 
             case TOKEN_IF: 
                 addBasicOpcode(code, ip, OP_IF); break;
@@ -419,10 +458,10 @@ void Compiler::startCompiler()
                    ip++;
                    break;
                }
-            case TOKEN_ENDIF: 
+            case TOKEN_ENDIF: // TODO Check for if
                addBasicOpcode(code, ip, OP_ENDIF); break;
 
-            case TOKEN_WHILE: 
+            case TOKEN_WHILE: // TODO Check for do
                addBasicOpcode(code, ip, OP_WHILE); break;
             case TOKEN_DO:
                 {
