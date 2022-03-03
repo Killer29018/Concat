@@ -1,0 +1,14 @@
+--------------------------------------------------
+Character.SBIMCL
+--stdout--
+HELLO WORLD
+
+--stderr--
+
+--build stdout--
+HELLO WORLD
+
+--build stderr--
+
+--------------------------------------------------
+

@@ -2,14 +2,14 @@
 A Basic program to show of the basic Math Operations and show a simple program
 */
 
-macro space 32 . endmacro
-macro op_+ 43 . endmacro
-macro op_- 45 . endmacro
-macro op_* 42 . endmacro
-macro op_/ 47 . endmacro
-macro op_mod 47 . endmacro
+macro space ' ' print endmacro
+macro op_+ '+' print endmacro
+macro op_- '-' print endmacro
+macro op_* '*' print endmacro
+macro op_/ '/' print endmacro
+macro op_mod '%' print endmacro
 
-macro op_= 61 . endmacro
+macro op_= '=' print endmacro
 
 21 // Value A
 2  // Value B

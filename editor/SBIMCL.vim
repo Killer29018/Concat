@@ -6,7 +6,7 @@ syntax keyword SBIMCL_PreProc macro endmacro
 syntax match SBIMCL_PreProc "\(^macro\s\)\@<=\S\+"
 highlight link SBIMCL_PreProc PreProc
 
-syntax keyword SBIMCL_Identifier var
+syntax keyword SBIMCL_Identifier var endvar
 syntax match SBIMCL_Identifier "\(^var\s\)\@<=\S\+"
 highlight link SBIMCL_Identifier Identifier
 
@@ -18,7 +18,6 @@ syntax keyword SBIMCL_Keyword and or invert land lor lnot << >>
 syntax keyword SBIMCL_Keyword true false
 highlight link SBIMCL_Keyword Keyword 
 
-" syntax match SBIMCL_Constants \"\v(^(\d+)\@<= | (\d+)\@<= |(\d)$)"
 syntax region SBIMCL_Constants start=/^\d/ end=/\v(\ze\s|$)/
 syntax region SBIMCL_Constants start=/ \d/ end=/\v(\ze\s|$)/
 highlight link SBIMCL_Constants Constant
@@ -42,6 +41,9 @@ highlight link SBIMCL_Operator Operator
 syntax match SBIMCL_Comments "\v//.*$"
 syntax region SBIMCL_Comments start=/\v\/\*/ skip=/\v\\./ end=/\v\*\//
 highlight link SBIMCL_Comments Comment
+
+syntax region SBIMCL_Character start=/\v\'/ end=/\v\'/
+highlight link SBIMCL_Character Character
 
 syntax match SBIMCL_Todo "\v(INFO|TODO|FIXME)" containedin=ALL
 highlight link SBIMCL_Todo Todo

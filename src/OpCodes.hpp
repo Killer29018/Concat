@@ -38,6 +38,7 @@ enum OpCodeEnum
     OP_WRITE_MEMORY_8,
 
     OP_PUSH_INT,
+    OP_PUSH_CHAR,
     OP_TRUE,
     OP_FALSE,
 
@@ -97,6 +98,7 @@ const std::vector<const char*> OpCodeString
     "OP_WRITE_MEMORY_8",
 
     "OP_PUSH_INT",
+    "OP_PUSH_CHAR",
     "OP_TRUE",
     "OP_FALSE",
 

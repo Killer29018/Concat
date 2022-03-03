@@ -37,6 +37,7 @@ enum TokenType
     TOKEN_WRITE_MEMORY_8,
 
     TOKEN_INT,
+    TOKEN_CHAR,
     TOKEN_TRUE,
     TOKEN_FALSE,
 
@@ -98,6 +99,7 @@ const std::vector<const char*> TokenString
     "TOKEN_WRITE_MEMORY_8",
 
     "TOKEN_INT",
+    "TOKEN_CHAR",
     "TOKEN_TRUE",
     "TOKEN_FALSE",
 

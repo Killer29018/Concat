@@ -11,7 +11,7 @@
     <= Less than or equal to
 */
 
-macro space 32 . endmacro
+macro space ' ' print endmacro
 macro a 21 endmacro
 macro b 20 endmacro
 

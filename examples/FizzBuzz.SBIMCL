@@ -1,7 +1,7 @@
 /*
     Fizz buzz between 1 and 1000 made with while loops
 */
-macro space 32 . endmacro
+macro space ' ' print endmacro
 
 macro fizz 
     if 3 mod 0 == dup then

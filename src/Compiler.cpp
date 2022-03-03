@@ -187,6 +187,16 @@ void Compiler::startCompiler()
                     ip++;
                     break;
                 }
+            case TOKEN_CHAR:
+                {
+                    code.code = OP_PUSH_CHAR;
+                    VALUE_TYPE value = *(word + 1);
+                    code.value = { TYPE_CHAR, value };
+
+                    VM::addOpCode(code);
+                    ip++;
+                    break;
+                }
             case TOKEN_TRUE:
                 {
                     code.code = OP_TRUE;

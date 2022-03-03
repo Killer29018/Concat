@@ -13,8 +13,10 @@ enum ValueType
     TYPE_NULL,
     TYPE_INT,
     TYPE_BOOL,
-    TYPE_IP_OFFSET,
+    TYPE_CHAR,
     TYPE_MEM_PTR,
+
+    TYPE_IP_OFFSET,
 
     TYPE_COUNT
 };
@@ -30,8 +32,10 @@ public:
         VALUE_TYPE value;
         VALUE_TYPE vInt;
         VALUE_TYPE vBool;
-        VALUE_TYPE vIpOffset;
+        VALUE_TYPE vChar;
         VALUE_TYPE vMemPtr;
+
+        VALUE_TYPE vIpOffset;
     } as;
 
     Value() = default;
@@ -45,8 +49,10 @@ public:
         case TYPE_NULL: break;
         case TYPE_INT: as.vInt = value; break;
         case TYPE_BOOL: as.vBool = value; break;
-        case TYPE_IP_OFFSET: as.vIpOffset = value; break;
         case TYPE_MEM_PTR: as.vMemPtr = value; break;
+        case TYPE_CHAR: as.vChar = value; break;
+
+        case TYPE_IP_OFFSET: as.vIpOffset = value; break;
         }
 
     }
@@ -77,8 +83,9 @@ const std::vector<const char*> ValueTypeString
     "NULL",
     "INT",
     "BOOL",
-    "IP_OFFSET",
+    "CHAR",
     "MEM_PTR",
+    "IP_OFFSET",
 };
 
 

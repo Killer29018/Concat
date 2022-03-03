@@ -236,6 +236,7 @@ void VM::simulate()
             }
 
         case OP_PUSH_INT:
+        case OP_PUSH_CHAR:
         case OP_TRUE:
         case OP_FALSE:
             {
@@ -256,8 +257,16 @@ void VM::simulate()
                     Error::stackTooSmallError(op, 1);
 
                 const Value a = pop();
-                printf("%d", a.as.vInt);
+
+                switch (a.type)
+                {
+                    case TYPE_CHAR:
+                        printf("%c", a.as.vChar & 0xFF); break;
+                    default:
+                        printf("%d", a.as.vInt);
+                }
                 ip++;
+
                 break;
             }
         case OP_DOT:

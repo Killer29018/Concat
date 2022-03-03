@@ -66,17 +66,22 @@ void Lexer::parseString()
     bool multiLineComment = false;
     bool end = false;
 
+    bool character = false;
+
     for (size_t i = 0; i < m_InputString.size();)
     {
         bool skip = checkComments(&start, &end, &comments, &multiLineComment, i);
 
-        if (!isDelimiter(m_InputString[i]) && !start && !comments && !skip)
+        if (m_InputString[i] == '\'')
+            character = !character;
+
+        if ((!isDelimiter(m_InputString[i]) || character) && !start && !comments && !skip)
         {
             t.startIndex = &m_InputString[0] + i;
             t.column = currentColumn;
             start = true;
         }
-        else if ((start && isDelimiter(m_InputString[i])) || end)
+        else if (!character && ((start && isDelimiter(m_InputString[i])) || end))
         {
             t.endIndex = (&m_InputString[0] + i);
             t.line = currentLine;
@@ -84,10 +89,11 @@ void Lexer::parseString()
             end = false;
             getTokenType(t);
 
+            character = false;
             m_Tokens.push_back(t);
         }
 
-        if (m_InputString[i] == '\n')
+        if (m_InputString[i] == '\n' && !character)
         {
             currentLine++;
             currentColumn = 0;
@@ -148,7 +154,7 @@ void Lexer::getTokenType(Token& token)
 void Lexer::parseWord(Token& token, const char* word)
 {
     int length = token.endIndex - token.startIndex;
-    if (*token.startIndex >= '0' && *token.startIndex <= '9')
+    if (*token.startIndex >= '0' && *token.startIndex <= '9') // Int
     {
         char* end;
         strtol(token.startIndex, &end, 10);
@@ -162,7 +168,17 @@ void Lexer::parseWord(Token& token, const char* word)
             token.type = TOKEN_INT;
         }
     }
-    else
+    else if (*token.startIndex == '\'') // Char
+    {
+        if (length != 3)
+        {
+            Error::compilerError(token, "Illformed character literal %.*s", length, token.startIndex);
+            m_Error = true;
+        }
+
+        token.type = TOKEN_CHAR;
+    }
+    else // Var, Macro
     {
         Token* top = &m_Tokens.at(m_Tokens.size() - 1);
         if (top->type == TOKEN_MACRO)
