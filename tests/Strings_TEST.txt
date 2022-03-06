@@ -1,0 +1,14 @@
+--------------------------------------------------
+Strings.SBIMCL
+--stdout--
+String Test
+
+--stderr--
+
+--build stdout--
+String Test
+
+--build stderr--
+
+--------------------------------------------------
+
