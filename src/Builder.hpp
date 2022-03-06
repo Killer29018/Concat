@@ -10,15 +10,14 @@
  * <FilenameLength> <Filename> <MemoryBufferSize> <OpCodesLength> <OpCodes...>
  */
 
-#define EnumType uint32_t
-#define EnumSize sizeof(uint32_t)
-#define Size_tSize sizeof(uint32_t)
+#define enumType uint16_t
+#define enumSize sizeof(enumType)
+#define size_tSize sizeof(uint32_t)
 
 class Builder
 {
 private:
     static size_t s_HeaderSize;
-    static size_t s_BodySize;
 public:
     static void buildCompiled(const char* filename, std::vector<OpCode>* opcodes);
     static void loadCompiled(const char* sourcePath);
@@ -27,10 +26,15 @@ private:
     ~Builder() = default;
 
     static void writeOpCode(char* buffer, const OpCode& op, size_t& index);
-    static void readOpCode(char* buffer, OpCode& op);
+    static void readOpCode(char* buffer, OpCode& op, std::ifstream& file);
+
+    static size_t getValueSize(const Value* value);
+    static size_t getValueSize(const ValueType value);
+    static void addValue(char* buffer, const Value* value, size_t& index);
+    static void readValue(char* buffer, ValueType type, OpCode& op);
 
     template<typename T>
-    static void addElement(char * output, size_t& index, T value, size_t size)
+    static void addElement(char* output, size_t& index, T value, size_t size)
     {
         for (size_t i = 1; i <= size; i++) 
         {
@@ -43,6 +47,7 @@ private:
     template<typename T>
     static void readElement(char* output, size_t& index, T& value, size_t size)
     {
+        value = 0;
         for (size_t i = 0; i < size; i++)
         {
             value <<= 8;
@@ -55,9 +60,11 @@ private:
     template<typename T>
     static void readElement(char* output, T& value, size_t size)
     {
+        value = 0;
         for (size_t i = 0; i < size; i++)
         {
-            value <<= 8;
+            if (size > 1)
+                value <<= 8;
             uint8_t element = output[i] & 0xFF;
             value |= element;
         }

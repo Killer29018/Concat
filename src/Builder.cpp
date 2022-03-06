@@ -5,90 +5,92 @@
 
 #include "VirtualMachine.hpp"
 
-// size_t Builder::s_HeaderSize = (Size_tSize * 3); // Doesnt include filename
-// size_t Builder::s_BodySize = EnumSize + EnumSize + sizeof(VALUE_TYPE) + (2 * Size_tSize);
-
-size_t Builder::s_HeaderSize = 0;
-size_t Builder::s_BodySize = 0;
+size_t Builder::s_HeaderSize = (size_tSize * 2); // Doesnt include filename
 
 void Builder::buildCompiled(const char* filename, std::vector<OpCode>* OpCodes)
 {
-    // std::filesystem::path path(filename);
+    std::filesystem::path path(filename);
 
-    // path.replace_extension(".SBIMCL_BIN");
+    path.replace_extension(".SBIMCL_BIN");
 
-    // std::string filenameOnly = path.stem().generic_string();
+    std::string filenameOnly = path.stem().generic_string();
 
-    // std::ofstream file;
-    // file.open(path.generic_string().c_str(), std::ios::out | std::ios::binary);
+    std::ofstream file;
+    file.open(path.generic_string().c_str(), std::ios::out | std::ios::binary);
 
-    // size_t header = s_HeaderSize + filenameOnly.size();
-    // size_t size = header + (s_BodySize * OpCodes->size());
+    size_t headerSize = s_HeaderSize + filenameOnly.size();
 
-    // size_t index = 0;
+    size_t index = 0;
 
-    // char* buffer = (char*)malloc(sizeof(char) * size);
-    // size_t length = filenameOnly.size();
-    // addElement(buffer, index, length, Size_tSize);
-    // strncpy(buffer + index, filenameOnly.c_str(), length);
-    // index += length;
-    // addElement(buffer, index, VM::getMemorySize(), Size_tSize);
-    // addElement(buffer, index, OpCodes->size(), Size_tSize);
+    size_t length = filenameOnly.size();
+    char* buffer = (char*)malloc((sizeof(char) * headerSize) + (sizeof(char) * length));
 
-    // for (size_t i = 0; i < OpCodes->size(); i++)
-    // {
-    //     OpCode& op = OpCodes->at(i);
+    addElement(buffer, index, length, size_tSize);
+    strncpy(buffer + index, filenameOnly.c_str(), length);
+    index += length;
+    addElement(buffer, index, OpCodes->size(), size_tSize);
 
-    //     writeOpCode(buffer, op, index);
-    // }
-    // file.write(buffer, size);
+    file.write(buffer, headerSize);
 
-    // file.close();
 
-    // printf("Created %s\n", path.generic_string().c_str());
+    for (size_t i = 0; i < OpCodes->size(); i++)
+    {
+        index = 0;
+        OpCode& op = OpCodes->at(i);
 
-    // delete[] buffer;
+        size_t vSize = getValueSize(op.value);
+        size_t opSize = enumSize + size_tSize + size_tSize;
+        size_t totalSize = sizeof(char) * (vSize + opSize);
+        buffer = (char*)realloc(buffer, totalSize);
+
+        writeOpCode(buffer, op, index);
+
+        file.write(buffer, totalSize);
+    }
+
+    delete[] buffer;
+
+    file.close();
+
+    printf("Created %s\n", path.generic_string().c_str());
+
 }
 
 void Builder::loadCompiled(const char* sourcePath)
 {
-    // std::filesystem::path path(sourcePath);
+    std::filesystem::path path(sourcePath);
 
-    // std::string sourceNameOnly = path.stem().generic_string();
+    std::string sourceNameOnly = path.stem().generic_string();
 
-    // std::ifstream file;
-    // file.open(path.generic_string().c_str(), std::ios::in | std::ios::binary);
+    std::ifstream file;
+    file.open(path.generic_string().c_str(), std::ios::in | std::ios::binary);
 
-    // char* buffer = (char*)malloc(sizeof(char) * Size_tSize);
-    // file.read(buffer, Size_tSize);
-    // size_t filenameLength;
-    // readElement(buffer, filenameLength, Size_tSize);
+    char* buffer = (char*)malloc(sizeof(char) * size_tSize);
+    file.read(buffer, size_tSize);
+    size_t filenameLength;
+    readElement(buffer, filenameLength, size_tSize);
 
-    // char* filename = (char*)malloc(sizeof(char) * filenameLength);
-    // buffer = (char*)realloc(buffer, sizeof(char) * filenameLength);
-    // file.read(buffer, filenameLength);
-    // strncpy(filename, buffer, filenameLength);
+    char* filename = (char*)malloc(sizeof(char) * filenameLength);
+    buffer = (char*)realloc(buffer, sizeof(char) * filenameLength);
+    file.read(buffer, filenameLength);
+    strncpy(filename, buffer, filenameLength);
 
-    // buffer = (char*)realloc(buffer, sizeof(char) * Size_tSize);
-    // file.read(buffer, Size_tSize);
-    // size_t memorySize;
-    // readElement(buffer, memorySize, Size_tSize);
-    // VM::addMemory(memorySize);
-
-    // file.read(buffer, Size_tSize);
-    // size_t opcodesLength;
-    // readElement(buffer, opcodesLength, Size_tSize);
+    file.read(buffer, size_tSize);
+    size_t opcodesLength;
+    readElement(buffer, opcodesLength, size_tSize);
 
     // buffer = (char*)realloc(buffer, sizeof(char) * s_BodySize);
-    // for (size_t i = 0; i < opcodesLength; i++)
-    // {
-    //     file.read(buffer, sizeof(char) * s_BodySize);
-    //     OpCode op;
+    for (size_t i = 0; i < opcodesLength; i++)
+    {
+        size_t size = sizeof(char) * (enumSize + enumSize + size_tSize + size_tSize);
+        buffer = (char*)realloc(buffer, size);
+        file.read(buffer, size);
+        OpCode op;
 
-    //     readOpCode(buffer, op);
+        readOpCode(buffer, op, file);
 
-    //     VM::addOpCode(op);
-    // }
+        VM::addOpCode(op);
+    }
 
     // file.close();
 
@@ -96,40 +98,184 @@ void Builder::loadCompiled(const char* sourcePath)
     // delete[] filename;
 }
 
+
 void Builder::writeOpCode(char* buffer, const OpCode& op, size_t& index)
 {
-    // EnumType opType = static_cast<EnumType>(op.code);
-    // EnumType valueType = static_cast<EnumType>(op.value.type);
-    // VALUE_TYPE value = op.value.as.vInt;
-    // size_t line = op.line;
-    // size_t column = op.column;
+    enumType opType = static_cast<enumType>(op.code);
+    enumType valueType;
 
-    // addElement(buffer, index, opType, EnumSize); 
-    // addElement(buffer, index, valueType, EnumSize); 
-    // addElement(buffer, index, value, sizeof(value));
-    // addElement(buffer, index, line, Size_tSize);
-    // addElement(buffer, index, column, Size_tSize);
+    if (!op.value)
+        valueType = static_cast<enumType>(TYPE_NULL);
+    else
+        valueType = static_cast<enumType>(op.value->type);
+    size_t line = op.line;
+    size_t column = op.column;
+
+    addElement(buffer, index, opType, enumSize); 
+    addElement(buffer, index, valueType, enumSize); 
+    addElement(buffer, index, line, size_tSize);
+    addElement(buffer, index, column, size_tSize);
+
+    addValue(buffer, op.value, index);
 }
 
-void Builder::readOpCode(char* buffer, OpCode& op)
+void Builder::readOpCode(char* buffer, OpCode& op, std::ifstream& file)
 {
-    // uint32_t opType = 0;
-    // uint32_t valueType = 0;
-    // VALUE_TYPE value = 0;
-    // size_t line = 0;
-    // size_t column = 0;
+    enumType opType, valueType;
+    size_t line, column;
 
-    // size_t index = 0;
+    size_t index = 0;
 
-    // readElement(buffer, index, opType, EnumSize);
-    // readElement(buffer, index, valueType, EnumSize);
-    // readElement(buffer, index, value, sizeof(value));
-    // readElement(buffer, index, line, Size_tSize);
-    // readElement(buffer, index, column, Size_tSize);
+    readElement(buffer, index, opType, enumSize);
+    readElement(buffer, index, valueType, enumSize);
+    readElement(buffer, index, line, size_tSize);
+    readElement(buffer, index, column, size_tSize);
 
-    // op.code = static_cast<OpCodeEnum>(opType);
-    // op.value.type = static_cast<ValueType>(valueType);
-    // op.value.as.vInt = value;
-    // op.line = line;
-    // op.column = column;
+    op.code = static_cast<OpCodeEnum>(opType);
+    ValueType type = static_cast<ValueType>(valueType);
+    op.line = line;
+    op.column = column;
+
+    size_t size = sizeof(char) * getValueSize(type);
+    char* value = (char*)malloc(size);
+    file.read(value, size);
+    readValue(value, type, op);
+    delete value;
+}
+
+size_t Builder::getValueSize(const Value* value)
+{
+    size_t size = enumSize;
+    if (!value)
+        size += sizeof(vNull);
+    else
+    {
+        switch (value->type)
+        {
+        case TYPE_NULL:
+            break;
+        case TYPE_INT:
+            size += sizeof(vInt); break;
+        case TYPE_BOOL:
+            size += sizeof(vBool); break;
+        case TYPE_CHAR:
+            size += sizeof(vChar); break;
+        case TYPE_MEM_PTR:
+            size += sizeof(vMemPtr); break;
+        case TYPE_IP_OFFSET:
+            size += sizeof(vIpOffset); break;
+
+        default:
+            assert(false && "Unreachable");
+        }
+    }
+
+    size -= sizeof(ValueType);
+
+    return size;
+}
+
+size_t Builder::getValueSize(const ValueType value)
+{
+    size_t size = 0;
+
+    switch (value)
+    {
+    case TYPE_NULL:
+        size += sizeof(vNull); break;
+    case TYPE_INT:
+        size += sizeof(vInt); break;
+    case TYPE_BOOL:
+        size += sizeof(vBool); break;
+    case TYPE_CHAR:
+        size += sizeof(vChar); break;
+    case TYPE_MEM_PTR:
+        size += sizeof(vMemPtr); break;
+    case TYPE_IP_OFFSET:
+        size += sizeof(vIpOffset); break;
+
+    default:
+        assert(false && "Unreachable");
+    }
+
+    size -= sizeof(ValueType);
+
+    return size;
+}
+
+void Builder::addValue(char* buffer, const Value* value, size_t& index)
+{
+    if (!value)
+        return;
+
+    switch (value->type)
+    {
+    case TYPE_NULL:
+        break;
+    case TYPE_INT:
+        addElement(buffer, index, as_vInt(value), sizeof(as_vInt(value)));
+        break;
+    case TYPE_BOOL:
+        addElement(buffer, index, as_vBool(value), sizeof(as_vBool(value)));
+        break;
+    case TYPE_CHAR:
+        addElement(buffer, index, as_vChar(value), sizeof(as_vChar(value)));
+        break;
+    case TYPE_MEM_PTR:
+        addElement(buffer, index, as_vMemPtr(value), sizeof(as_vMemPtr(value)));
+        break;
+    case TYPE_IP_OFFSET:
+        addElement(buffer, index, as_vIpOffset(value), sizeof(as_vIpOffset(value)));
+        break;
+
+    default:
+        assert(false && "Unreachable");
+    }
+}
+
+void Builder::readValue(char* buffer, ValueType type, OpCode& op)
+{
+    switch (type)
+    {
+    case TYPE_NULL:
+        op.value = new vNull(); break;
+    case TYPE_INT:
+        {
+            int32_t value;
+            readElement(buffer, value, sizeof(value));
+            op.value = new vInt(value);
+            break;
+        }
+    case TYPE_BOOL:
+        {
+            bool value;
+            readElement(buffer, value, sizeof(value));
+            op.value = new vBool(value);
+            break;
+        }
+    case TYPE_CHAR:
+        {
+            char value;
+            readElement(buffer, value, sizeof(value));
+            op.value = new vChar(value);
+            break;
+        }
+    case TYPE_MEM_PTR:
+        {
+            uint32_t value;
+            readElement(buffer, value, sizeof(value));
+            op.value = new vMemPtr(value);
+            break;
+        }
+    case TYPE_IP_OFFSET:
+        {
+            int32_t value;
+            readElement(buffer, value, sizeof(value));
+            op.value = new vIpOffset(value);
+            break;
+        }
+
+    default:
+        assert(false && "Unreachable");
+    }
 }
