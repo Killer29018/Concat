@@ -11,10 +11,10 @@ class VM
 {
 private:
     static std::vector<OpCode> m_OpCodes;
-    static std::stack<Value> m_Stack;
+    static std::stack<const Value*> m_Stack;
 
     static std::vector<uint8_t> m_Memory;
-    static std::unordered_map<VALUE_TYPE, size_t> m_Variables;
+    static std::unordered_map<uint32_t, size_t> m_Variables;
     static int32_t m_CurrentVarIndex;
 public:
     static void addOpCode(OpCodeEnum code);
@@ -36,10 +36,10 @@ private:
 
     static void operation(const OpCode& op, size_t& ip);
 
-    static Value loadMemory(const Value& address, size_t bytes);
-    static void writeMemory(const Value& address, const Value& value, size_t bytes);
+    static Value* loadMemory(const Value* address, size_t bytes);
+    static void writeMemory(const Value* address, const Value* value, size_t bytes);
 
-    static Value pop() { Value v = m_Stack.top(); m_Stack.pop(); return v; }
+    static const Value* pop() { const Value* v = m_Stack.top(); m_Stack.pop(); return v; }
 
 };
 

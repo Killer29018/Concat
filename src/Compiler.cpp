@@ -21,7 +21,6 @@ void Compiler::startCompiler()
     if (m_Tokens->size() == 0)
         return;
 
-    // printf("%p\n", (void*)&m_Variables);
     OpCode code;
     size_t ip = 0;
     while (ip < m_Tokens->size())
@@ -35,7 +34,8 @@ void Compiler::startCompiler()
 
         std::string stringWord(word);
 
-        code.value = { TYPE_NULL, 0 };
+        // code.value = { TYPE_NULL, 0 };
+        code.value = nullptr;
         code.line = t.line;
         code.column = t.column;
 
@@ -82,10 +82,10 @@ void Compiler::startCompiler()
                 {
                     if (m_Variables.find(word) != m_Variables.end())
                     {
-                        VALUE_TYPE index = std::distance(m_Variables.begin(), m_Variables.find(word));
+                        size_t index = std::distance(m_Variables.begin(), m_Variables.find(word));
                         // addBasicOpCode(code, ip, OP_LOAD_VAR);
                         code.code = OP_LOAD_VAR;
-                        code.value = { TYPE_MEM_PTR, index };
+                        code.value = new vMemPtr(index);
                         VM::addOpCode(code);
                         ip++;
                     }
@@ -114,10 +114,10 @@ void Compiler::startCompiler()
                             if (m_Tokens->at(ip + ipOffset).type == TOKEN_ENDVAR)
                             {
                                 m_Variables.emplace(word);
-                                VALUE_TYPE index = std::distance(m_Variables.begin(), m_Variables.find(word));
+                                size_t index = std::distance(m_Variables.begin(), m_Variables.find(word));
                                 // addBasicOpCode(code, ip, OP_LOAD_VAR);
                                 code.code = OP_CREATE_VAR;
-                                code.value = { TYPE_MEM_PTR, index };
+                                code.value = new vMemPtr(index);
                                 VM::addOpCode(code);
                                 break;
                             }
@@ -180,8 +180,8 @@ void Compiler::startCompiler()
             case TOKEN_INT:
                 {
                     code.code = OP_PUSH_INT;
-                    VALUE_TYPE value = atoi(word);
-                    code.value = { TYPE_INT, value };
+                    int32_t value = atoi(word);
+                    code.value = new vInt(value);
 
                     VM::addOpCode(code);
                     ip++;
@@ -193,8 +193,7 @@ void Compiler::startCompiler()
                     char c = *(word + 1);
                     if (length == 4) c = parseEscapeCharacter(word, length);
 
-                    VALUE_TYPE value = c;
-                    code.value = { TYPE_CHAR, value };
+                    code.value = new vChar(c);
 
                     VM::addOpCode(code);
                     ip++;
@@ -203,7 +202,7 @@ void Compiler::startCompiler()
             case TOKEN_TRUE:
                 {
                     code.code = OP_TRUE;
-                    code.value = { TYPE_BOOL, 1 };
+                    code.value = new vBool(true);
 
                     VM::addOpCode(code);
                     ip++;
@@ -212,7 +211,8 @@ void Compiler::startCompiler()
             case TOKEN_FALSE:
                 {
                     code.code = OP_FALSE;
-                    code.value = { TYPE_BOOL, 0 };
+                    // code.value = { TYPE_BOOL, 0 };
+                    code.value = new vBool(false);
 
                     VM::addOpCode(code);
                     ip++;
@@ -356,7 +356,8 @@ void Compiler::startCompiler()
                     }
 
                     code.code = OP_THEN;
-                    code.value = { TYPE_IP_OFFSET, 0 };
+                    // code.value = { TYPE_IP_OFFSET, 0 };
+                    code.value = new vIpOffset(0);
                     VM::addOpCode(code);
                     ip++;
                     break;
@@ -428,7 +429,8 @@ void Compiler::startCompiler()
 
 
                    code.code = OP_ELSEIF;
-                   code.value = { TYPE_IP_OFFSET, 0 };
+                   // code.value = { TYPE_IP_OFFSET, 0 };
+                   code.value = new vIpOffset(0);
                    VM::addOpCode(code);
                    ip++;
                    break;
@@ -466,7 +468,8 @@ void Compiler::startCompiler()
                    }
 
                    code.code = OP_ELSE;
-                   code.value = { TYPE_IP_OFFSET, 0 };
+                   // code.value = { TYPE_IP_OFFSET, 0 };
+                   code.value = new vIpOffset(0);
                    VM::addOpCode(code);
                    ip++;
                    break;
@@ -540,7 +543,8 @@ void Compiler::startCompiler()
                     }
 
                     code.code = OP_DO;
-                    code.value = { TYPE_IP_OFFSET, 0 };
+                    // code.value = { TYPE_IP_OFFSET, 0 };
+                    code.value = new vIpOffset(0);
                     VM::addOpCode(code);
                     ip++;
                     break;
@@ -578,7 +582,8 @@ void Compiler::startCompiler()
                     }
 
                     code.code = OP_ENDWHILE;
-                    code.value = { TYPE_IP_OFFSET, 0 };
+                    // code.value = { TYPE_IP_OFFSET, 0 };
+                    code.value = new vIpOffset(0);
                     VM::addOpCode(code);
                     ip++;
                     break;
@@ -604,5 +609,5 @@ void Compiler::addBasicOpcode(OpCode& code, size_t& ip, OpCodeEnum opcode)
 
 char Compiler::parseEscapeCharacter(const char* word, size_t length)
 {
-
+    return word[0];
 }

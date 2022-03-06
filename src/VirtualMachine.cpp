@@ -9,9 +9,9 @@
 #include "Builder.hpp"
 
 std::vector<OpCode> VM::m_OpCodes;
-std::stack<Value> VM::m_Stack;
+std::stack<const Value*> VM::m_Stack;
 std::vector<uint8_t> VM::m_Memory;
-std::unordered_map<VALUE_TYPE, size_t> VM::m_Variables;
+std::unordered_map<uint32_t, size_t> VM::m_Variables;
 int32_t VM::m_CurrentVarIndex = -1;
 
 
@@ -19,7 +19,7 @@ void VM::addOpCode(OpCodeEnum code)
 {
     OpCode op;
     op.code = code;
-    op.value = { TYPE_NULL, 0 };
+    op.value = nullptr;
     m_OpCodes.emplace_back(op);
 }
 
@@ -32,7 +32,7 @@ void VM::pushInt(int32_t value)
 {
     OpCode op;
     op.code = OP_PUSH_INT;
-    op.value = { TYPE_INT, value };
+    op.value = new vInt(value);
     m_OpCodes.emplace_back(op);
 }
 
@@ -49,16 +49,19 @@ void VM::printOpCodes()
     printf("--- OPCODES ---\n");
     for (size_t i = 0; i < m_OpCodes.size(); i++)
     {
-        switch (m_OpCodes[i].code)
+        if (!m_OpCodes[i].value)
         {
-        case OP_PUSH_INT: 
-        case OP_CREATE_VAR:
-        case OP_LOAD_VAR:
-            printValueDebug(i); break;
-            printValueDebug(i); break;
-        default:
+            printf("%.4lu | %.30s\n", i, OpCodeString[m_OpCodes[i].code]);
+            continue;
+        }
+
+        switch (m_OpCodes[i].value->type)
+        {
+        case TYPE_NULL:
             printf("%.4lu | %.30s\n", i, OpCodeString[m_OpCodes[i].code]);
             break;
+        default:
+            printValueDebug(i); break;
         }
     }
 }
@@ -89,20 +92,20 @@ void VM::simulate()
                             
         case OP_INVERT:
             {
-                const Value a = pop();
-                Value rV;
+                const Value* a = pop();
+                Value* rV;
 
-                Value::invert(a, rV, op);
+                value_invert(a, &rV, op);
                 m_Stack.push(rV);
                 ip++;
                 break;
             }
         case OP_LNOT:
             {
-                const Value a = pop();
-                Value rV;
+                const Value* a = pop();
+                Value* rV;
 
-                Value::lnot(a, rV, op);
+                value_lnot(a, &rV, op);
                 m_Stack.push(rV);
                 ip++;
                 break;
@@ -115,17 +118,15 @@ void VM::simulate()
 
         case OP_CREATE_VAR:
             {
-                m_CurrentVarIndex = op.value.as.vMemPtr;
-                m_Variables.insert({ op.value.as.vMemPtr, 0 });
+                m_CurrentVarIndex = as_vMemPtr(op.value);
+                m_Variables.insert({ m_CurrentVarIndex, 0 });
                 ip++;
                 break;
             }
         case OP_LOAD_VAR:
             {
-                size_t index = m_Variables.at(op.value.as.vMemPtr);
-                Value a;
-                a.type = TYPE_MEM_PTR;
-                a.as.vMemPtr = index;
+                size_t index = m_Variables.at(as_vMemPtr(op.value));
+                Value* a = new vMemPtr(index);
                 m_Stack.push(a);
                 ip++;
                 break;
@@ -135,17 +136,17 @@ void VM::simulate()
                 if (m_Stack.size() < 1)
                     Error::stackTooSmallError(op, 1);
 
-                const Value a = pop();
+                const Value* a = pop();
 
                 if (m_CurrentVarIndex == -1)
                     assert(false && "Unreachable. Should be dealt with in Compiler");
 
-                if (a.type != TYPE_INT)
+                if (a->type != TYPE_INT)
                 {
-                    Error::runtimeError(op, "Invalid Type. %s was expected but found %s instead", ValueTypeString[TYPE_INT], ValueTypeString[a.type]);
+                    Error::runtimeError(op, "Invalid Type. %s was expected but found %s instead", ValueTypeString[TYPE_INT], ValueTypeString[a->type]);
                 }
 
-                uint32_t index = addMemory(a.as.vInt);
+                uint32_t index = addMemory(as_vInt(a));
 
                 m_Variables.at(m_CurrentVarIndex) = index;
 
@@ -159,14 +160,14 @@ void VM::simulate()
                 if (m_Stack.size() < 1)
                     Error::stackTooSmallError(op, 1);
 
-                const Value a = pop();
+                const Value* a = pop();
 
-                if (a.type != TYPE_MEM_PTR)
+                if (a->type != TYPE_MEM_PTR)
                 {
-                    Error::runtimeError(op, "Invalid Type. %s was expected but found %s instead", ValueTypeString[TYPE_MEM_PTR], ValueTypeString[a.type]);
+                    Error::runtimeError(op, "Invalid Type. %s was expected but found %s instead", ValueTypeString[TYPE_MEM_PTR], ValueTypeString[a->type]);
                 }
 
-                Value rV = loadMemory(a, 4);
+                Value* rV = loadMemory(a, 4);
                 m_Stack.push(rV);
                 ip++;
 
@@ -177,17 +178,17 @@ void VM::simulate()
                 if (m_Stack.size() < 2)
                     Error::stackTooSmallError(op, 2);
 
-                const Value address = pop();
-                const Value value = pop();
+                const Value* address = pop();
+                const Value* value = pop();
 
-                if (address.type != TYPE_MEM_PTR)
+                if (address->type != TYPE_MEM_PTR)
                 {
-                    Error::runtimeError(op, "Invalid Type. %s was expected but found %s instead", ValueTypeString[TYPE_MEM_PTR], ValueTypeString[address.type]);
+                    Error::runtimeError(op, "Invalid Type. %s was expected but found %s instead", ValueTypeString[TYPE_MEM_PTR], ValueTypeString[address->type]);
                 }
 
-                if (value.type != TYPE_INT)
+                if (value->type != TYPE_INT)
                 {
-                    Error::runtimeError(op, "Invalid Type. %s was expected but found %s instead", ValueTypeString[TYPE_INT], ValueTypeString[value.type]);
+                    Error::runtimeError(op, "Invalid Type. %s was expected but found %s instead", ValueTypeString[TYPE_INT], ValueTypeString[value->type]);
                 }
 
                 writeMemory(address, value, 4);
@@ -199,14 +200,14 @@ void VM::simulate()
                 if (m_Stack.size() < 1)
                     Error::stackTooSmallError(op, 1);
 
-                const Value a = pop();
+                const Value* a = pop();
 
-                if (a.type != TYPE_MEM_PTR)
+                if (a->type != TYPE_MEM_PTR)
                 {
-                    Error::runtimeError(op, "Invalid Type. %s was expected but found %s instead", ValueTypeString[TYPE_MEM_PTR], ValueTypeString[a.type]);
+                    Error::runtimeError(op, "Invalid Type. %s was expected but found %s instead", ValueTypeString[TYPE_MEM_PTR], ValueTypeString[a->type]);
                 }
 
-                Value rV = loadMemory(a, 1);
+                Value* rV = loadMemory(a, 1);
                 m_Stack.push(rV);
                 ip++;
 
@@ -217,17 +218,17 @@ void VM::simulate()
                 if (m_Stack.size() < 2)
                     Error::stackTooSmallError(op, 2);
 
-                const Value address = pop();
-                const Value value = pop();
+                const Value* address = pop();
+                const Value* value = pop();
 
-                if (address.type != TYPE_MEM_PTR)
+                if (address->type != TYPE_MEM_PTR)
                 {
-                    Error::runtimeError(op, "Invalid Type. %s was expected but found %s instead", ValueTypeString[TYPE_MEM_PTR], ValueTypeString[address.type]);
+                    Error::runtimeError(op, "Invalid Type. %s was expected but found %s instead", ValueTypeString[TYPE_MEM_PTR], ValueTypeString[address->type]);
                 }
 
-                if (value.type != TYPE_INT)
+                if (value->type != TYPE_INT)
                 {
-                    Error::runtimeError(op, "Invalid Type. %s was expected but found %s instead", ValueTypeString[TYPE_INT], ValueTypeString[value.type]);
+                    Error::runtimeError(op, "Invalid Type. %s was expected but found %s instead", ValueTypeString[TYPE_INT], ValueTypeString[value->type]);
                 }
 
                 writeMemory(address, value, 1);
@@ -241,6 +242,7 @@ void VM::simulate()
         case OP_FALSE:
             {
                 m_Stack.push(op.value);
+
                 ip++;
                 break;
             }
@@ -256,14 +258,20 @@ void VM::simulate()
                 if (m_Stack.empty())
                     Error::stackTooSmallError(op, 1);
 
-                const Value a = pop();
+                const Value* a = pop();
 
-                switch (a.type)
+                switch (a->type)
                 {
+                    case TYPE_INT:
+                        printf("%d", as_vInt(a)); break;
+                    case TYPE_BOOL:
+                        printf("%d", as_vBool(a)); break;
                     case TYPE_CHAR:
-                        printf("%c", a.as.vChar & 0xFF); break;
+                        printf("%c", as_vChar(a)); break;
+                    case TYPE_MEM_PTR:
+                        printf("%d", as_vMemPtr(a)); break;
                     default:
-                        printf("%d", a.as.vInt);
+                        assert(false && "Not Reachable");
                 }
                 ip++;
 
@@ -274,8 +282,12 @@ void VM::simulate()
                 if (m_Stack.empty())
                     Error::stackTooSmallError(op, 1);
 
-                const Value a = pop();
-                printf("%c", a.as.vInt);
+                const Value* a = pop();
+
+                if (a->type != TYPE_INT)
+                    Error::runtimeError(op, "Only int can be treated as ascii");
+
+                printf("%c", as_vInt(a));
                 ip++;
                 break;
             }
@@ -285,7 +297,7 @@ void VM::simulate()
                 if (m_Stack.empty())
                     Error::stackTooSmallError(op, 1);
 
-                const Value a = pop();
+                const Value* a = pop();
                 m_Stack.push(a);
                 m_Stack.push(a);
                 ip++;
@@ -305,8 +317,8 @@ void VM::simulate()
                 if (m_Stack.size() < 2)
                     Error::stackTooSmallError(op, 2);
 
-                const Value a = pop();
-                const Value b = pop();
+                const Value* a = pop();
+                const Value* b = pop();
                 m_Stack.push(a);
                 m_Stack.push(b);
                 ip++;
@@ -318,8 +330,8 @@ void VM::simulate()
                 if (m_Stack.size() < 2)
                     Error::stackTooSmallError(op, 2);
 
-                const Value a = pop();
-                const Value b = pop();
+                const Value* a = pop();
+                const Value* b = pop();
                 m_Stack.push(b);
                 m_Stack.push(a);
                 m_Stack.push(b);
@@ -332,9 +344,9 @@ void VM::simulate()
                 if (m_Stack.size() < 3)
                     Error::stackTooSmallError(op, 3);
 
-                const Value a = pop();
-                const Value b = pop();
-                const Value c = pop();
+                const Value* a = pop();
+                const Value* b = pop();
+                const Value* c = pop();
 
                 m_Stack.push(b);
                 m_Stack.push(a);
@@ -352,14 +364,14 @@ void VM::simulate()
                 if (m_Stack.empty())
                     Error::stackTooSmallError(op, 1);
 
-                const Value a = pop();
+                const Value* a = pop();
 
-                if (a.type != TYPE_BOOL)
-                    Error::runtimeError(op, "Invalid Type. %s was expected but found %s instead", ValueTypeString[TYPE_BOOL], ValueTypeString[a.type]);
+                if (a->type != TYPE_BOOL)
+                    Error::runtimeError(op, "Invalid Type. %s was expected but found %s instead", ValueTypeString[TYPE_BOOL], ValueTypeString[a->type]);
 
-                bool boolTrue = a.as.vBool;
+                bool boolTrue = as_vBool(a);
 
-                if (op.value.as.vIpOffset == 0)
+                if (as_vIpOffset(op.value) == 0)
                 {
                     size_t ipOffset = 0;
                     size_t ifCount = 0;
@@ -375,7 +387,7 @@ void VM::simulate()
                         {
                             if (ifCount == 0)
                             {
-                                op.value.as.vIpOffset = ipOffset;
+                                op.value = new vIpOffset(ipOffset);
                                 break;
                             }
                             else
@@ -388,7 +400,7 @@ void VM::simulate()
                         {
                             if (ifCount == 0)
                             {
-                                op.value.as.vIpOffset = ipOffset + 1;
+                                op.value = new vIpOffset(ipOffset + 1);
                                 break;
                             }
                             else
@@ -405,14 +417,14 @@ void VM::simulate()
                 }
                 else
                 {
-                    ip += op.value.as.vIpOffset;
+                    ip += as_vIpOffset(op.value);
                 }
 
                 break;
             }
         case OP_ELSEIF:
             {
-                if (op.value.as.vIpOffset == 0)
+                if (as_vIpOffset(op.value) == 0)
                 {
                     size_t ipOffset = 0;
                     size_t ifCount = 0;
@@ -428,7 +440,7 @@ void VM::simulate()
                         {
                             if (ifCount == 0)
                             {
-                                op.value.as.vIpOffset = ipOffset;
+                                op.value = new vIpOffset(ipOffset);
                                 break;
                             }
                             else
@@ -439,14 +451,14 @@ void VM::simulate()
                     }
                 }
                 
-                ip += op.value.as.vIpOffset;
+                ip += as_vIpOffset(op.value);
 
                 ip++;
                 break;
             }
         case OP_ELSE:
             {
-                if (op.value.as.vIpOffset == 0)
+                if (as_vIpOffset(op.value) == 0)
                 {
                     size_t ipOffset = 0;
                     size_t ifCount = 0;
@@ -462,7 +474,7 @@ void VM::simulate()
                         {
                             if (ifCount == 0)
                             {
-                                op.value.as.vIpOffset = ipOffset;
+                                op.value = new vIpOffset(ipOffset);
                                 break;
                             }
                             else
@@ -473,7 +485,7 @@ void VM::simulate()
                     }
                 }
                 
-                ip += op.value.as.vIpOffset;
+                ip += as_vIpOffset(op.value);
 
                 ip++;
                 break;
@@ -490,14 +502,14 @@ void VM::simulate()
                 if (m_Stack.empty())
                     Error::stackTooSmallError(op, 1);
 
-                const Value a = pop();
+                const Value* a = pop();
 
-                if (a.type != TYPE_BOOL)
-                    Error::runtimeError(op, "Invalid Type. %s was expected but found %s instead", ValueTypeString[TYPE_BOOL], ValueTypeString[a.type]);
+                if (a->type != TYPE_BOOL)
+                    Error::runtimeError(op, "Invalid Type. %s was expected but found %s instead", ValueTypeString[TYPE_BOOL], ValueTypeString[a->type]);
 
-                bool boolTrue = a.as.vBool;
+                bool boolTrue = as_vBool(a);
 
-                if(op.value.as.vIpOffset == 0)
+                if(as_vIpOffset(op.value) == 0)
                 {
                     size_t ipOffset = 0;
                     size_t whileCount = 0;
@@ -513,7 +525,7 @@ void VM::simulate()
                         {
                             if (whileCount == 0)
                             {
-                                op.value.as.vIpOffset = ipOffset + 1;
+                                op.value = new vIpOffset(ipOffset + 1);
                                 break;
                             }
                             else
@@ -530,13 +542,13 @@ void VM::simulate()
                 }
                 else
                 {
-                    ip += op.value.as.vIpOffset;
+                    ip += as_vIpOffset(op.value);
                 }
                 break;
             }
         case OP_ENDWHILE: 
             {
-                if(op.value.as.vIpOffset == 0)
+                if(as_vIpOffset(op.value) == 0)
                 {
                     size_t ipOffset = 0;
                     size_t endWhileCount = 0;
@@ -552,7 +564,7 @@ void VM::simulate()
                         {
                             if (endWhileCount == 0)
                             {
-                                op.value.as.vIpOffset = ipOffset;
+                                op.value = new vIpOffset(ipOffset);
                                 break;
                             }
                             else
@@ -563,7 +575,7 @@ void VM::simulate()
                     }
                 }
 
-                ip -= op.value.as.vIpOffset;
+                ip -= as_vIpOffset(op.value);
                 break;
             }
 
@@ -582,14 +594,21 @@ void VM::build(const char* filename)
 void VM::printValueDebug(size_t index)
 {
     OpCode& code = m_OpCodes[index];
-    switch (code.value.type)
+    switch (code.value->type)
     {
     case TYPE_INT:
-        printf("%.4lu | %.30s | %d\n", index, OpCodeString[code.code], code.value.as.vInt);
+        printf("%.4lu | %.30s | %d\n", index, OpCodeString[code.code], as_vInt(code.value));
+        break;
+    case TYPE_BOOL:
+        printf("%.4lu | %.30s | %d\n", index, OpCodeString[code.code], as_vBool(code.value));
+        break;
+    case TYPE_CHAR:
+        printf("%.4lu | %.30s | %c\n", index, OpCodeString[code.code], as_vChar(code.value));
         break;
     case TYPE_MEM_PTR:
-        printf("%.4lu | %.30s | %d\n", index, OpCodeString[code.code], code.value.as.vMemPtr);
+        printf("%.4lu | %.30s | %d\n", index, OpCodeString[code.code], as_vMemPtr(code.value));
         break;
+    break;
     default:
         assert(false && "Unreachable"); // UNREACHABLE
     }
@@ -600,45 +619,45 @@ void VM::operation(const OpCode& op, size_t& ip)
     if (m_Stack.size() < 2)
         Error::stackTooSmallError(op, 2);
 
-    Value b = pop();
-    Value a = pop();
+    const Value* b = pop();
+    const Value* a = pop();
 
-    Value v;
+    Value* v = nullptr;
 
     switch (op.code)
     {
     case OP_ADD:
-        Value::add(a, b, v, op); break;
+        value_add(a, b, &v, op); break;
     case OP_SUBTRACT:
-        Value::subtract(a, b, v, op); break;
+        value_subtract(a, b, &v, op); break;
     case OP_MULTIPLY:
-        Value::multiply(a, b, v, op); break;
+        value_multiply(a, b, &v, op); break;
     case OP_DIVIDE:
-        Value::divide(a, b, v, op); break;
+        value_divide(a, b, &v, op); break;
     case OP_MOD:
-        Value::mod(a, b, v, op); break;
+        value_mod(a, b, &v, op); break;
 
     case OP_EQUAL:
-        Value::equal(a, b, v, op); break;
+        value_equal(a, b, &v, op); break;
     case OP_NOT_EQUAL:
-        Value::not_equal(a, b, v, op); break;
+        value_not_equal(a, b, &v, op); break;
     case OP_GREATER:
-        Value::greater(a, b, v, op); break;
+        value_greater(a, b, &v, op); break;
     case OP_LESS:
-        Value::less(a, b, v, op); break;
+        value_less(a, b, &v, op); break;
     case OP_GREATER_EQUAL:
-        Value::greater_equal(a, b, v, op); break;
+        value_greater_equal(a, b, &v, op); break;
     case OP_LESS_EQUAL:
-        Value::less_equal(a, b, v, op); break;
+        value_less_equal(a, b, &v, op); break;
 
     case OP_LAND:
-        Value::land(a, b, v, op); break;
+        value_land(a, b, &v, op); break;
     case OP_LOR:
-        Value::lor(a, b, v, op); break;
+        value_lor(a, b, &v, op); break;
     case OP_RSHIFT:
-        Value::rshift(a, b, v, op); break;
+        value_rshift(a, b, &v, op); break;
     case OP_LSHIFT:
-        Value::lshift(a, b, v, op); break;
+        value_lshift(a, b, &v, op); break;
     default:
         assert(false && "Unreachable"); // UNREACHABLE
     }
@@ -647,25 +666,25 @@ void VM::operation(const OpCode& op, size_t& ip)
     ip++;
 }
 
-Value VM::loadMemory(const Value& address, size_t bytes)
+Value* VM::loadMemory(const Value* address, size_t bytes)
 {
-    VALUE_TYPE v = 0;
+    int32_t v = 0;
     for (size_t i = 0; i < bytes; i++)
     {
         v <<= 8;
-        uint8_t element = m_Memory[address.as.vMemPtr + i];
+        uint8_t element = m_Memory[as_vMemPtr(address) + i];
         v |= element;
     }
 
-    return Value(TYPE_INT, v);
+    return new vInt(v);
 }
 
-void VM::writeMemory(const Value& address, const Value& value, size_t bytes)
+void VM::writeMemory(const Value* address, const Value* value, size_t bytes)
 {
-    VALUE_TYPE v = value.as.vInt;
+    int32_t v = as_vInt(value);
     for (size_t i = 1; i <= bytes; i++)
     {
-        m_Memory[address.as.vMemPtr + (bytes - i)] = v & 0xFF;
+        m_Memory[as_vMemPtr(address) + (bytes - i)] = v & 0xFF;
         v >>= 8;
     }
 }

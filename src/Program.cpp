@@ -86,8 +86,8 @@ void Program::createOpcodes(const char* filename)
 
     Compiler::startCompiler();
 
-    Lexer::deallocate();
-
     if (printDebugOpcodes)
         VM::printOpCodes();
+
+    Lexer::deallocate();
 }

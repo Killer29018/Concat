@@ -21,62 +21,86 @@ enum ValueType
     TYPE_COUNT
 };
 
-typedef int32_t VALUE_TYPE;
-
 struct Value
 {
 public:
     ValueType type;
-    union
-    {
-        VALUE_TYPE value;
-        VALUE_TYPE vInt;
-        VALUE_TYPE vBool;
-        VALUE_TYPE vChar;
-        VALUE_TYPE vMemPtr;
 
-        VALUE_TYPE vIpOffset;
-    } as;
+    // Value* value;
 
     Value() = default;
 
-    Value(ValueType t, VALUE_TYPE value)
-        : type(t)
-    {
-        switch (type)
-        {
-        case TYPE_COUNT:
-        case TYPE_NULL: break;
-        case TYPE_INT: as.vInt = value; break;
-        case TYPE_BOOL: as.vBool = value; break;
-        case TYPE_MEM_PTR: as.vMemPtr = value; break;
-        case TYPE_CHAR: as.vChar = value; break;
-
-        case TYPE_IP_OFFSET: as.vIpOffset = value; break;
-        }
-
-    }
-public:
-    static void add(const Value& a, const Value& b, Value& rV, const OpCode& op);
-    static void subtract(const Value& a, const Value& b, Value& rV, const OpCode& op);
-    static void multiply(const Value& a, const Value& b, Value& rV, const OpCode& op);
-    static void divide(const Value& a, const Value& b, Value& rV, const OpCode& op);
-    static void mod(const Value& a, const Value& b, Value& rV, const OpCode& op);
-
-    static void equal(const Value& a, const Value& b, Value& rV, const OpCode& op);
-    static void not_equal(const Value& a, const Value& b, Value& rV, const OpCode& op);
-    static void greater(const Value& a, const Value& b, Value& rV, const OpCode& op);
-    static void less(const Value& a, const Value& b, Value& rV, const OpCode& op);
-    static void greater_equal(const Value& a, const Value& b, Value& rV, const OpCode& op);
-    static void less_equal(const Value& a, const Value& b, Value& rV, const OpCode& op);
-
-    static void invert(const Value& a, Value& rV, const OpCode& op);
-    static void lnot(const Value& a, Value& rV, const OpCode& op);
-    static void land(const Value& a, const Value& b, Value& rV, const OpCode& op);
-    static void lor(const Value& a, const Value& b, Value& rV, const OpCode& op);
-    static void rshift(const Value& a, const Value& b, Value& rV, const OpCode& op);
-    static void lshift(const Value& a, const Value& b, Value& rv, const OpCode& op);
+    Value(ValueType type)
+        : type(type) {}
 };
+
+struct vNull : Value
+{
+    vNull() : Value(TYPE_NULL) {}
+};
+
+struct vInt : Value
+{
+    int32_t v;
+
+    vInt(int32_t value) : Value(TYPE_INT), v(value) {}
+};
+
+struct vBool : Value
+{
+    bool v;
+
+    vBool(bool value) : Value(TYPE_BOOL), v(value) {}
+};
+
+struct vChar : Value
+{
+    char v;
+
+    vChar(char value) : Value(TYPE_CHAR), v(value) {}
+};
+
+struct vMemPtr : Value
+{
+    uint32_t v;
+
+    vMemPtr(uint32_t value) : Value(TYPE_MEM_PTR), v(value) {}
+};
+
+struct vIpOffset : Value
+{
+    int32_t v;
+
+    vIpOffset(int32_t value) : Value(TYPE_IP_OFFSET), v(value) {}
+};
+
+#define as_vInt(val)        (((vInt*)(val))->v)
+#define as_vBool(val)       (((vBool*)(val))->v)
+#define as_vChar(val)       (((vChar*)(val))->v)
+#define as_vMemPtr(val)     (((vMemPtr*)(val))->v)
+#define as_vIpOffset(val)   (((vIpOffset*)(val))->v)
+
+        // rV = vInt(((vInt*)a.value)->v + ((vInt*)b.value)->v);
+
+void value_add(const Value* a, const Value* b, Value** rV, const OpCode& op);
+void value_subtract(const Value* a, const Value* b, Value** rV, const OpCode& op);
+void value_multiply(const Value* a, const Value* b, Value** rV, const OpCode& op);
+void value_divide(const Value* a, const Value* b, Value** rV, const OpCode& op);
+void value_mod(const Value* a, const Value* b, Value** rV, const OpCode& op);
+
+void value_equal(const Value* a, const Value* b, Value** rV, const OpCode& op);
+void value_not_equal(const Value* a, const Value* b, Value** rV, const OpCode& op);
+void value_greater(const Value* a, const Value* b, Value** rV, const OpCode& op);
+void value_less(const Value* a, const Value* b, Value** rV, const OpCode& op);
+void value_greater_equal(const Value* a, const Value* b, Value** rV, const OpCode& op);
+void value_less_equal(const Value* a, const Value* b, Value** rV, const OpCode& op);
+
+void value_invert(const Value* a, Value** rV, const OpCode& op);
+void value_lnot(const Value* a, Value** rV, const OpCode& op);
+void value_land(const Value* a, const Value* b, Value** rV, const OpCode& op);
+void value_lor(const Value* a, const Value* b, Value** rV, const OpCode& op);
+void value_rshift(const Value* a, const Value* b, Value** rV, const OpCode& op);
+void value_lshift(const Value* a, const Value* b, Value** rV, const OpCode& op);
 
 const std::vector<const char*> ValueTypeString
 {

@@ -126,10 +126,11 @@ const std::vector<const char*> OpCodeString
 struct OpCode
 {
     OpCodeEnum code;    // 8
-    Value value;        // 8 + 4
 
     size_t line;        // 4
     size_t column;      // 4
+
+    Value* value;        // 8 + 4
 };
 
 #endif

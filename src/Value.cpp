@@ -8,180 +8,184 @@
 // TODO: Type checking doesn't work if types are different
 // TODO: Return Type should be set within the operations themselves
 
-void Value::add(const Value& a, const Value& b, Value& rV, const OpCode& op)
+void value_add(const Value* a, const Value* b, Value** rV, const OpCode& op)
 {
-    switch (a.type)
+    switch (a->type)
     {
         case TYPE_INT:
         case TYPE_MEM_PTR:
             break;
         default:
-        Error::runtimeError(op, "Invalid Type. %s or %s was expected but found %s instead", ValueTypeString[TYPE_INT], ValueTypeString[TYPE_MEM_PTR], ValueTypeString[a.type]);
+        Error::runtimeError(op, "Invalid Type. %s or %s was expected but found %s instead", ValueTypeString[TYPE_INT], ValueTypeString[TYPE_MEM_PTR], ValueTypeString[a->type]);
     }
 
-    switch (b.type)
+    switch (b->type)
     {
         case TYPE_INT:
         case TYPE_MEM_PTR:
             break;
         default:
-        Error::runtimeError(op, "Invalid Type. %s or %s was expected but found %s instead", ValueTypeString[TYPE_INT], ValueTypeString[TYPE_MEM_PTR], ValueTypeString[b.type]);
+        Error::runtimeError(op, "Invalid Type. %s or %s was expected but found %s instead", ValueTypeString[TYPE_INT], ValueTypeString[TYPE_MEM_PTR], ValueTypeString[b->type]);
     }
 
-    if (a.type == TYPE_INT && b.type == TYPE_INT)
+    if (a->type == b->type)
     {
-        rV.type = TYPE_INT;
-        rV.as.vInt = a.as.vInt + b.as.vInt;
+        if (a->type == TYPE_MEM_PTR)
+            Error::runtimeError(op, "Can not add two %s together", ValueTypeString[TYPE_MEM_PTR]);
     }
-    else if ((a.type == TYPE_MEM_PTR && b.type == TYPE_INT) ||
-             (a.type == TYPE_INT && b.type == TYPE_MEM_PTR))
+
+    if (a->type == TYPE_INT && b->type == TYPE_INT)
     {
-        rV.type = TYPE_MEM_PTR;
-        rV.as.vInt = a.as.value + b.as.value;
+        (*rV) = new vInt(as_vInt(a) + as_vInt(b));
+    }
+    // else if ((a->type == TYPE_MEM_PTR && b->type == TYPE_INT) ||
+    //          (a->type == TYPE_INT && b->type == TYPE_MEM_PTR))
+    else if (a->type == TYPE_MEM_PTR && b->type == TYPE_INT)
+    {
+        (*rV) = new vMemPtr(as_vMemPtr(a) + as_vInt(b));
+    }
+    else if (a->type == TYPE_INT && b->type == TYPE_MEM_PTR)
+    {
+        (*rV) = new vMemPtr(as_vInt(a) + as_vMemPtr(b));
     }
     else
     {
-        Error::runtimeError(op, "Invalid Types");
+        assert(false && "Not checked properly");
     }
 }
 
-void Value::subtract(const Value& a, const Value& b, Value& rV, const OpCode& op)
+void value_subtract(const Value* a, const Value* b, Value** rV, const OpCode& op)
 {
-    switch (a.type)
+    switch (a->type)
     {
         case TYPE_INT:
         case TYPE_MEM_PTR:
             break;
         default:
-        Error::runtimeError(op, "Invalid Type. %s or %s was expected but found %s instead", ValueTypeString[TYPE_INT], ValueTypeString[TYPE_MEM_PTR], ValueTypeString[a.type]);
+        Error::runtimeError(op, "Invalid Type. %s or %s was expected but found %s instead", ValueTypeString[TYPE_INT], ValueTypeString[TYPE_MEM_PTR], ValueTypeString[a->type]);
     }
 
-    switch (b.type)
+    switch (b->type)
     {
         case TYPE_INT:
-        case TYPE_MEM_PTR:
             break;
         default:
-        Error::runtimeError(op, "Invalid Type. %s or %s was expected but found %s instead", ValueTypeString[TYPE_INT], ValueTypeString[TYPE_MEM_PTR], ValueTypeString[b.type]);
+        Error::runtimeError(op, "Invalid Type. %s was expected but found %s instead", ValueTypeString[TYPE_INT], ValueTypeString[b->type]);
     }
 
-    if (a.type == TYPE_INT && b.type == TYPE_INT)
+    if (a->type == TYPE_INT && b->type == TYPE_INT)
     {
-        rV.type = TYPE_INT;
-        rV.as.vInt = a.as.vInt - b.as.vInt;
+        (*rV) = new vInt(as_vInt(a) - as_vInt(b));
     }
-    else if ((a.type == TYPE_MEM_PTR && b.type == TYPE_INT) ||
-             (a.type == TYPE_INT && b.type == TYPE_MEM_PTR))
+    else if (a->type == TYPE_MEM_PTR && b->type == TYPE_INT)
     {
-        rV.type = TYPE_MEM_PTR;
-        rV.as.vInt = a.as.value - b.as.value;
+        (*rV) = new vMemPtr(as_vMemPtr(a) - as_vInt(b));
     }
     else
     {
-        Error::runtimeError(op, "Invalid Types");
+        assert(false && "Not checked properly");
     }
 }
 
-void Value::multiply(const Value& a, const Value& b, Value& rV, const OpCode& op)
+void value_multiply(const Value* a, const Value* b, Value** rV, const OpCode& op)
 {
-    if (a.type != TYPE_INT)
-        Error::runtimeError(op, "Invalid Type. %s was expected but found %s instead", ValueTypeString[TYPE_INT], ValueTypeString[a.type]);
-    if (b.type != TYPE_INT)
-        Error::runtimeError(op, "Invalid Type. %s was expected but found %s instead", ValueTypeString[TYPE_INT], ValueTypeString[b.type]);
+    if (a->type != TYPE_INT)
+        Error::runtimeError(op, "Invalid Type. %s was expected but found %s instead", ValueTypeString[TYPE_INT], ValueTypeString[a->type]);
+    if (b->type != TYPE_INT)
+        Error::runtimeError(op, "Invalid Type. %s was expected but found %s instead", ValueTypeString[TYPE_INT], ValueTypeString[b->type]);
 
-    if (a.type == TYPE_INT && b.type == TYPE_INT)
+    if (a->type == TYPE_INT && b->type == TYPE_INT)
     {
-        rV.type = TYPE_INT;
-        rV.as.vInt = a.as.vInt * b.as.vInt;
+        (*rV) = new vInt(as_vInt(a) * as_vInt(b));
     }
     else
     {
-        Error::runtimeError(op, "Invalid Types");
+        assert(false && "Not Checked properly");
     }
 }
 
-void Value::divide(const Value& a, const Value& b, Value& rV, const OpCode& op)
+void value_divide(const Value* a, const Value* b, Value** rV, const OpCode& op)
 {
-    if (a.type != TYPE_INT)
-        Error::runtimeError(op, "Invalid Type. %s was expected but found %s instead", ValueTypeString[TYPE_INT], ValueTypeString[a.type]);
-    if (b.type != TYPE_INT)
-        Error::runtimeError(op, "Invalid Type. %s was expected but found %s instead", ValueTypeString[TYPE_INT], ValueTypeString[b.type]);
+    if (a->type != TYPE_INT)
+        Error::runtimeError(op, "Invalid Type. %s was expected but found %s instead", ValueTypeString[TYPE_INT], ValueTypeString[a->type]);
+    if (b->type != TYPE_INT)
+        Error::runtimeError(op, "Invalid Type. %s was expected but found %s instead", ValueTypeString[TYPE_INT], ValueTypeString[b->type]);
 
-    if (a.type == TYPE_INT && b.type == TYPE_INT)
+    if (a->type == TYPE_INT && b->type == TYPE_INT)
     {
-        rV.type = TYPE_INT;
-        rV.as.vInt = a.as.vInt / b.as.vInt;
+        (*rV) = new vInt(as_vInt(a) / as_vInt(b));
     }
     else
     {
-        Error::runtimeError(op, "Invalid Types");
+        assert(false && "Not checked properly");
     }
 }
 
-void Value::mod(const Value& a, const Value& b, Value& rV, const OpCode& op)
+void value_mod(const Value* a, const Value* b, Value** rV, const OpCode& op)
 {
-    if (a.type != TYPE_INT)
-        Error::runtimeError(op, "Invalid Type. %s was expected but found %s instead", ValueTypeString[TYPE_INT], ValueTypeString[a.type]);
-    if (b.type != TYPE_INT)
-        Error::runtimeError(op, "Invalid Type. %s was expected but found %s instead", ValueTypeString[TYPE_INT], ValueTypeString[b.type]);
+    if (a->type != TYPE_INT)
+        Error::runtimeError(op, "Invalid Type. %s was expected but found %s instead", ValueTypeString[TYPE_INT], ValueTypeString[a->type]);
+    if (b->type != TYPE_INT)
+        Error::runtimeError(op, "Invalid Type. %s was expected but found %s instead", ValueTypeString[TYPE_INT], ValueTypeString[b->type]);
 
-    if (a.type == TYPE_INT && b.type == TYPE_INT)
+    if (a->type == TYPE_INT && b->type == TYPE_INT)
     {
-        rV.type = TYPE_INT;
-        rV.as.vInt = a.as.vInt % b.as.vInt;
+        (*rV) = new vInt(as_vInt(a) % as_vInt(b));
     }
     else
     {
-        Error::runtimeError(op, "Invalid Types");
+        assert(false && "Not checked properly");
     }
 }
 
 
-void Value::equal(const Value& a, const Value& b, Value& rV, const OpCode& op)
+void value_equal(const Value* a, const Value* b, Value** rV, const OpCode& op)
 {
-    switch (a.type)
+    switch (a->type)
     {
         case TYPE_INT:
         case TYPE_BOOL:
         case TYPE_MEM_PTR:
             break;
         default:
-            Error::runtimeError(op, "Invalid Type. %s or %s was expected but found %s instead", ValueTypeString[TYPE_INT], ValueTypeString[TYPE_BOOL], ValueTypeString[a.type]);
+            Error::runtimeError(op, "Invalid Type. %s or %s was expected but found %s instead", ValueTypeString[TYPE_INT], ValueTypeString[TYPE_BOOL], ValueTypeString[a->type]);
     }
 
-    switch (b.type)
+    switch (b->type)
     {
         case TYPE_INT:
         case TYPE_BOOL:
         case TYPE_MEM_PTR:
             break;
         default:
-            Error::runtimeError(op, "Invalid Type. %s or %s was expected but found %s instead", ValueTypeString[TYPE_INT], ValueTypeString[TYPE_BOOL], ValueTypeString[b.type]);
+            Error::runtimeError(op, "Invalid Type. %s or %s was expected but found %s instead", ValueTypeString[TYPE_INT], ValueTypeString[TYPE_BOOL], ValueTypeString[b->type]);
     }
 
-    if (a.type != b.type)
+    if (a->type != b->type)
     {
-        if (a.type == TYPE_MEM_PTR || b.type == TYPE_MEM_PTR)
+        if (a->type == TYPE_MEM_PTR || b->type == TYPE_MEM_PTR)
             Error::runtimeError(op, "Memptr can only be compared to itself");
     }
 
-    rV.type = TYPE_BOOL;
-    if (a.type == TYPE_INT && b.type == TYPE_INT)
+    if (a->type == TYPE_INT && b->type == TYPE_INT)
     {
-        rV.as.vBool = (a.as.vInt == b.as.vInt);
+        (*rV) = new vBool(as_vInt(a) == as_vInt(b));
     }
-    else if (a.type == TYPE_BOOL && b.type == TYPE_BOOL)
+    else if (a->type == TYPE_BOOL && b->type == TYPE_BOOL)
     {
-        rV.as.vBool = (a.as.vBool == b.as.vBool);
+        (*rV) = new vBool(as_vBool(a) == as_vBool(b));
     }
-    else if ((a.type == TYPE_BOOL || b.type == TYPE_BOOL) && 
-             (a.type == TYPE_INT  || b.type == TYPE_INT ))
+    else if (a->type == TYPE_BOOL && b->type == TYPE_INT)
     {
-        rV.as.vBool = (a.as.value == b.as.value);
+        (*rV) = new vBool(as_vBool(a) == as_vInt(b));
     }
-    else if (a.type == TYPE_MEM_PTR) // Both are equal
+    else if (a->type == TYPE_INT && b->type == TYPE_BOOL)
     {
-        rV.as.vBool = (a.as.vMemPtr == b.as.vMemPtr);
+        (*rV) = new vBool(as_vInt(a) == as_vBool(b));
+    }
+    else if (a->type == TYPE_MEM_PTR) // Both are equal
+    {
+        (*rV) = new vBool(as_vMemPtr(a) == as_vMemPtr(b));
     }
     else
     {
@@ -189,69 +193,53 @@ void Value::equal(const Value& a, const Value& b, Value& rV, const OpCode& op)
     }
 }
 
-void Value::not_equal(const Value& a, const Value& b, Value& rV, const OpCode& op)
+void value_not_equal(const Value* a, const Value* b, Value** rV, const OpCode& op)
 {
-    switch (a.type)
+    switch (a->type)
     {
         case TYPE_INT:
         case TYPE_BOOL:
         case TYPE_MEM_PTR:
             break;
         default:
-            Error::runtimeError(op, "Invalid Type. %s or %s was expected but found %s instead", ValueTypeString[TYPE_INT], ValueTypeString[TYPE_BOOL], ValueTypeString[a.type]);
+            Error::runtimeError(op, "Invalid Type. %s or %s was expected but found %s instead", ValueTypeString[TYPE_INT], ValueTypeString[TYPE_BOOL], ValueTypeString[a->type]);
     }
 
-    switch (b.type)
+    switch (b->type)
     {
         case TYPE_INT:
         case TYPE_BOOL:
         case TYPE_MEM_PTR:
             break;
         default:
-            Error::runtimeError(op, "Invalid Type. %s or %s was expected but found %s instead", ValueTypeString[TYPE_INT], ValueTypeString[TYPE_BOOL], ValueTypeString[b.type]);
+            Error::runtimeError(op, "Invalid Type. %s or %s was expected but found %s instead", ValueTypeString[TYPE_INT], ValueTypeString[TYPE_BOOL], ValueTypeString[b->type]);
     }
 
-    if (a.type != b.type)
+    if (a->type != b->type)
     {
-        if (a.type == TYPE_MEM_PTR || b.type == TYPE_MEM_PTR)
+        if (a->type == TYPE_MEM_PTR || b->type == TYPE_MEM_PTR)
             Error::runtimeError(op, "Memptr can only be compared to itself");
     }
 
-    rV.type = TYPE_BOOL;
-    if (a.type == TYPE_INT && b.type == TYPE_INT)
+    if (a->type == TYPE_INT && b->type == TYPE_INT)
     {
-        rV.as.vBool = (a.as.vInt != b.as.vInt);
+        (*rV) = new vBool(as_vInt(a) != as_vInt(b));
     }
-    else if (a.type == TYPE_BOOL && b.type == TYPE_BOOL)
+    else if (a->type == TYPE_BOOL && b->type == TYPE_BOOL)
     {
-        rV.as.vBool = (a.as.vBool != b.as.vBool);
+        (*rV) = new vBool(as_vBool(a) != as_vBool(b));
     }
-    else if ((a.type == TYPE_BOOL || b.type == TYPE_BOOL) && 
-             (a.type == TYPE_INT  || b.type == TYPE_INT ))
+    else if (a->type == TYPE_BOOL && b->type == TYPE_INT)
     {
-        rV.as.vBool = (a.as.value != b.as.value);
+        (*rV) = new vBool(as_vBool(a) != as_vInt(b));
     }
-    else if (a.type == TYPE_MEM_PTR) // Types are equal
+    else if (a->type == TYPE_INT && b->type == TYPE_BOOL)
     {
-         rV.as.vBool = (a.as.vMemPtr != b.as.vMemPtr);
+        (*rV) = new vBool(as_vInt(a) != as_vBool(b));
     }
-    else
+    else if (a->type == TYPE_MEM_PTR) // Both are equal
     {
-        Error::runtimeError(op, "Invalid Types");
-    }
-}
-
-void Value::greater(const Value& a, const Value& b, Value& rV, const OpCode& op)
-{
-    if (a.type != TYPE_INT)
-        Error::runtimeError(op, "Invalid Type. %s was expected but found %s instead", ValueTypeString[TYPE_INT], ValueTypeString[a.type]);
-    if (b.type != TYPE_INT)
-        Error::runtimeError(op, "Invalid Type. %s was expected but found %s instead", ValueTypeString[TYPE_INT], ValueTypeString[b.type]);
-
-    if (a.type == TYPE_INT && b.type == TYPE_INT)
-    {
-        rV.type = TYPE_BOOL;
-        rV.as.vBool = (a.as.vInt > b.as.vInt);
+        (*rV) = new vBool(as_vMemPtr(a) != as_vMemPtr(b));
     }
     else
     {
@@ -259,17 +247,16 @@ void Value::greater(const Value& a, const Value& b, Value& rV, const OpCode& op)
     }
 }
 
-void Value::less(const Value& a, const Value& b, Value& rV, const OpCode& op)
+void value_greater(const Value* a, const Value* b, Value** rV, const OpCode& op)
 {
-    if (a.type != TYPE_INT)
-        Error::runtimeError(op, "Invalid Type. %s was expected but found %s instead", ValueTypeString[TYPE_INT], ValueTypeString[a.type]);
-    if (b.type != TYPE_INT)
-        Error::runtimeError(op, "Invalid Type. %s was expected but found %s instead", ValueTypeString[TYPE_INT], ValueTypeString[b.type]);
+    if (a->type != TYPE_INT)
+        Error::runtimeError(op, "Invalid Type. %s was expected but found %s instead", ValueTypeString[TYPE_INT], ValueTypeString[a->type]);
+    if (b->type != TYPE_INT)
+        Error::runtimeError(op, "Invalid Type. %s was expected but found %s instead", ValueTypeString[TYPE_INT], ValueTypeString[b->type]);
 
-    if (a.type == TYPE_INT && b.type == TYPE_INT)
+    if (a->type == TYPE_INT && b->type == TYPE_INT)
     {
-        rV.type = TYPE_BOOL;
-        rV.as.vBool = (a.as.vInt < b.as.vInt);
+        (*rV) = new vBool(as_vInt(a) > as_vInt(b));
     }
     else
     {
@@ -277,17 +264,16 @@ void Value::less(const Value& a, const Value& b, Value& rV, const OpCode& op)
     }
 }
 
-void Value::greater_equal(const Value& a, const Value& b, Value& rV, const OpCode& op)
+void value_less(const Value* a, const Value* b, Value** rV, const OpCode& op)
 {
-    if (a.type != TYPE_INT)
-        Error::runtimeError(op, "Invalid Type. %s was expected but found %s instead", ValueTypeString[TYPE_INT], ValueTypeString[a.type]);
-    if (b.type != TYPE_INT)
-        Error::runtimeError(op, "Invalid Type. %s was expected but found %s instead", ValueTypeString[TYPE_INT], ValueTypeString[b.type]);
+    if (a->type != TYPE_INT)
+        Error::runtimeError(op, "Invalid Type. %s was expected but found %s instead", ValueTypeString[TYPE_INT], ValueTypeString[a->type]);
+    if (b->type != TYPE_INT)
+        Error::runtimeError(op, "Invalid Type. %s was expected but found %s instead", ValueTypeString[TYPE_INT], ValueTypeString[b->type]);
 
-    if (a.type == TYPE_INT && b.type == TYPE_INT)
+    if (a->type == TYPE_INT && b->type == TYPE_INT)
     {
-        rV.type = TYPE_BOOL;
-        rV.as.vBool = (a.as.vInt >= b.as.vInt);
+        (*rV) = new vBool(as_vInt(a) < as_vInt(b));
     }
     else
     {
@@ -295,17 +281,16 @@ void Value::greater_equal(const Value& a, const Value& b, Value& rV, const OpCod
     }
 }
 
-void Value::less_equal(const Value& a, const Value& b, Value& rV, const OpCode& op)
+void value_greater_equal(const Value* a, const Value* b, Value** rV, const OpCode& op)
 {
-    if (a.type != TYPE_INT)
-        Error::runtimeError(op, "Invalid Type. %s was expected but found %s instead", ValueTypeString[TYPE_INT], ValueTypeString[a.type]);
-    if (b.type != TYPE_INT)
-        Error::runtimeError(op, "Invalid Type. %s was expected but found %s instead", ValueTypeString[TYPE_INT], ValueTypeString[b.type]);
+    if (a->type != TYPE_INT)
+        Error::runtimeError(op, "Invalid Type. %s was expected but found %s instead", ValueTypeString[TYPE_INT], ValueTypeString[a->type]);
+    if (b->type != TYPE_INT)
+        Error::runtimeError(op, "Invalid Type. %s was expected but found %s instead", ValueTypeString[TYPE_INT], ValueTypeString[b->type]);
 
-    if (a.type == TYPE_INT && b.type == TYPE_INT)
+    if (a->type == TYPE_INT && b->type == TYPE_INT)
     {
-        rV.type = TYPE_BOOL;
-        rV.as.vBool = (a.as.vInt <= b.as.vInt);
+        (*rV) = new vBool(as_vInt(a) >= as_vInt(b));
     }
     else
     {
@@ -313,56 +298,69 @@ void Value::less_equal(const Value& a, const Value& b, Value& rV, const OpCode& 
     }
 }
 
-void Value::invert(const Value& a, Value& rV, const OpCode& op)
+void value_less_equal(const Value* a, const Value* b, Value** rV, const OpCode& op)
 {
-    if (a.type != TYPE_BOOL)
-        Error::runtimeError(op, "Invalid Type. %s was expected but found %s instead", ValueTypeString[TYPE_BOOL], ValueTypeString[a.type]);
+    if (a->type != TYPE_INT)
+        Error::runtimeError(op, "Invalid Type. %s was expected but found %s instead", ValueTypeString[TYPE_INT], ValueTypeString[a->type]);
+    if (b->type != TYPE_INT)
+        Error::runtimeError(op, "Invalid Type. %s was expected but found %s instead", ValueTypeString[TYPE_INT], ValueTypeString[b->type]);
 
-    rV.type = TYPE_BOOL;
-    rV.as.vBool = !a.as.vBool;
+    if (a->type == TYPE_INT && b->type == TYPE_INT)
+    {
+        (*rV) = new vBool(as_vInt(a) <= as_vInt(b));
+    }
+    else
+    {
+        Error::runtimeError(op, "Invalid Types");
+    }
 }
 
-void Value::lnot(const Value& a, Value& rV, const OpCode& op)
+void value_invert(const Value* a, Value** rV, const OpCode& op)
 {
-    if (a.type != TYPE_INT)
-        Error::runtimeError(op, "Invalid Type. %s was expected but found %s instead", ValueTypeString[TYPE_INT], ValueTypeString[a.type]);
+    if (a->type != TYPE_BOOL)
+        Error::runtimeError(op, "Invalid Type. %s was expected but found %s instead", ValueTypeString[TYPE_BOOL], ValueTypeString[a->type]);
 
-    rV.type = TYPE_INT;
-    rV.as.vInt = ~(a.as.vInt);
+    (*rV) = new vBool(!as_vBool(a));
 }
 
-void Value::land(const Value& a, const Value& b, Value& rV, const OpCode& op)
+void value_lnot(const Value* a, Value** rV, const OpCode& op)
 {
-    switch (a.type)
+    if (a->type != TYPE_INT)
+        Error::runtimeError(op, "Invalid Type. %s was expected but found %s instead", ValueTypeString[TYPE_INT], ValueTypeString[a->type]);
+
+    (*rV) = new vInt(~as_vInt(a));
+}
+
+void value_land(const Value* a, const Value* b, Value** rV, const OpCode& op)
+{
+    switch (a->type)
     {
         case TYPE_INT:
         case TYPE_BOOL:
             break;
         default:
-            Error::runtimeError(op, "Invalid Type. %s or %s was expected but found %s instead", ValueTypeString[TYPE_INT], ValueTypeString[TYPE_BOOL], ValueTypeString[a.type]);
+            Error::runtimeError(op, "Invalid Type. %s or %s was expected but found %s instead", ValueTypeString[TYPE_INT], ValueTypeString[TYPE_BOOL], ValueTypeString[a->type]);
     }
 
-    switch (b.type)
+    switch (b->type)
     {
         case TYPE_INT:
         case TYPE_BOOL:
             break;
         default:
-            Error::runtimeError(op, "Invalid Type. %s or %s was expected but found %s instead", ValueTypeString[TYPE_INT], ValueTypeString[TYPE_BOOL], ValueTypeString[b.type]);
+            Error::runtimeError(op, "Invalid Type. %s or %s was expected but found %s instead", ValueTypeString[TYPE_INT], ValueTypeString[TYPE_BOOL], ValueTypeString[b->type]);
     }
 
-    if (a.type != b.type)
-        Error::runtimeError(op, "Types were expected to be equal but found %s and %s instead", ValueTypeString[a.type], ValueTypeString[b.type]);
+    if (a->type != b->type)
+        Error::runtimeError(op, "Types were expected to be equal but found %s and %s instead", ValueTypeString[a->type], ValueTypeString[b->type]);
 
-    if (a.type == TYPE_INT && b.type == TYPE_INT)
+    if (a->type == TYPE_INT && b->type == TYPE_INT)
     {
-        rV.type = TYPE_INT;
-        rV.as.vBool = (a.as.vInt & b.as.vInt);
+        (*rV) = new vInt(as_vInt(a) & as_vInt(b));
     }
-    else if (a.type == TYPE_BOOL && b.type == TYPE_BOOL)
+    else if (a->type == TYPE_BOOL && b->type == TYPE_BOOL)
     {
-        rV.type = TYPE_BOOL;
-        rV.as.vBool = (a.as.vBool && b.as.vBool);
+        (*rV) = new vBool(as_vBool(a) && as_vBool(b));
     }
     else
     {
@@ -370,38 +368,36 @@ void Value::land(const Value& a, const Value& b, Value& rV, const OpCode& op)
     }
 }
 
-void Value::lor(const Value& a, const Value& b, Value& rV, const OpCode& op)
+void value_lor(const Value* a, const Value* b, Value** rV, const OpCode& op)
 {
-    switch (a.type)
+    switch (a->type)
     {
         case TYPE_INT:
         case TYPE_BOOL:
             break;
         default:
-            Error::runtimeError(op, "Invalid Type. %s or %s was expected but found %s instead", ValueTypeString[TYPE_INT], ValueTypeString[TYPE_BOOL], ValueTypeString[a.type]);
+            Error::runtimeError(op, "Invalid Type. %s or %s was expected but found %s instead", ValueTypeString[TYPE_INT], ValueTypeString[TYPE_BOOL], ValueTypeString[a->type]);
     }
 
-    switch (b.type)
+    switch (b->type)
     {
         case TYPE_INT:
         case TYPE_BOOL:
             break;
         default:
-            Error::runtimeError(op, "Invalid Type. %s or %s was expected but found %s instead", ValueTypeString[TYPE_INT], ValueTypeString[TYPE_BOOL], ValueTypeString[b.type]);
+            Error::runtimeError(op, "Invalid Type. %s or %s was expected but found %s instead", ValueTypeString[TYPE_INT], ValueTypeString[TYPE_BOOL], ValueTypeString[b->type]);
     }
 
-    if (a.type != b.type)
-        Error::runtimeError(op, "Types were expected to be equal but found %s and %s instead", ValueTypeString[a.type], ValueTypeString[b.type]);
+    if (a->type != b->type)
+        Error::runtimeError(op, "Types were expected to be equal but found %s and %s instead", ValueTypeString[a->type], ValueTypeString[b->type]);
 
-    if (a.type == TYPE_INT && b.type == TYPE_INT)
+    if (a->type == TYPE_INT && b->type == TYPE_INT)
     {
-        rV.type = TYPE_INT;
-        rV.as.vBool = (a.as.vInt | b.as.vInt);
+        (*rV) = new vInt(as_vInt(a) | as_vInt(b));
     }
-    else if (a.type == TYPE_BOOL && b.type == TYPE_BOOL)
+    else if (a->type == TYPE_BOOL && b->type == TYPE_BOOL)
     {
-        rV.type = TYPE_BOOL;
-        rV.as.vBool = (a.as.vBool || b.as.vBool);
+        (*rV) = new vBool(as_vBool(a) || as_vBool(b));
     }
     else
     {
@@ -409,46 +405,44 @@ void Value::lor(const Value& a, const Value& b, Value& rV, const OpCode& op)
     }
 }
 
-void Value::rshift(const Value& a, const Value& b, Value& rV, const OpCode& op)
+void value_rshift(const Value* a, const Value* b, Value** rV, const OpCode& op)
 {
-    switch (a.type)
+    switch (a->type)
     {
         case TYPE_INT:
             break;
         default:
-            Error::runtimeError(op, "Invalid Type. %s was expected but found %s instead", ValueTypeString[TYPE_INT], ValueTypeString[a.type]);
+            Error::runtimeError(op, "Invalid Type. %s was expected but found %s instead", ValueTypeString[TYPE_INT], ValueTypeString[a->type]);
     }
 
-    switch (b.type)
+    switch (b->type)
     {
         case TYPE_INT:
             break;
         default:
-            Error::runtimeError(op, "Invalid Type. %s was expected but found %s instead", ValueTypeString[TYPE_INT], ValueTypeString[a.type]);
+            Error::runtimeError(op, "Invalid Type. %s was expected but found %s instead", ValueTypeString[TYPE_INT], ValueTypeString[a->type]);
     }
 
-    rV.type = TYPE_INT;
-    rV.as.vInt = a.as.vInt >> b.as.vInt;
+    (*rV) = new vInt(as_vInt(a) >> as_vInt(b));
 }
 
-void Value::lshift(const Value& a, const Value& b, Value& rV, const OpCode& op)
+void value_lshift(const Value* a, const Value* b, Value** rV, const OpCode& op)
 {
-    switch (a.type)
+    switch (a->type)
     {
         case TYPE_INT:
             break;
         default:
-            Error::runtimeError(op, "Invalid Type. %s was expected but found %s instead", ValueTypeString[TYPE_INT], ValueTypeString[a.type]);
+            Error::runtimeError(op, "Invalid Type. %s was expected but found %s instead", ValueTypeString[TYPE_INT], ValueTypeString[a->type]);
     }
 
-    switch (b.type)
+    switch (b->type)
     {
         case TYPE_INT:
             break;
         default:
-            Error::runtimeError(op, "Invalid Type. %s was expected but found %s instead", ValueTypeString[TYPE_INT], ValueTypeString[a.type]);
+            Error::runtimeError(op, "Invalid Type. %s was expected but found %s instead", ValueTypeString[TYPE_INT], ValueTypeString[a->type]);
     }
 
-    rV.type = TYPE_INT;
-    rV.as.vInt = a.as.vInt << b.as.vInt;
+    (*rV) = new vInt(as_vInt(a) << as_vInt(b));
 }

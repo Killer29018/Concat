@@ -230,11 +230,6 @@ bool Lexer::isDelimiter(char c)
     }
 }
 
-char Lexer::parseEscapeCharacter(const char* word, size_t length)
-{
-    assert(false && "Not implemented");
-}
-
 bool Lexer::checkComments(bool* start, bool* end, bool* comments, bool* multiLineComment, size_t index)
 {
     bool skip = false;
