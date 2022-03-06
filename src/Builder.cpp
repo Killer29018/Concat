@@ -136,10 +136,25 @@ void Builder::readOpCode(char* buffer, OpCode& op, std::ifstream& file)
     op.line = line;
     op.column = column;
 
-    size_t size = sizeof(char) * getValueSize(type);
-    char* value = (char*)malloc(size);
+    size_t size;
+    char* value = (char*)malloc(0);
+    if (type == TYPE_STRING)
+    {
+        value = (char*)realloc(value, size_tSize * sizeof(char));
+        file.read(value, size_tSize);
+        size_t length;
+        readElement(value, length, size_tSize);
+
+        size = length;
+    }
+    else
+    {
+        size = sizeof(char) * getValueSize(type);
+    }
+
+    value = (char*)realloc(value, size);
     file.read(value, size);
-    readValue(value, type, op);
+    readValue(value, type, op, size);
     delete value;
 }
 
@@ -160,6 +175,8 @@ size_t Builder::getValueSize(const Value* value)
             size += sizeof(vBool); break;
         case TYPE_CHAR:
             size += sizeof(vChar); break;
+        case TYPE_STRING:
+            size += sizeof(vNull) + size_tSize + strlen(as_vString(value)); break;
         case TYPE_MEM_PTR:
             size += sizeof(vMemPtr); break;
         case TYPE_IP_OFFSET:
@@ -221,6 +238,9 @@ void Builder::addValue(char* buffer, const Value* value, size_t& index)
     case TYPE_CHAR:
         addElement(buffer, index, as_vChar(value), sizeof(as_vChar(value)));
         break;
+    case TYPE_STRING:
+        addString(buffer, index, value);
+        break;
     case TYPE_MEM_PTR:
         addElement(buffer, index, as_vMemPtr(value), sizeof(as_vMemPtr(value)));
         break;
@@ -233,7 +253,7 @@ void Builder::addValue(char* buffer, const Value* value, size_t& index)
     }
 }
 
-void Builder::readValue(char* buffer, ValueType type, OpCode& op)
+void Builder::readValue(char* buffer, ValueType type, OpCode& op, size_t bufferSize)
 {
     switch (type)
     {
@@ -260,6 +280,13 @@ void Builder::readValue(char* buffer, ValueType type, OpCode& op)
             op.value = new vChar(value);
             break;
         }
+    case TYPE_STRING:
+        {
+            char* value;
+            readString(buffer, &value, bufferSize);
+            op.value = new vString(value);
+            break;
+        }
     case TYPE_MEM_PTR:
         {
             uint32_t value;
@@ -279,3 +306,24 @@ void Builder::readValue(char* buffer, ValueType type, OpCode& op)
         assert(false && "Unreachable");
     }
 }
+
+void Builder::addString(char* buffer, size_t& index, const Value* value)
+{
+    vString* str = (vString*)(value);
+    size_t size = strlen(as_vString(value));
+
+    addElement(buffer, index, size, size_tSize);
+    strncpy(buffer + index, str->v, size);
+
+    index += size;
+}
+
+void Builder::readString(char* buffer, char** value, size_t bufferSize)
+{
+    (*value) = (char*)malloc(bufferSize + 1);
+
+    strncpy(*value, buffer, bufferSize);
+    (*(value))[bufferSize] = 0x00;
+
+}
+

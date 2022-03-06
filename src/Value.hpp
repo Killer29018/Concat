@@ -14,6 +14,7 @@ enum ValueType
     TYPE_INT,
     TYPE_BOOL,
     TYPE_CHAR,
+    TYPE_STRING,
     TYPE_MEM_PTR,
 
     TYPE_IP_OFFSET,
@@ -60,6 +61,12 @@ struct vChar : Value
     vChar(char value) : Value(TYPE_CHAR), v(value) {}
 };
 
+struct vString : Value
+{
+    char* v;
+    vString(char* value) : Value(TYPE_STRING), v(value) {}
+};
+
 struct vMemPtr : Value
 {
     uint32_t v;
@@ -77,6 +84,7 @@ struct vIpOffset : Value
 #define as_vInt(val)        (((vInt*)(val))->v)
 #define as_vBool(val)       (((vBool*)(val))->v)
 #define as_vChar(val)       (((vChar*)(val))->v)
+#define as_vString(val)     (((vString*)(val))->v)
 #define as_vMemPtr(val)     (((vMemPtr*)(val))->v)
 #define as_vIpOffset(val)   (((vIpOffset*)(val))->v)
 
@@ -108,6 +116,7 @@ const std::vector<const char*> ValueTypeString
     "INT",
     "BOOL",
     "CHAR",
+    "STRING",
     "MEM_PTR",
     "IP_OFFSET",
 };

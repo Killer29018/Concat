@@ -5,19 +5,13 @@ macro space ' ' print endmacro
 
 macro fizz 
     if 3 mod 0 == dup then
-        70 .
-        73 .
-        90 .
-        90 .
+        "FIZZ" print
     endif
 endmacro
 
 macro buzz
     if 5 mod 0 == dup then
-        66 .
-        85 .
-        90 .
-        90 .
+        "BUZZ" print
     endif
 endmacro
 

@@ -30,8 +30,12 @@ private:
 
     static size_t getValueSize(const Value* value);
     static size_t getValueSize(const ValueType value);
+
     static void addValue(char* buffer, const Value* value, size_t& index);
-    static void readValue(char* buffer, ValueType type, OpCode& op);
+    static void readValue(char* buffer, ValueType type, OpCode& op, size_t bufferSize);
+
+    static void addString(char* buffer, size_t& index, const Value* value);
+    static void readString(char* buffer, char** value, size_t bufferSize);
 
     template<typename T>
     static void addElement(char* output, size_t& index, T value, size_t size)

@@ -66,22 +66,25 @@ void Lexer::parseString()
     bool multiLineComment = false;
     bool end = false;
 
-    bool character = false;
+    bool parseCharacter = false;
+    bool parseString = false;
 
     for (size_t i = 0; i < m_InputString.size();)
     {
         bool skip = checkComments(&start, &end, &comments, &multiLineComment, i);
 
         if (m_InputString[i] == '\'')
-            character = !character;
+            parseCharacter = !parseCharacter;
+        else if (m_InputString[i] == '"')
+            parseString = !parseString;
 
-        if ((!isDelimiter(m_InputString[i]) || character) && !start && !comments && !skip)
+        if ((!isDelimiter(m_InputString[i]) || parseCharacter || parseString) && !start && !comments && !skip)
         {
             t.startIndex = &m_InputString[0] + i;
             t.column = currentColumn;
             start = true;
         }
-        else if (!character && ((start && isDelimiter(m_InputString[i])) || end))
+        else if (!parseCharacter && !parseString && ((start && isDelimiter(m_InputString[i])) || end))
         {
             t.endIndex = (&m_InputString[0] + i);
             t.line = currentLine;
@@ -89,11 +92,12 @@ void Lexer::parseString()
             end = false;
             getTokenType(t);
 
-            character = false;
+            parseCharacter = false;
+            parseString = false;
             m_Tokens.push_back(t);
         }
 
-        if (m_InputString[i] == '\n' && !character)
+        if (m_InputString[i] == '\n' && !parseCharacter && !parseString)
         {
             currentLine++;
             currentColumn = 0;
@@ -187,6 +191,10 @@ void Lexer::parseWord(Token& token, const char* word)
         }
 
         token.type = TOKEN_CHAR;
+    }
+    else if (*token.startIndex == '"')
+    {
+       token.type = TOKEN_STRING; 
     }
     else // Var, Macro
     {

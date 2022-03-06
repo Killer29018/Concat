@@ -199,6 +199,21 @@ void Compiler::startCompiler()
                     ip++;
                     break;
                 }
+            case TOKEN_STRING:
+                {
+                    code.code = OP_PUSH_STRING;
+                    char* c = (char*)malloc(sizeof(char) * (length - 1));
+                    memset(c, 0, length - 1);
+
+                    strncpy(c, word + 1, length - 2);
+                    c[length - 1] = 0x00;
+
+                    code.value = new vString(c);
+
+                    VM::addOpCode(code);
+                    ip++;
+                    break;
+                }
             case TOKEN_TRUE:
                 {
                     code.code = OP_TRUE;

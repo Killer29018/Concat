@@ -39,6 +39,7 @@ enum OpCodeEnum
 
     OP_PUSH_INT,
     OP_PUSH_CHAR,
+    OP_PUSH_STRING,
     OP_TRUE,
     OP_FALSE,
 
@@ -99,6 +100,7 @@ const std::vector<const char*> OpCodeString
 
     "OP_PUSH_INT",
     "OP_PUSH_CHAR",
+    "OP_PUSH_STRING",
     "OP_TRUE",
     "OP_FALSE",
 
