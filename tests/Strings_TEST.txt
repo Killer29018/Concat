@@ -2,11 +2,19 @@
 Strings.SBIMCL
 --stdout--
 String Test
+S
+
+g Test
+g
 
 --stderr--
 
 --build stdout--
 String Test
+S
+
+g Test
+g
 
 --build stderr--
 

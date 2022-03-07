@@ -291,18 +291,17 @@ void VM::simulate()
                 {
                 case TYPE_INT:
                     printf("%c", as_vInt(a)); break;
-                case TYPE_CHAR:
-                    printf("%i", as_vChar(a)); break;
                 case TYPE_BOOL:
                     printf("%i", as_vBool(a)); break;
+                case TYPE_CHAR:
+                    printf("%i", as_vChar(a)); break;
                 case TYPE_CSTRING:
                     printf("%c", as_vCString(a)[0]); break;
 
                 default:
-                    Error::runtimeError(op, "Only int can be treated as ascii"); break;
+                    Error::runtimeError(op, "Invalid Type");
                 }
 
-                if (a->type != TYPE_INT)
                 ip++;
                 break;
             }
