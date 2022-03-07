@@ -287,10 +287,22 @@ void VM::simulate()
 
                 const Value* a = pop();
 
-                if (a->type != TYPE_INT)
-                    Error::runtimeError(op, "Only int can be treated as ascii");
+                switch (a->type)
+                {
+                case TYPE_INT:
+                    printf("%c", as_vInt(a)); break;
+                case TYPE_CHAR:
+                    printf("%i", as_vChar(a)); break;
+                case TYPE_BOOL:
+                    printf("%i", as_vBool(a)); break;
+                case TYPE_CSTRING:
+                    printf("%c", as_vCString(a)[0]); break;
 
-                printf("%c", as_vInt(a));
+                default:
+                    Error::runtimeError(op, "Only int can be treated as ascii"); break;
+                }
+
+                if (a->type != TYPE_INT)
                 ip++;
                 break;
             }

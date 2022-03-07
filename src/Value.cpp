@@ -5,6 +5,8 @@
 
 #include "Error.hpp"
 
+#include <cstring>
+
 // TODO: Type checking doesn't work if types are different
 // TODO: Return Type should be set within the operations themselves
 
@@ -13,19 +15,29 @@ void value_add(const Value* a, const Value* b, Value** rV, const OpCode& op)
     switch (a->type)
     {
         case TYPE_INT:
+        case TYPE_CSTRING:
         case TYPE_MEM_PTR:
             break;
         default:
-        Error::runtimeError(op, "Invalid Type. %s or %s was expected but found %s instead", ValueTypeString[TYPE_INT], ValueTypeString[TYPE_MEM_PTR], ValueTypeString[a->type]);
+            Error::runtimeError(op, "Invalid Type. %s %s or %s was expected but found %s instead", 
+                    ValueTypeString[TYPE_INT], 
+                    ValueTypeString[TYPE_CSTRING],
+                    ValueTypeString[TYPE_MEM_PTR],
+                    ValueTypeString[a->type]);
     }
 
     switch (b->type)
     {
         case TYPE_INT:
         case TYPE_MEM_PTR:
+        case TYPE_CSTRING:
             break;
         default:
-        Error::runtimeError(op, "Invalid Type. %s or %s was expected but found %s instead", ValueTypeString[TYPE_INT], ValueTypeString[TYPE_MEM_PTR], ValueTypeString[b->type]);
+            Error::runtimeError(op, "Invalid Type. %s %s or %s was expected but found %s instead", 
+                    ValueTypeString[TYPE_INT], 
+                    ValueTypeString[TYPE_CSTRING],
+                    ValueTypeString[TYPE_MEM_PTR],
+                    ValueTypeString[b->type]);
     }
 
     if (a->type == b->type)
@@ -38,8 +50,6 @@ void value_add(const Value* a, const Value* b, Value** rV, const OpCode& op)
     {
         (*rV) = new vInt(as_vInt(a) + as_vInt(b));
     }
-    // else if ((a->type == TYPE_MEM_PTR && b->type == TYPE_INT) ||
-    //          (a->type == TYPE_INT && b->type == TYPE_MEM_PTR))
     else if (a->type == TYPE_MEM_PTR && b->type == TYPE_INT)
     {
         (*rV) = new vMemPtr(as_vMemPtr(a) + as_vInt(b));
@@ -48,9 +58,19 @@ void value_add(const Value* a, const Value* b, Value** rV, const OpCode& op)
     {
         (*rV) = new vMemPtr(as_vInt(a) + as_vMemPtr(b));
     }
+    else if (a->type == TYPE_CSTRING && b->type == TYPE_INT)
+    {
+        int offset = as_vInt(b);
+        char* string = as_vCString(a);
+
+        if (offset >= strlen(string))
+            Error::runtimeError(op, "Offset surpasses string length");
+
+        (*rV) = new vCString((string + offset));
+    }
     else
     {
-        assert(false && "Not checked properly");
+        Error::runtimeError(op, "Invalid Types");
     }
 }
 

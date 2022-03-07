@@ -1,1 +1,7 @@
-"String Test"c print cr
+"String Test"c dup print cr
+dup . cr
+
+cr
+
+dup 5 + print cr
+dup 5 + . cr
