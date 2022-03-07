@@ -8,6 +8,7 @@
 'O' print
 'R' print
 'L' print
-'D' print cr
+'D' print
+'\n' print
 
 // '\n' // Not Currently Possible

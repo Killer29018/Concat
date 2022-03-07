@@ -16,6 +16,8 @@ private:
     static std::unordered_map<std::string, std::vector<Token>> m_Macros;
     static std::set<std::string> m_Variables;
     static bool m_Error;
+
+    static std::vector<std::pair<std::string, std::string>> m_Patterns;
 public:
     static void addTokens(std::vector<Token>& tokens);
     static void startCompiler();
@@ -25,7 +27,8 @@ private:
 
     static void addBasicOpcode(OpCode& code, size_t& ip, OpCodeEnum opcode);
 
-    static char parseEscapeCharacter(const char* word, size_t length);
+    static char parseEscapeCharacter(const char* word);
+    static std::string parseEscapeSequence(const char* word);
 };
 
 #endif

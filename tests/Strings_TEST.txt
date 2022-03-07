@@ -6,6 +6,12 @@ S
 
 g Test
 g
+Escape code test
+
+
+3 New
+Lines
+Tab	Tab
 
 --stderr--
 
@@ -15,6 +21,12 @@ S
 
 g Test
 g
+Escape code test
+
+
+3 New
+Lines
+Tab	Tab
 
 --build stderr--
 

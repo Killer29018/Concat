@@ -11,6 +11,18 @@ std::unordered_map<std::string, std::vector<Token>> Compiler::m_Macros {};
 std::set<std::string> Compiler::m_Variables;
 bool Compiler::m_Error = false;
 
+std::vector<std::pair<std::string, std::string>> Compiler::m_Patterns =
+{
+    { "\\\\", "\\"},    /* \\ '\' */
+    { "\\a",  "\a"},    /* \a '\a' */
+    { "\\b",  "\b"},    /* \b '\b' */
+    { "\\t",  "\t"},    /* \t '\t' */
+    { "\\n",  "\n"},    /* \n '\n' */
+    { "\\v",  "\v"},    /* \v '\v' */
+    { "\\f",  "\f"},    /* \f '\f' */
+    { "\\r",  "\r"},    /* \r '\r' */
+};
+
 void Compiler::addTokens(std::vector<Token>& tokens)
 {
     m_Tokens = &tokens;
@@ -191,7 +203,7 @@ void Compiler::startCompiler()
                 {
                     code.code = OP_PUSH_CHAR;
                     char c = *(word + 1);
-                    if (length == 4) c = parseEscapeCharacter(word, length);
+                    if (length == 4) c = parseEscapeCharacter(word);
 
                     code.value = new vChar(c);
 
@@ -202,10 +214,14 @@ void Compiler::startCompiler()
             case TOKEN_CSTRING:
                 {
                     code.code = OP_PUSH_CSTRING;
-                    char* c = (char*)malloc(sizeof(char) * (length - 2));
-                    memset(c, 0, length - 2);
 
-                    strncpy(c, word + 1, length - 3);
+                    // strncpy(c, word + 1, length - 3);
+                    // c[length - 1] = 0x00;
+
+                    std::string parsed = parseEscapeSequence(word);
+                    char* c = (char*)malloc(sizeof(char) * (parsed.size()));
+                    memset(c, 0, parsed.size() - 1);
+                    strncpy(c, parsed.c_str(), parsed.size() - 2);
                     c[length - 1] = 0x00;
 
                     code.value = new vCString(c);
@@ -622,7 +638,38 @@ void Compiler::addBasicOpcode(OpCode& code, size_t& ip, OpCodeEnum opcode)
     ip++;
 }
 
-char Compiler::parseEscapeCharacter(const char* word, size_t length)
+std::string stringReplace(const std::string& s, const std::string& findS, const std::string replaceS)
 {
-    return word[0];
+    std::string result = s;
+
+    auto pos = s.find(findS);
+    if (pos == std::string::npos)
+        return result;
+
+    result.replace(pos, findS.length(), replaceS);
+    return stringReplace(result, findS, replaceS);
+}
+
+std::string Compiler::parseEscapeSequence(const char* word)
+{
+    std::string result(word + 1);
+
+    for (const auto& p : m_Patterns)
+    {
+        result = stringReplace(result, p.first, p.second);
+    }
+
+    return result;
+}
+
+char Compiler::parseEscapeCharacter(const char* word)
+{
+    std::string result(word + 1);
+
+    for (const auto& p : m_Patterns)
+    {
+        result = stringReplace(result, p.first, p.second);
+    }
+
+    return result[0];
 }

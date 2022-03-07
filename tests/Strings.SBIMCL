@@ -5,3 +5,6 @@ cr
 
 dup 5 + print cr
 dup 5 + . cr
+
+"Escape code test\n\n\n3 New\nLines\n"c print
+"Tab\tTab\n"c print
