@@ -6,8 +6,8 @@ syntax keyword SBIMCL_PreProc macro endmacro
 syntax match SBIMCL_PreProc "\(^macro\s\)\@<=\S\+"
 highlight link SBIMCL_PreProc PreProc
 
-syntax keyword SBIMCL_Identifier var endvar
-syntax match SBIMCL_Identifier "\(^var\s\)\@<=\S\+"
+syntax keyword SBIMCL_Identifier mem endmem
+syntax match SBIMCL_Identifier "\(^mem\s\)\@<=\S\+"
 highlight link SBIMCL_Identifier Identifier
 
 syntax keyword SBIMCL_Keyword dup drop swap over rot mod

@@ -14,7 +14,7 @@ private:
     static std::stack<const Value*> m_Stack;
 
     static std::vector<uint8_t> m_Memory;
-    static std::unordered_map<uint32_t, size_t> m_Variables;
+    static std::unordered_map<uint32_t, size_t> m_MemoryNames;
     static int32_t m_CurrentVarIndex;
 public:
     static void addOpCode(OpCodeEnum code);

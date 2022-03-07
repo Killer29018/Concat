@@ -1,5 +1,5 @@
 // 32 Bit Number
-var bit32 4 endvar// Create "value" as pointer to 1 byte
+mem bit32 4 endmem// Create "value" as pointer to 1 byte
 
 10 bit32 ! // Write 10 into memory addr given by "value"
 bit32 @ print cr  // Read value and print the value
@@ -8,7 +8,7 @@ bit32 dup @ 10 + swap ! // Read the value and then increment it by 10 and then r
 bit32 @ print cr // Print the new value
 
 // 8 Bit Number
-var bit8 1 endvar
+mem bit8 1 endmem
 
 255 bit8 !8
 bit8 @8 print cr
@@ -28,8 +28,8 @@ macro getPtrRev // ptr index -- ptr
     4 * swap 4 - swap -
 endmacro
 
-var bit20 4 20 * endvar // 4 Bytes
-var bit20end 0 endvar
+mem bit20 4 20 * endmem // 4 Bytes
+mem bit20end 0 endmem
 
 cr
 bit20 print cr

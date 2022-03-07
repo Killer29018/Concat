@@ -145,7 +145,7 @@ void Lexer::getTokenType(Token& token)
     }
     else if (m_Var.find(word) != m_Var.end())
     {
-        token.type = TOKEN_VAR;
+        token.type = TOKEN_MEM;
     }
     else
     {
@@ -213,9 +213,9 @@ void Lexer::parseWord(Token& token, const char* word)
             m_Macros.emplace(word);
             m_Tokens.pop_back();
         }
-        else if (top->type == TOKEN_VAR)
+        else if (top->type == TOKEN_MEM)
         {
-            token.type = TOKEN_VAR;
+            token.type = TOKEN_MEM;
             m_Var.emplace(word);
             m_Tokens.pop_back();
         }
@@ -223,7 +223,7 @@ void Lexer::parseWord(Token& token, const char* word)
         {
             if (m_Var.find(word) != m_Var.end())
             {
-                token.type = TOKEN_VAR;
+                token.type = TOKEN_MEM;
             }
             else
             {

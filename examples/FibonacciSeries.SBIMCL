@@ -1,5 +1,5 @@
-var n1 4 endvar
-var n2 4 endvar
+mem n1 4 endmem
+mem n2 4 endmem
 1 n1 !
 
 macro times 46 endmacro

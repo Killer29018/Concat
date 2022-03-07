@@ -78,13 +78,13 @@ void Compiler::startCompiler()
             case TOKEN_LSHIFT: 
                 addBasicOpcode(code, ip, OP_LSHIFT); break;
 
-            case TOKEN_VAR:
+            case TOKEN_MEM:
                 {
                     if (m_Variables.find(word) != m_Variables.end())
                     {
                         size_t index = std::distance(m_Variables.begin(), m_Variables.find(word));
                         // addBasicOpCode(code, ip, OP_LOAD_VAR);
-                        code.code = OP_LOAD_VAR;
+                        code.code = OP_LOAD_MEM;
                         code.value = new vMemPtr(index);
                         VM::addOpCode(code);
                         ip++;
@@ -93,7 +93,7 @@ void Compiler::startCompiler()
                     {
                         if (ip == m_Tokens->size() - 1)
                         {
-                            Error::compilerError(t, "Unexpected end when declaring variable");
+                            Error::compilerError(t, "Unexpected end when declaring memory");
                             m_Error = true;
                             ip++;
                             break;
@@ -106,17 +106,17 @@ void Compiler::startCompiler()
 
                             if ((ip + ipOffset) == m_Tokens->size())
                             {
-                                Error::compilerError(t, "var %s has no corresponding endvar", word);
+                                Error::compilerError(t, "mem %s has no corresponding endmem", word);
                                 m_Error = true;
                                 break;
                             }
 
-                            if (m_Tokens->at(ip + ipOffset).type == TOKEN_ENDVAR)
+                            if (m_Tokens->at(ip + ipOffset).type == TOKEN_ENDMEM)
                             {
                                 m_Variables.emplace(word);
                                 size_t index = std::distance(m_Variables.begin(), m_Variables.find(word));
                                 // addBasicOpCode(code, ip, OP_LOAD_VAR);
-                                code.code = OP_CREATE_VAR;
+                                code.code = OP_CREATE_MEM;
                                 code.value = new vMemPtr(index);
                                 VM::addOpCode(code);
                                 break;
@@ -127,11 +127,11 @@ void Compiler::startCompiler()
                     }
                     break;
                 }
-            case TOKEN_ENDVAR:
+            case TOKEN_ENDMEM:
                 {
                     if (ip == 0)
                     {
-                        Error::compilerError(t, "could not find var before endvar");
+                        Error::compilerError(t, "could not find var before endmem");
                         m_Error = true;
                         ip++;
                         break;
@@ -142,27 +142,27 @@ void Compiler::startCompiler()
                     {
                         ipOffset++;
 
-                        if ((ip - ipOffset) == 0 && m_Tokens->at(ip - ipOffset).type != TOKEN_VAR)
+                        if ((ip - ipOffset) == 0 && m_Tokens->at(ip - ipOffset).type != TOKEN_MEM)
                         {
-                            Error::compilerError(t, "endvar has no corresponding var");
+                            Error::compilerError(t, "endmem has no corresponding mem");
                             m_Error = true;
                             break;
                         }
 
-                        if (m_Tokens->at(ip - ipOffset).type == TOKEN_VAR)
+                        if (m_Tokens->at(ip - ipOffset).type == TOKEN_MEM)
                         {
                             break;
                         }
-                        else if (m_Tokens->at(ip - ipOffset).type == TOKEN_ENDVAR)
+                        else if (m_Tokens->at(ip - ipOffset).type == TOKEN_ENDMEM)
                         {
-                            Error::compilerError(t, "unexpected endvar before var");
+                            Error::compilerError(t, "unexpected endmem before mem");
                             m_Error = true;
                             break;
                         }
                     }
 
                     ip++;
-                    code.code = OP_ENDVAR;
+                    code.code = OP_ENDMEM;
                     VM::addOpCode(code);
                     break;
                 }

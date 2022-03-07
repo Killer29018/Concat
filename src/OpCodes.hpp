@@ -27,9 +27,9 @@ enum OpCodeEnum
     OP_RSHIFT,
     OP_LSHIFT,
 
-    OP_CREATE_VAR,
-    OP_LOAD_VAR,
-    OP_ENDVAR,
+    OP_CREATE_MEM,
+    OP_LOAD_MEM,
+    OP_ENDMEM,
 
     OP_READ_MEMORY_32,
     OP_WRITE_MEMORY_32,

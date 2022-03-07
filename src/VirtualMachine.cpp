@@ -11,7 +11,7 @@
 std::vector<OpCode> VM::m_OpCodes;
 std::stack<const Value*> VM::m_Stack;
 std::vector<uint8_t> VM::m_Memory;
-std::unordered_map<uint32_t, size_t> VM::m_Variables;
+std::unordered_map<uint32_t, size_t> VM::m_MemoryNames;
 int32_t VM::m_CurrentVarIndex = -1;
 
 
@@ -116,22 +116,22 @@ void VM::simulate()
         case OP_LSHIFT:
             operation(op, ip); break;
 
-        case OP_CREATE_VAR:
+        case OP_CREATE_MEM:
             {
                 m_CurrentVarIndex = as_vMemPtr(op.value);
-                m_Variables.insert({ m_CurrentVarIndex, 0 });
+                m_MemoryNames.insert({ m_CurrentVarIndex, 0 });
                 ip++;
                 break;
             }
-        case OP_LOAD_VAR:
+        case OP_LOAD_MEM:
             {
-                size_t index = m_Variables.at(as_vMemPtr(op.value));
+                size_t index = m_MemoryNames.at(as_vMemPtr(op.value));
                 Value* a = new vMemPtr(index);
                 m_Stack.push(a);
                 ip++;
                 break;
             }
-        case OP_ENDVAR: // TODO: Create memory region
+        case OP_ENDMEM:
             {
                 if (m_Stack.size() < 1)
                     Error::stackTooSmallError(op, 1);
@@ -148,7 +148,7 @@ void VM::simulate()
 
                 uint32_t index = addMemory(as_vInt(a));
 
-                m_Variables.at(m_CurrentVarIndex) = index;
+                m_MemoryNames.at(m_CurrentVarIndex) = index;
 
                 m_CurrentVarIndex = -1;
                 ip++;

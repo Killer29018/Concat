@@ -28,8 +28,8 @@ const std::unordered_map<std::string, TokenType> Keywords({
     { ">>",         TOKEN_RSHIFT},
     { "<<",         TOKEN_LSHIFT },
 
-    { "var",        TOKEN_VAR },
-    { "endvar",     TOKEN_ENDVAR },
+    { "mem",        TOKEN_MEM },
+    { "endmem",     TOKEN_ENDMEM },
 
     { "@",          TOKEN_READ_MEMORY_32 },
     { "!",          TOKEN_WRITE_MEMORY_32 },
