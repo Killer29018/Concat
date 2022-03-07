@@ -118,14 +118,14 @@ void VM::simulate()
 
         case OP_CREATE_MEM:
             {
-                m_CurrentVarIndex = as_vMemPtr(op.value);
+                m_CurrentVarIndex = get_vMemPtr(op.value);
                 m_MemoryNames.insert({ m_CurrentVarIndex, 0 });
                 ip++;
                 break;
             }
         case OP_LOAD_MEM:
             {
-                size_t index = m_MemoryNames.at(as_vMemPtr(op.value));
+                size_t index = m_MemoryNames.at(get_vMemPtr(op.value));
                 Value* a = new vMemPtr(index);
                 m_Stack.push(a);
                 ip++;
@@ -146,7 +146,7 @@ void VM::simulate()
                     Error::runtimeError(op, "Invalid Type. %s was expected but found %s instead", ValueTypeString[TYPE_INT], ValueTypeString[a->type]);
                 }
 
-                uint32_t index = addMemory(as_vInt(a));
+                uint32_t index = addMemory(get_vInt(a));
 
                 m_MemoryNames.at(m_CurrentVarIndex) = index;
 
@@ -264,15 +264,15 @@ void VM::simulate()
                 switch (a->type)
                 {
                     case TYPE_INT:
-                        printf("%d", as_vInt(a)); break;
+                        printf("%d", get_vInt(a)); break;
                     case TYPE_BOOL:
-                        printf("%d", as_vBool(a)); break;
+                        printf("%d", get_vBool(a)); break;
                     case TYPE_CHAR:
-                        printf("%c", as_vChar(a)); break;
+                        printf("%c", get_vChar(a)); break;
                     case TYPE_CSTRING:
-                        printf("%s", as_vCString(a)); break;
+                        printf("%s", get_vCString(a)); break;
                     case TYPE_MEM_PTR:
-                        printf("%d", as_vMemPtr(a)); break;
+                        printf("%d", get_vMemPtr(a)); break;
                     default:
                         assert(false && "Not Reachable");
                 }
@@ -290,13 +290,13 @@ void VM::simulate()
                 switch (a->type)
                 {
                 case TYPE_INT:
-                    printf("%c", as_vInt(a)); break;
+                    printf("%c", get_vInt(a)); break;
                 case TYPE_BOOL:
-                    printf("%i", as_vBool(a)); break;
+                    printf("%i", get_vBool(a)); break;
                 case TYPE_CHAR:
-                    printf("%i", as_vChar(a)); break;
+                    printf("%i", get_vChar(a)); break;
                 case TYPE_CSTRING:
-                    printf("%c", as_vCString(a)[0]); break;
+                    printf("%c", get_vCString(a)[0]); break;
 
                 default:
                     Error::runtimeError(op, "Invalid Type");
@@ -383,9 +383,9 @@ void VM::simulate()
                 if (a->type != TYPE_BOOL)
                     Error::runtimeError(op, "Invalid Type. %s was expected but found %s instead", ValueTypeString[TYPE_BOOL], ValueTypeString[a->type]);
 
-                bool boolTrue = as_vBool(a);
+                bool boolTrue = get_vBool(a);
 
-                if (as_vIpOffset(op.value) == 0)
+                if (get_vIpOffset(op.value) == 0)
                 {
                     size_t ipOffset = 0;
                     size_t ifCount = 0;
@@ -431,14 +431,14 @@ void VM::simulate()
                 }
                 else
                 {
-                    ip += as_vIpOffset(op.value);
+                    ip += get_vIpOffset(op.value);
                 }
 
                 break;
             }
         case OP_ELSEIF:
             {
-                if (as_vIpOffset(op.value) == 0)
+                if (get_vIpOffset(op.value) == 0)
                 {
                     size_t ipOffset = 0;
                     size_t ifCount = 0;
@@ -465,14 +465,14 @@ void VM::simulate()
                     }
                 }
                 
-                ip += as_vIpOffset(op.value);
+                ip += get_vIpOffset(op.value);
 
                 ip++;
                 break;
             }
         case OP_ELSE:
             {
-                if (as_vIpOffset(op.value) == 0)
+                if (get_vIpOffset(op.value) == 0)
                 {
                     size_t ipOffset = 0;
                     size_t ifCount = 0;
@@ -499,7 +499,7 @@ void VM::simulate()
                     }
                 }
                 
-                ip += as_vIpOffset(op.value);
+                ip += get_vIpOffset(op.value);
 
                 ip++;
                 break;
@@ -521,9 +521,9 @@ void VM::simulate()
                 if (a->type != TYPE_BOOL)
                     Error::runtimeError(op, "Invalid Type. %s was expected but found %s instead", ValueTypeString[TYPE_BOOL], ValueTypeString[a->type]);
 
-                bool boolTrue = as_vBool(a);
+                bool boolTrue = get_vBool(a);
 
-                if(as_vIpOffset(op.value) == 0)
+                if(get_vIpOffset(op.value) == 0)
                 {
                     size_t ipOffset = 0;
                     size_t whileCount = 0;
@@ -556,13 +556,13 @@ void VM::simulate()
                 }
                 else
                 {
-                    ip += as_vIpOffset(op.value);
+                    ip += get_vIpOffset(op.value);
                 }
                 break;
             }
         case OP_ENDWHILE: 
             {
-                if(as_vIpOffset(op.value) == 0)
+                if(get_vIpOffset(op.value) == 0)
                 {
                     size_t ipOffset = 0;
                     size_t endWhileCount = 0;
@@ -589,7 +589,7 @@ void VM::simulate()
                     }
                 }
 
-                ip -= as_vIpOffset(op.value);
+                ip -= get_vIpOffset(op.value);
                 break;
             }
 
@@ -611,16 +611,16 @@ void VM::printValueDebug(size_t index)
     switch (code.value->type)
     {
     case TYPE_INT:
-        printf("%.4lu | %.30s | %d\n", index, OpCodeString[code.code], as_vInt(code.value));
+        printf("%.4lu | %.30s | %d\n", index, OpCodeString[code.code], get_vInt(code.value));
         break;
     case TYPE_BOOL:
-        printf("%.4lu | %.30s | %d\n", index, OpCodeString[code.code], as_vBool(code.value));
+        printf("%.4lu | %.30s | %d\n", index, OpCodeString[code.code], get_vBool(code.value));
         break;
     case TYPE_CHAR:
-        printf("%.4lu | %.30s | %c\n", index, OpCodeString[code.code], as_vChar(code.value));
+        printf("%.4lu | %.30s | %c\n", index, OpCodeString[code.code], get_vChar(code.value));
         break;
     case TYPE_MEM_PTR:
-        printf("%.4lu | %.30s | %d\n", index, OpCodeString[code.code], as_vMemPtr(code.value));
+        printf("%.4lu | %.30s | %d\n", index, OpCodeString[code.code], get_vMemPtr(code.value));
         break;
     break;
     default:
@@ -686,7 +686,7 @@ Value* VM::loadMemory(const Value* address, size_t bytes)
     for (size_t i = 0; i < bytes; i++)
     {
         v <<= 8;
-        uint8_t element = m_Memory[as_vMemPtr(address) + i];
+        uint8_t element = m_Memory[get_vMemPtr(address) + i];
         v |= element;
     }
 
@@ -695,10 +695,10 @@ Value* VM::loadMemory(const Value* address, size_t bytes)
 
 void VM::writeMemory(const Value* address, const Value* value, size_t bytes)
 {
-    int32_t v = as_vInt(value);
+    int32_t v = get_vInt(value);
     for (size_t i = 1; i <= bytes; i++)
     {
-        m_Memory[as_vMemPtr(address) + (bytes - i)] = v & 0xFF;
+        m_Memory[get_vMemPtr(address) + (bytes - i)] = v & 0xFF;
         v >>= 8;
     }
 }

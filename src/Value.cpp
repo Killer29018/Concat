@@ -46,22 +46,22 @@ void value_add(const Value* a, const Value* b, Value** rV, const OpCode& op)
 
     if (a->type == TYPE_INT && b->type == TYPE_INT)
     {
-        (*rV) = new vInt(as_vInt(a) + as_vInt(b));
+        (*rV) = new vInt(get_vInt(a) + get_vInt(b));
     }
     // else if ((a->type == TYPE_MEM_PTR && b->type == TYPE_INT) ||
     //          (a->type == TYPE_INT && b->type == TYPE_MEM_PTR))
     else if (a->type == TYPE_MEM_PTR && b->type == TYPE_INT)
     {
-        (*rV) = new vMemPtr(as_vMemPtr(a) + as_vInt(b));
+        (*rV) = new vMemPtr(get_vMemPtr(a) + get_vInt(b));
     }
     else if (a->type == TYPE_INT && b->type == TYPE_MEM_PTR)
     {
-        (*rV) = new vMemPtr(as_vInt(a) + as_vMemPtr(b));
+        (*rV) = new vMemPtr(get_vInt(a) + get_vMemPtr(b));
     }
     else if (a->type == TYPE_CSTRING && b->type == TYPE_INT)
     {
-        size_t offset = as_vInt(b);
-        char* value = as_vCString(a);
+        size_t offset = get_vInt(b);
+        char* value = get_vCString(a);
 
         (*rV) = new vCString((value + offset));
     }
@@ -92,11 +92,11 @@ void value_subtract(const Value* a, const Value* b, Value** rV, const OpCode& op
 
     if (a->type == TYPE_INT && b->type == TYPE_INT)
     {
-        (*rV) = new vInt(as_vInt(a) - as_vInt(b));
+        (*rV) = new vInt(get_vInt(a) - get_vInt(b));
     }
     else if (a->type == TYPE_MEM_PTR && b->type == TYPE_INT)
     {
-        (*rV) = new vMemPtr(as_vMemPtr(a) - as_vInt(b));
+        (*rV) = new vMemPtr(get_vMemPtr(a) - get_vInt(b));
     }
     else
     {
@@ -113,7 +113,7 @@ void value_multiply(const Value* a, const Value* b, Value** rV, const OpCode& op
 
     if (a->type == TYPE_INT && b->type == TYPE_INT)
     {
-        (*rV) = new vInt(as_vInt(a) * as_vInt(b));
+        (*rV) = new vInt(get_vInt(a) * get_vInt(b));
     }
     else
     {
@@ -130,7 +130,7 @@ void value_divide(const Value* a, const Value* b, Value** rV, const OpCode& op)
 
     if (a->type == TYPE_INT && b->type == TYPE_INT)
     {
-        (*rV) = new vInt(as_vInt(a) / as_vInt(b));
+        (*rV) = new vInt(get_vInt(a) / get_vInt(b));
     }
     else
     {
@@ -147,7 +147,7 @@ void value_mod(const Value* a, const Value* b, Value** rV, const OpCode& op)
 
     if (a->type == TYPE_INT && b->type == TYPE_INT)
     {
-        (*rV) = new vInt(as_vInt(a) % as_vInt(b));
+        (*rV) = new vInt(get_vInt(a) % get_vInt(b));
     }
     else
     {
@@ -186,23 +186,23 @@ void value_equal(const Value* a, const Value* b, Value** rV, const OpCode& op)
 
     if (a->type == TYPE_INT && b->type == TYPE_INT)
     {
-        (*rV) = new vBool(as_vInt(a) == as_vInt(b));
+        (*rV) = new vBool(get_vInt(a) == get_vInt(b));
     }
     else if (a->type == TYPE_BOOL && b->type == TYPE_BOOL)
     {
-        (*rV) = new vBool(as_vBool(a) == as_vBool(b));
+        (*rV) = new vBool(get_vBool(a) == get_vBool(b));
     }
     else if (a->type == TYPE_BOOL && b->type == TYPE_INT)
     {
-        (*rV) = new vBool(as_vBool(a) == as_vInt(b));
+        (*rV) = new vBool(get_vBool(a) == get_vInt(b));
     }
     else if (a->type == TYPE_INT && b->type == TYPE_BOOL)
     {
-        (*rV) = new vBool(as_vInt(a) == as_vBool(b));
+        (*rV) = new vBool(get_vInt(a) == get_vBool(b));
     }
     else if (a->type == TYPE_MEM_PTR) // Both are equal
     {
-        (*rV) = new vBool(as_vMemPtr(a) == as_vMemPtr(b));
+        (*rV) = new vBool(get_vMemPtr(a) == get_vMemPtr(b));
     }
     else
     {
@@ -240,23 +240,23 @@ void value_not_equal(const Value* a, const Value* b, Value** rV, const OpCode& o
 
     if (a->type == TYPE_INT && b->type == TYPE_INT)
     {
-        (*rV) = new vBool(as_vInt(a) != as_vInt(b));
+        (*rV) = new vBool(get_vInt(a) != get_vInt(b));
     }
     else if (a->type == TYPE_BOOL && b->type == TYPE_BOOL)
     {
-        (*rV) = new vBool(as_vBool(a) != as_vBool(b));
+        (*rV) = new vBool(get_vBool(a) != get_vBool(b));
     }
     else if (a->type == TYPE_BOOL && b->type == TYPE_INT)
     {
-        (*rV) = new vBool(as_vBool(a) != as_vInt(b));
+        (*rV) = new vBool(get_vBool(a) != get_vInt(b));
     }
     else if (a->type == TYPE_INT && b->type == TYPE_BOOL)
     {
-        (*rV) = new vBool(as_vInt(a) != as_vBool(b));
+        (*rV) = new vBool(get_vInt(a) != get_vBool(b));
     }
     else if (a->type == TYPE_MEM_PTR) // Both are equal
     {
-        (*rV) = new vBool(as_vMemPtr(a) != as_vMemPtr(b));
+        (*rV) = new vBool(get_vMemPtr(a) != get_vMemPtr(b));
     }
     else
     {
@@ -273,7 +273,7 @@ void value_greater(const Value* a, const Value* b, Value** rV, const OpCode& op)
 
     if (a->type == TYPE_INT && b->type == TYPE_INT)
     {
-        (*rV) = new vBool(as_vInt(a) > as_vInt(b));
+        (*rV) = new vBool(get_vInt(a) > get_vInt(b));
     }
     else
     {
@@ -290,7 +290,7 @@ void value_less(const Value* a, const Value* b, Value** rV, const OpCode& op)
 
     if (a->type == TYPE_INT && b->type == TYPE_INT)
     {
-        (*rV) = new vBool(as_vInt(a) < as_vInt(b));
+        (*rV) = new vBool(get_vInt(a) < get_vInt(b));
     }
     else
     {
@@ -307,7 +307,7 @@ void value_greater_equal(const Value* a, const Value* b, Value** rV, const OpCod
 
     if (a->type == TYPE_INT && b->type == TYPE_INT)
     {
-        (*rV) = new vBool(as_vInt(a) >= as_vInt(b));
+        (*rV) = new vBool(get_vInt(a) >= get_vInt(b));
     }
     else
     {
@@ -324,7 +324,7 @@ void value_less_equal(const Value* a, const Value* b, Value** rV, const OpCode& 
 
     if (a->type == TYPE_INT && b->type == TYPE_INT)
     {
-        (*rV) = new vBool(as_vInt(a) <= as_vInt(b));
+        (*rV) = new vBool(get_vInt(a) <= get_vInt(b));
     }
     else
     {
@@ -337,7 +337,7 @@ void value_invert(const Value* a, Value** rV, const OpCode& op)
     if (a->type != TYPE_BOOL)
         Error::runtimeError(op, "Invalid Type. %s was expected but found %s instead", ValueTypeString[TYPE_BOOL], ValueTypeString[a->type]);
 
-    (*rV) = new vBool(!as_vBool(a));
+    (*rV) = new vBool(!get_vBool(a));
 }
 
 void value_lnot(const Value* a, Value** rV, const OpCode& op)
@@ -345,7 +345,7 @@ void value_lnot(const Value* a, Value** rV, const OpCode& op)
     if (a->type != TYPE_INT)
         Error::runtimeError(op, "Invalid Type. %s was expected but found %s instead", ValueTypeString[TYPE_INT], ValueTypeString[a->type]);
 
-    (*rV) = new vInt(~as_vInt(a));
+    (*rV) = new vInt(~get_vInt(a));
 }
 
 void value_land(const Value* a, const Value* b, Value** rV, const OpCode& op)
@@ -373,11 +373,11 @@ void value_land(const Value* a, const Value* b, Value** rV, const OpCode& op)
 
     if (a->type == TYPE_INT && b->type == TYPE_INT)
     {
-        (*rV) = new vInt(as_vInt(a) & as_vInt(b));
+        (*rV) = new vInt(get_vInt(a) & get_vInt(b));
     }
     else if (a->type == TYPE_BOOL && b->type == TYPE_BOOL)
     {
-        (*rV) = new vBool(as_vBool(a) && as_vBool(b));
+        (*rV) = new vBool(get_vBool(a) && get_vBool(b));
     }
     else
     {
@@ -410,11 +410,11 @@ void value_lor(const Value* a, const Value* b, Value** rV, const OpCode& op)
 
     if (a->type == TYPE_INT && b->type == TYPE_INT)
     {
-        (*rV) = new vInt(as_vInt(a) | as_vInt(b));
+        (*rV) = new vInt(get_vInt(a) | get_vInt(b));
     }
     else if (a->type == TYPE_BOOL && b->type == TYPE_BOOL)
     {
-        (*rV) = new vBool(as_vBool(a) || as_vBool(b));
+        (*rV) = new vBool(get_vBool(a) || get_vBool(b));
     }
     else
     {
@@ -440,7 +440,7 @@ void value_rshift(const Value* a, const Value* b, Value** rV, const OpCode& op)
             Error::runtimeError(op, "Invalid Type. %s was expected but found %s instead", ValueTypeString[TYPE_INT], ValueTypeString[a->type]);
     }
 
-    (*rV) = new vInt(as_vInt(a) >> as_vInt(b));
+    (*rV) = new vInt(get_vInt(a) >> get_vInt(b));
 }
 
 void value_lshift(const Value* a, const Value* b, Value** rV, const OpCode& op)
@@ -461,5 +461,5 @@ void value_lshift(const Value* a, const Value* b, Value** rV, const OpCode& op)
             Error::runtimeError(op, "Invalid Type. %s was expected but found %s instead", ValueTypeString[TYPE_INT], ValueTypeString[a->type]);
     }
 
-    (*rV) = new vInt(as_vInt(a) << as_vInt(b));
+    (*rV) = new vInt(get_vInt(a) << get_vInt(b));
 }

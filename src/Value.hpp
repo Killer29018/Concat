@@ -46,6 +46,8 @@ struct vInt : Value
 
     vInt(int32_t value) : Value(TYPE_INT), v(value) {}
 };
+#define as_vInt(val)        ((vInt*)(val))
+#define get_vInt(val)       (((vInt*)(val))->v)
 
 struct vBool : Value
 {
@@ -53,6 +55,8 @@ struct vBool : Value
 
     vBool(bool value) : Value(TYPE_BOOL), v(value) {}
 };
+#define as_vBool(val)       ((vBool*)(val))
+#define get_vBool(val)      (((vBool*)(val))->v)
 
 struct vChar : Value
 {
@@ -60,12 +64,16 @@ struct vChar : Value
 
     vChar(char value) : Value(TYPE_CHAR), v(value) {}
 };
+#define as_vChar(val)       ((vChar*)(val))
+#define get_vChar(val)      (((vChar*)(val))->v)
 
 struct vCString : Value
 {
     char* v;
     vCString(char* value) : Value(TYPE_CSTRING), v(value) {}
 };
+#define as_vCString(val)    ((vCString*)(val))
+#define get_vCString(val)   (((vCString*)(val))->v)
 
 struct vMemPtr : Value
 {
@@ -73,6 +81,8 @@ struct vMemPtr : Value
 
     vMemPtr(uint32_t value) : Value(TYPE_MEM_PTR), v(value) {}
 };
+#define as_vMemPtr(val)     ((vMemPtr*)(val))
+#define get_vMemPtr(val)    (((vMemPtr*)(val))->v)
 
 struct vIpOffset : Value
 {
@@ -80,15 +90,8 @@ struct vIpOffset : Value
 
     vIpOffset(int32_t value) : Value(TYPE_IP_OFFSET), v(value) {}
 };
-
-#define as_vInt(val)        (((vInt*)(val))->v)
-#define as_vBool(val)       (((vBool*)(val))->v)
-#define as_vChar(val)       (((vChar*)(val))->v)
-#define as_vCString(val)    (((vCString*)(val))->v)
-#define as_vMemPtr(val)     (((vMemPtr*)(val))->v)
-#define as_vIpOffset(val)   (((vIpOffset*)(val))->v)
-
-        // rV = vInt(((vInt*)a.value)->v + ((vInt*)b.value)->v);
+#define as_vIpOffset(val)   ((vIpOffset*)(val))
+#define get_vIpOffset(val)  (((vIpOffset*)(val))->v)
 
 void value_add(const Value* a, const Value* b, Value** rV, const OpCode& op);
 void value_subtract(const Value* a, const Value* b, Value** rV, const OpCode& op);

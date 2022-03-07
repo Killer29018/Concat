@@ -176,7 +176,7 @@ size_t Builder::getValueSize(const Value* value)
         case TYPE_CHAR:
             size += sizeof(vChar); break;
         case TYPE_CSTRING:
-            size += sizeof(vNull) + size_tSize + strlen(as_vCString(value)); break;
+            size += sizeof(vNull) + size_tSize + strlen(get_vCString(value)); break;
         case TYPE_MEM_PTR:
             size += sizeof(vMemPtr); break;
         case TYPE_IP_OFFSET:
@@ -230,22 +230,22 @@ void Builder::addValue(char* buffer, const Value* value, size_t& index)
     case TYPE_NULL:
         break;
     case TYPE_INT:
-        addElement(buffer, index, as_vInt(value), sizeof(as_vInt(value)));
+        addElement(buffer, index, get_vInt(value), sizeof(get_vInt(value)));
         break;
     case TYPE_BOOL:
-        addElement(buffer, index, as_vBool(value), sizeof(as_vBool(value)));
+        addElement(buffer, index, get_vBool(value), sizeof(get_vBool(value)));
         break;
     case TYPE_CHAR:
-        addElement(buffer, index, as_vChar(value), sizeof(as_vChar(value)));
+        addElement(buffer, index, get_vChar(value), sizeof(get_vChar(value)));
         break;
     case TYPE_CSTRING:
         addCString(buffer, index, value);
         break;
     case TYPE_MEM_PTR:
-        addElement(buffer, index, as_vMemPtr(value), sizeof(as_vMemPtr(value)));
+        addElement(buffer, index, get_vMemPtr(value), sizeof(get_vMemPtr(value)));
         break;
     case TYPE_IP_OFFSET:
-        addElement(buffer, index, as_vIpOffset(value), sizeof(as_vIpOffset(value)));
+        addElement(buffer, index, get_vIpOffset(value), sizeof(get_vIpOffset(value)));
         break;
 
     default:
@@ -310,7 +310,7 @@ void Builder::readValue(char* buffer, ValueType type, OpCode& op, size_t bufferS
 void Builder::addCString(char* buffer, size_t& index, const Value* value)
 {
     vCString* str = (vCString*)(value);
-    size_t size = strlen(as_vCString(value));
+    size_t size = strlen(get_vCString(value));
 
     addElement(buffer, index, size, size_tSize);
     strncpy(buffer + index, str->v, size);

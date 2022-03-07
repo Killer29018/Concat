@@ -101,7 +101,7 @@ const std::vector<const char*> TokenString
 
     "TOKEN_INT",
     "TOKEN_CHAR",
-    "TOKEN_STRING",
+    "TOKEN_CSTRING",
     "TOKEN_TRUE",
     "TOKEN_FALSE",
 

@@ -100,7 +100,7 @@ const std::vector<const char*> OpCodeString
 
     "OP_PUSH_INT",
     "OP_PUSH_CHAR",
-    "OP_PUSH_STRING",
+    "OP_PUSH_CSTRING",
     "OP_TRUE",
     "OP_FALSE",
 
