@@ -138,7 +138,7 @@ void Builder::readOpCode(char* buffer, OpCode& op, std::ifstream& file)
 
     size_t size;
     char* value = (char*)malloc(0);
-    if (type == TYPE_STRING)
+    if (type == TYPE_CSTRING)
     {
         value = (char*)realloc(value, size_tSize * sizeof(char));
         file.read(value, size_tSize);
@@ -175,8 +175,8 @@ size_t Builder::getValueSize(const Value* value)
             size += sizeof(vBool); break;
         case TYPE_CHAR:
             size += sizeof(vChar); break;
-        case TYPE_STRING:
-            size += sizeof(vNull) + size_tSize + strlen(as_vString(value)); break;
+        case TYPE_CSTRING:
+            size += sizeof(vNull) + size_tSize + strlen(as_vCString(value)); break;
         case TYPE_MEM_PTR:
             size += sizeof(vMemPtr); break;
         case TYPE_IP_OFFSET:
@@ -238,8 +238,8 @@ void Builder::addValue(char* buffer, const Value* value, size_t& index)
     case TYPE_CHAR:
         addElement(buffer, index, as_vChar(value), sizeof(as_vChar(value)));
         break;
-    case TYPE_STRING:
-        addString(buffer, index, value);
+    case TYPE_CSTRING:
+        addCString(buffer, index, value);
         break;
     case TYPE_MEM_PTR:
         addElement(buffer, index, as_vMemPtr(value), sizeof(as_vMemPtr(value)));
@@ -280,11 +280,11 @@ void Builder::readValue(char* buffer, ValueType type, OpCode& op, size_t bufferS
             op.value = new vChar(value);
             break;
         }
-    case TYPE_STRING:
+    case TYPE_CSTRING:
         {
             char* value;
-            readString(buffer, &value, bufferSize);
-            op.value = new vString(value);
+            readCString(buffer, &value, bufferSize);
+            op.value = new vCString(value);
             break;
         }
     case TYPE_MEM_PTR:
@@ -307,10 +307,10 @@ void Builder::readValue(char* buffer, ValueType type, OpCode& op, size_t bufferS
     }
 }
 
-void Builder::addString(char* buffer, size_t& index, const Value* value)
+void Builder::addCString(char* buffer, size_t& index, const Value* value)
 {
-    vString* str = (vString*)(value);
-    size_t size = strlen(as_vString(value));
+    vCString* str = (vCString*)(value);
+    size_t size = strlen(as_vCString(value));
 
     addElement(buffer, index, size, size_tSize);
     strncpy(buffer + index, str->v, size);
@@ -318,7 +318,7 @@ void Builder::addString(char* buffer, size_t& index, const Value* value)
     index += size;
 }
 
-void Builder::readString(char* buffer, char** value, size_t bufferSize)
+void Builder::readCString(char* buffer, char** value, size_t bufferSize)
 {
     (*value) = (char*)malloc(bufferSize + 1);
 

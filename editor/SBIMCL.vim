@@ -46,6 +46,7 @@ syntax region SBIMCL_Character start=/\v\'/ end=/\v\'/
 highlight link SBIMCL_Character Character
 
 syntax region SBIMCL_String start=/\v\"/ end=/\v\"/
+syntax region SBIMCL_String start=/\v\"/ end=/\v\"c/
 highlight link SBIMCL_String String
 
 syntax match SBIMCL_Todo "\v(INFO|TODO|FIXME)" containedin=ALL

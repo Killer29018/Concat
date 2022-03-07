@@ -5,13 +5,13 @@ macro space ' ' print endmacro
 
 macro fizz 
     if 3 mod 0 == dup then
-        "FIZZ" print
+        "FIZZ"c print
     endif
 endmacro
 
 macro buzz
     if 5 mod 0 == dup then
-        "BUZZ" print
+        "BUZZ"c print
     endif
 endmacro
 

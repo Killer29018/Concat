@@ -238,7 +238,7 @@ void VM::simulate()
 
         case OP_PUSH_INT:
         case OP_PUSH_CHAR:
-        case OP_PUSH_STRING:
+        case OP_PUSH_CSTRING:
         case OP_TRUE:
         case OP_FALSE:
             {
@@ -269,8 +269,8 @@ void VM::simulate()
                         printf("%d", as_vBool(a)); break;
                     case TYPE_CHAR:
                         printf("%c", as_vChar(a)); break;
-                    case TYPE_STRING:
-                        printf("%s", as_vString(a)); break;
+                    case TYPE_CSTRING:
+                        printf("%s", as_vCString(a)); break;
                     case TYPE_MEM_PTR:
                         printf("%d", as_vMemPtr(a)); break;
                     default:

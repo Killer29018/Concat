@@ -199,16 +199,16 @@ void Compiler::startCompiler()
                     ip++;
                     break;
                 }
-            case TOKEN_STRING:
+            case TOKEN_CSTRING:
                 {
-                    code.code = OP_PUSH_STRING;
-                    char* c = (char*)malloc(sizeof(char) * (length - 1));
-                    memset(c, 0, length - 1);
+                    code.code = OP_PUSH_CSTRING;
+                    char* c = (char*)malloc(sizeof(char) * (length - 2));
+                    memset(c, 0, length - 2);
 
-                    strncpy(c, word + 1, length - 2);
+                    strncpy(c, word + 1, length - 3);
                     c[length - 1] = 0x00;
 
-                    code.value = new vString(c);
+                    code.value = new vCString(c);
 
                     VM::addOpCode(code);
                     ip++;
