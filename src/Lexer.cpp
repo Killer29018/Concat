@@ -194,14 +194,9 @@ void Lexer::parseWord(Token& token, const char* word)
     }
     else if (*token.startIndex == '"')
     {
-        if (*(token.endIndex - 1) == '"')
+        if (*(token.endIndex - 1) == '"') // String
         {
-            // Normal String
-            assert(false && "Not Implemented");
-        }
-        else if (*(token.endIndex - 2) == '"' && *(token.endIndex - 1) == 'c')
-        {
-            token.type = TOKEN_CSTRING; 
+            token.type = TOKEN_STRING;
         }
     }
     else // Var, Macro

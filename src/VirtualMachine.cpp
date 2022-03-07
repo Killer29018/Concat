@@ -238,7 +238,7 @@ void VM::simulate()
 
         case OP_PUSH_INT:
         case OP_PUSH_CHAR:
-        case OP_PUSH_CSTRING:
+        case OP_PUSH_STRING:
         case OP_TRUE:
         case OP_FALSE:
             {
@@ -269,8 +269,8 @@ void VM::simulate()
                         printf("%d", get_vBool(a)); break;
                     case TYPE_CHAR:
                         printf("%c", get_vChar(a)); break;
-                    case TYPE_CSTRING:
-                        printf("%s", get_vCString(a)); break;
+                    case TYPE_STRING:
+                        printf("%s", get_vString(a)); break;
                     case TYPE_MEM_PTR:
                         printf("%d", get_vMemPtr(a)); break;
                     default:
@@ -295,8 +295,8 @@ void VM::simulate()
                     printf("%i", get_vBool(a)); break;
                 case TYPE_CHAR:
                     printf("%i", get_vChar(a)); break;
-                case TYPE_CSTRING:
-                    printf("%c", get_vCString(a)[0]); break;
+                case TYPE_STRING:
+                    printf("%c", get_vString(a)[0]); break;
 
                 default:
                     Error::runtimeError(op, "Invalid Type");

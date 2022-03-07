@@ -13,13 +13,13 @@ void value_add(const Value* a, const Value* b, Value** rV, const OpCode& op)
     switch (a->type)
     {
         case TYPE_INT:
-        case TYPE_CSTRING:
+        case TYPE_STRING:
         case TYPE_MEM_PTR:
             break;
         default:
             Error::runtimeError(op, "Invalid Type. %s %s or %s was expected but found %s instead",
                     ValueTypeString[TYPE_INT],
-                    ValueTypeString[TYPE_CSTRING],
+                    ValueTypeString[TYPE_STRING],
                     ValueTypeString[TYPE_MEM_PTR],
                     ValueTypeString[a->type]);
     }
@@ -28,12 +28,12 @@ void value_add(const Value* a, const Value* b, Value** rV, const OpCode& op)
     {
         case TYPE_INT:
         case TYPE_MEM_PTR:
-        case TYPE_CSTRING:
+        case TYPE_STRING:
             break;
         default:
             Error::runtimeError(op, "Invalid Type. %s %s or %s was expected but found %s instead",
                     ValueTypeString[TYPE_INT],
-                    ValueTypeString[TYPE_CSTRING],
+                    ValueTypeString[TYPE_STRING],
                     ValueTypeString[TYPE_MEM_PTR],
                     ValueTypeString[b->type]);
     }
@@ -58,12 +58,12 @@ void value_add(const Value* a, const Value* b, Value** rV, const OpCode& op)
     {
         (*rV) = new vMemPtr(get_vInt(a) + get_vMemPtr(b));
     }
-    else if (a->type == TYPE_CSTRING && b->type == TYPE_INT)
+    else if (a->type == TYPE_STRING && b->type == TYPE_INT)
     {
         size_t offset = get_vInt(b);
-        char* value = get_vCString(a);
+        char* value = get_vString(a);
 
-        (*rV) = new vCString((value + offset));
+        (*rV) = new vString((value + offset));
     }
     else
     {

@@ -211,20 +211,17 @@ void Compiler::startCompiler()
                     ip++;
                     break;
                 }
-            case TOKEN_CSTRING:
+            case TOKEN_STRING:
                 {
-                    code.code = OP_PUSH_CSTRING;
-
-                    // strncpy(c, word + 1, length - 3);
-                    // c[length - 1] = 0x00;
+                    code.code = OP_PUSH_STRING;
 
                     std::string parsed = parseEscapeSequence(word);
                     char* c = (char*)malloc(sizeof(char) * (parsed.size()));
                     memset(c, 0, parsed.size() - 1);
-                    strncpy(c, parsed.c_str(), parsed.size() - 2);
-                    c[length - 1] = 0x00;
+                    strncpy(c, parsed.c_str(), parsed.size() - 1);
+                    c[parsed.size() - 1] = 0x00;
 
-                    code.value = new vCString(c);
+                    code.value = new vString(c);
 
                     VM::addOpCode(code);
                     ip++;

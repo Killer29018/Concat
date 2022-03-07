@@ -14,7 +14,7 @@ enum ValueType
     TYPE_INT,
     TYPE_BOOL,
     TYPE_CHAR,
-    TYPE_CSTRING,
+    TYPE_STRING,
     TYPE_MEM_PTR,
 
     TYPE_IP_OFFSET,
@@ -67,13 +67,14 @@ struct vChar : Value
 #define as_vChar(val)       ((vChar*)(val))
 #define get_vChar(val)      (((vChar*)(val))->v)
 
-struct vCString : Value
+struct vString : Value
 {
     char* v;
-    vCString(char* value) : Value(TYPE_CSTRING), v(value) {}
+    vString(char* value) : Value(TYPE_STRING), v(value) {}
 };
-#define as_vCString(val)    ((vCString*)(val))
-#define get_vCString(val)   (((vCString*)(val))->v)
+#define as_vString(val)    ((vString*)(val))
+#define get_vString(val)   (((vString*)(val))->v)
+#define get_vStringSize(val) (strlen(((vString*)(val))->v))
 
 struct vMemPtr : Value
 {

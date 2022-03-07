@@ -8,7 +8,7 @@ macro printValue // index value -- index
     // 'index : value'
     over 1 +
     print
-    " : "c print
+    " : " print
     print cr
 endmacro
 

@@ -5,19 +5,19 @@ macro space ' ' print endmacro
 
 macro fizz 
     if 3 mod 0 == dup then
-        "FIZZ"c print
+        "FIZZ" print
     endif
 endmacro
 
 macro buzz
     if 5 mod 0 == dup then
-        "BUZZ"c print
+        "BUZZ" print
     endif
 endmacro
 
 
 macro fizzbuzz
-    1 while dup 1000 < do
+    1 while dup 200 < do
         dup
         dup fizz
         over buzz
