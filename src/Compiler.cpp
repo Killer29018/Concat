@@ -97,7 +97,7 @@ void Compiler::startCompiler()
                         size_t index = std::distance(m_Variables.begin(), m_Variables.find(word));
                         // addBasicOpCode(code, ip, OP_LOAD_VAR);
                         code.code = OP_LOAD_MEM;
-                        code.value = new vMemPtr(index);
+                        code.value = std::shared_ptr<Value>(new vMemPtr(index));
                         VM::addOpCode(code);
                         ip++;
                     }
@@ -129,7 +129,7 @@ void Compiler::startCompiler()
                                 size_t index = std::distance(m_Variables.begin(), m_Variables.find(word));
                                 // addBasicOpCode(code, ip, OP_LOAD_VAR);
                                 code.code = OP_CREATE_MEM;
-                                code.value = new vMemPtr(index);
+                                code.value = std::shared_ptr<Value>(new vMemPtr(index));
                                 VM::addOpCode(code);
                                 break;
                             }
@@ -193,7 +193,7 @@ void Compiler::startCompiler()
                 {
                     code.code = OP_PUSH_INT;
                     int32_t value = atoi(word);
-                    code.value = new vInt(value);
+                    code.value = std::shared_ptr<Value>(new vInt(value));
 
                     VM::addOpCode(code);
                     ip++;
@@ -205,7 +205,7 @@ void Compiler::startCompiler()
                     char c = *(word + 1);
                     if (length == 4) c = parseEscapeCharacter(word);
 
-                    code.value = new vChar(c);
+                    code.value = std::shared_ptr<Value>(new vChar(c));
 
                     VM::addOpCode(code);
                     ip++;
@@ -221,7 +221,7 @@ void Compiler::startCompiler()
                     strncpy(c, parsed.c_str(), parsed.size() - 1);
                     c[parsed.size() - 1] = 0x00;
 
-                    code.value = new vString(c);
+                    code.value = std::shared_ptr<Value>(new vString(c));
 
                     VM::addOpCode(code);
                     ip++;
@@ -230,7 +230,7 @@ void Compiler::startCompiler()
             case TOKEN_TRUE:
                 {
                     code.code = OP_TRUE;
-                    code.value = new vBool(true);
+                    code.value = std::shared_ptr<Value>(new vBool(true));
 
                     VM::addOpCode(code);
                     ip++;
@@ -240,7 +240,7 @@ void Compiler::startCompiler()
                 {
                     code.code = OP_FALSE;
                     // code.value = { TYPE_BOOL, 0 };
-                    code.value = new vBool(false);
+                    code.value = std::shared_ptr<Value>(new vBool(false));
 
                     VM::addOpCode(code);
                     ip++;
@@ -385,7 +385,7 @@ void Compiler::startCompiler()
 
                     code.code = OP_THEN;
                     // code.value = { TYPE_IP_OFFSET, 0 };
-                    code.value = new vIpOffset(0);
+                    code.value = std::shared_ptr<Value>(new vIpOffset(0));
                     VM::addOpCode(code);
                     ip++;
                     break;
@@ -458,7 +458,7 @@ void Compiler::startCompiler()
 
                    code.code = OP_ELSEIF;
                    // code.value = { TYPE_IP_OFFSET, 0 };
-                   code.value = new vIpOffset(0);
+                   code.value = std::shared_ptr<Value>(new vIpOffset(0));
                    VM::addOpCode(code);
                    ip++;
                    break;
@@ -497,7 +497,7 @@ void Compiler::startCompiler()
 
                    code.code = OP_ELSE;
                    // code.value = { TYPE_IP_OFFSET, 0 };
-                   code.value = new vIpOffset(0);
+                   code.value = std::shared_ptr<Value>(new vIpOffset(0));
                    VM::addOpCode(code);
                    ip++;
                    break;
@@ -572,7 +572,7 @@ void Compiler::startCompiler()
 
                     code.code = OP_DO;
                     // code.value = { TYPE_IP_OFFSET, 0 };
-                    code.value = new vIpOffset(0);
+                    code.value = std::shared_ptr<Value>(new vIpOffset(0));
                     VM::addOpCode(code);
                     ip++;
                     break;
@@ -611,7 +611,7 @@ void Compiler::startCompiler()
 
                     code.code = OP_ENDWHILE;
                     // code.value = { TYPE_IP_OFFSET, 0 };
-                    code.value = new vIpOffset(0);
+                    code.value = std::shared_ptr<Value>(new vIpOffset(0));
                     VM::addOpCode(code);
                     ip++;
                     break;

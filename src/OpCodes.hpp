@@ -132,7 +132,7 @@ struct OpCode
     size_t line;        // 4
     size_t column;      // 4
 
-    Value* value;
+    std::shared_ptr<Value> value;
 };
 
 #endif

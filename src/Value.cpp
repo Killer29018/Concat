@@ -11,7 +11,7 @@
 // TODO: Type checking doesn't work if types are different
 // TODO: Return Type should be set within the operations themselves
 
-void value_add(const Value* a, const Value* b, Value** rV, const OpCode& op)
+void value_add(std::shared_ptr<Value> a, std::shared_ptr<Value> b, std::shared_ptr<Value>& rV, const OpCode& op)
 {
     switch (a->type)
     {
@@ -49,24 +49,24 @@ void value_add(const Value* a, const Value* b, Value** rV, const OpCode& op)
 
     if (a->type == TYPE_INT && b->type == TYPE_INT)
     {
-        (*rV) = new vInt(get_vInt(a) + get_vInt(b));
+        rV = std::shared_ptr<Value>(new vInt(get_vInt(a) + get_vInt(b)));
     }
     // else if ((a->type == TYPE_MEM_PTR && b->type == TYPE_INT) ||
     //          (a->type == TYPE_INT && b->type == TYPE_MEM_PTR))
     else if (a->type == TYPE_MEM_PTR && b->type == TYPE_INT)
     {
-        (*rV) = new vMemPtr(get_vMemPtr(a) + get_vInt(b));
+        rV = std::shared_ptr<Value>(new vMemPtr(get_vMemPtr(a) + get_vInt(b)));
     }
     else if (a->type == TYPE_INT && b->type == TYPE_MEM_PTR)
     {
-        (*rV) = new vMemPtr(get_vInt(a) + get_vMemPtr(b));
+        rV = std::shared_ptr<Value>(new vMemPtr(get_vInt(a) + get_vMemPtr(b)));
     }
     else if (a->type == TYPE_STRING && b->type == TYPE_INT)
     {
         size_t offset = get_vInt(b);
         char* value = get_vString(a);
 
-        (*rV) = new vString((value + offset));
+        rV = std::shared_ptr<Value>(new vString((value + offset)));
     }
     else if(a->type == TYPE_STRING && b->type == TYPE_STRING)
     {
@@ -77,7 +77,7 @@ void value_add(const Value* a, const Value* b, Value** rV, const OpCode& op)
         strcpy(newString, get_vString(a));
         strcpy(newString + get_vStringSize(a), get_vString(b));
 
-        (*rV) = new vString(newString);
+        rV = std::shared_ptr<Value>(new vString(newString));
     }
     else
     {
@@ -85,7 +85,7 @@ void value_add(const Value* a, const Value* b, Value** rV, const OpCode& op)
     }
 }
 
-void value_subtract(const Value* a, const Value* b, Value** rV, const OpCode& op)
+void value_subtract(std::shared_ptr<Value> a, std::shared_ptr<Value> b, std::shared_ptr<Value>& rV, const OpCode& op)
 {
     switch (a->type)
     {
@@ -107,15 +107,15 @@ void value_subtract(const Value* a, const Value* b, Value** rV, const OpCode& op
 
     if (a->type == TYPE_INT && b->type == TYPE_INT)
     {
-        (*rV) = new vInt(get_vInt(a) - get_vInt(b));
+        rV = std::shared_ptr<Value>(new vInt(get_vInt(a) - get_vInt(b)));
     }
     else if (a->type == TYPE_MEM_PTR && b->type == TYPE_INT)
     {
-        (*rV) = new vMemPtr(get_vMemPtr(a) - get_vInt(b));
+        rV = std::shared_ptr<Value>(new vMemPtr(get_vMemPtr(a) - get_vInt(b)));
     }
     else if (a->type == TYPE_MEM_PTR && b->type == TYPE_MEM_PTR)
     {
-        (*rV) = new vMemPtr(get_vMemPtr(a) - get_vMemPtr(b));
+        rV = std::shared_ptr<Value>(new vMemPtr(get_vMemPtr(a) - get_vMemPtr(b)));
     }
     else
     {
@@ -123,7 +123,7 @@ void value_subtract(const Value* a, const Value* b, Value** rV, const OpCode& op
     }
 }
 
-void value_multiply(const Value* a, const Value* b, Value** rV, const OpCode& op)
+void value_multiply(std::shared_ptr<Value> a, std::shared_ptr<Value> b, std::shared_ptr<Value>& rV, const OpCode& op)
 {
     if (a->type != TYPE_INT)
         Error::runtimeError(op, "Invalid Type. %s was expected but found %s instead", ValueTypeString[TYPE_INT], ValueTypeString[a->type]);
@@ -132,7 +132,7 @@ void value_multiply(const Value* a, const Value* b, Value** rV, const OpCode& op
 
     if (a->type == TYPE_INT && b->type == TYPE_INT)
     {
-        (*rV) = new vInt(get_vInt(a) * get_vInt(b));
+        rV = std::shared_ptr<Value>(new vInt(get_vInt(a) * get_vInt(b)));
     }
     else
     {
@@ -140,7 +140,7 @@ void value_multiply(const Value* a, const Value* b, Value** rV, const OpCode& op
     }
 }
 
-void value_divide(const Value* a, const Value* b, Value** rV, const OpCode& op)
+void value_divide(std::shared_ptr<Value> a, std::shared_ptr<Value> b, std::shared_ptr<Value>& rV, const OpCode& op)
 {
     if (a->type != TYPE_INT)
         Error::runtimeError(op, "Invalid Type. %s was expected but found %s instead", ValueTypeString[TYPE_INT], ValueTypeString[a->type]);
@@ -149,7 +149,7 @@ void value_divide(const Value* a, const Value* b, Value** rV, const OpCode& op)
 
     if (a->type == TYPE_INT && b->type == TYPE_INT)
     {
-        (*rV) = new vInt(get_vInt(a) / get_vInt(b));
+        rV = std::shared_ptr<Value>(new vInt(get_vInt(a) / get_vInt(b)));
     }
     else
     {
@@ -157,7 +157,7 @@ void value_divide(const Value* a, const Value* b, Value** rV, const OpCode& op)
     }
 }
 
-void value_mod(const Value* a, const Value* b, Value** rV, const OpCode& op)
+void value_mod(std::shared_ptr<Value> a, std::shared_ptr<Value> b, std::shared_ptr<Value>& rV, const OpCode& op)
 {
     if (a->type != TYPE_INT)
         Error::runtimeError(op, "Invalid Type. %s was expected but found %s instead", ValueTypeString[TYPE_INT], ValueTypeString[a->type]);
@@ -166,7 +166,7 @@ void value_mod(const Value* a, const Value* b, Value** rV, const OpCode& op)
 
     if (a->type == TYPE_INT && b->type == TYPE_INT)
     {
-        (*rV) = new vInt(get_vInt(a) % get_vInt(b));
+        rV = std::shared_ptr<Value>(new vInt(get_vInt(a) % get_vInt(b)));
     }
     else
     {
@@ -175,7 +175,7 @@ void value_mod(const Value* a, const Value* b, Value** rV, const OpCode& op)
 }
 
 
-void value_equal(const Value* a, const Value* b, Value** rV, const OpCode& op)
+void value_equal(std::shared_ptr<Value> a, std::shared_ptr<Value> b, std::shared_ptr<Value>& rV, const OpCode& op)
 {
     switch (a->type)
     {
@@ -205,23 +205,23 @@ void value_equal(const Value* a, const Value* b, Value** rV, const OpCode& op)
 
     if (a->type == TYPE_INT && b->type == TYPE_INT)
     {
-        (*rV) = new vBool(get_vInt(a) == get_vInt(b));
+        rV = std::shared_ptr<Value>(new vBool(get_vInt(a) == get_vInt(b)));
     }
     else if (a->type == TYPE_BOOL && b->type == TYPE_BOOL)
     {
-        (*rV) = new vBool(get_vBool(a) == get_vBool(b));
+        rV = std::shared_ptr<Value>(new vBool(get_vBool(a) == get_vBool(b)));
     }
     else if (a->type == TYPE_BOOL && b->type == TYPE_INT)
     {
-        (*rV) = new vBool(get_vBool(a) == get_vInt(b));
+        rV = std::shared_ptr<Value>(new vBool(get_vBool(a) == get_vInt(b)));
     }
     else if (a->type == TYPE_INT && b->type == TYPE_BOOL)
     {
-        (*rV) = new vBool(get_vInt(a) == get_vBool(b));
+        rV = std::shared_ptr<Value>(new vBool(get_vInt(a) == get_vBool(b)));
     }
     else if (a->type == TYPE_MEM_PTR) // Both are equal
     {
-        (*rV) = new vBool(get_vMemPtr(a) == get_vMemPtr(b));
+        rV = std::shared_ptr<Value>(new vBool(get_vMemPtr(a) == get_vMemPtr(b)));
     }
     else
     {
@@ -229,7 +229,7 @@ void value_equal(const Value* a, const Value* b, Value** rV, const OpCode& op)
     }
 }
 
-void value_not_equal(const Value* a, const Value* b, Value** rV, const OpCode& op)
+void value_not_equal(std::shared_ptr<Value> a, std::shared_ptr<Value> b, std::shared_ptr<Value>& rV, const OpCode& op)
 {
     switch (a->type)
     {
@@ -259,23 +259,23 @@ void value_not_equal(const Value* a, const Value* b, Value** rV, const OpCode& o
 
     if (a->type == TYPE_INT && b->type == TYPE_INT)
     {
-        (*rV) = new vBool(get_vInt(a) != get_vInt(b));
+        rV = std::shared_ptr<Value>(new vBool(get_vInt(a) != get_vInt(b)));
     }
     else if (a->type == TYPE_BOOL && b->type == TYPE_BOOL)
     {
-        (*rV) = new vBool(get_vBool(a) != get_vBool(b));
+        rV = std::shared_ptr<Value>(new vBool(get_vBool(a) != get_vBool(b)));
     }
     else if (a->type == TYPE_BOOL && b->type == TYPE_INT)
     {
-        (*rV) = new vBool(get_vBool(a) != get_vInt(b));
+        rV = std::shared_ptr<Value>(new vBool(get_vBool(a) != get_vInt(b)));
     }
     else if (a->type == TYPE_INT && b->type == TYPE_BOOL)
     {
-        (*rV) = new vBool(get_vInt(a) != get_vBool(b));
+        rV = std::shared_ptr<Value>(new vBool(get_vInt(a) != get_vBool(b)));
     }
     else if (a->type == TYPE_MEM_PTR) // Both are equal
     {
-        (*rV) = new vBool(get_vMemPtr(a) != get_vMemPtr(b));
+        rV = std::shared_ptr<Value>(new vBool(get_vMemPtr(a) != get_vMemPtr(b)));
     }
     else
     {
@@ -283,7 +283,7 @@ void value_not_equal(const Value* a, const Value* b, Value** rV, const OpCode& o
     }
 }
 
-void value_greater(const Value* a, const Value* b, Value** rV, const OpCode& op)
+void value_greater(std::shared_ptr<Value> a, std::shared_ptr<Value> b, std::shared_ptr<Value>& rV, const OpCode& op)
 {
     if (a->type != TYPE_INT)
         Error::runtimeError(op, "Invalid Type. %s was expected but found %s instead", ValueTypeString[TYPE_INT], ValueTypeString[a->type]);
@@ -292,7 +292,7 @@ void value_greater(const Value* a, const Value* b, Value** rV, const OpCode& op)
 
     if (a->type == TYPE_INT && b->type == TYPE_INT)
     {
-        (*rV) = new vBool(get_vInt(a) > get_vInt(b));
+        rV = std::shared_ptr<Value>(new vBool(get_vInt(a) > get_vInt(b)));
     }
     else
     {
@@ -300,7 +300,7 @@ void value_greater(const Value* a, const Value* b, Value** rV, const OpCode& op)
     }
 }
 
-void value_less(const Value* a, const Value* b, Value** rV, const OpCode& op)
+void value_less(std::shared_ptr<Value> a, std::shared_ptr<Value> b, std::shared_ptr<Value>& rV, const OpCode& op)
 {
     if (a->type != TYPE_INT)
         Error::runtimeError(op, "Invalid Type. %s was expected but found %s instead", ValueTypeString[TYPE_INT], ValueTypeString[a->type]);
@@ -309,7 +309,7 @@ void value_less(const Value* a, const Value* b, Value** rV, const OpCode& op)
 
     if (a->type == TYPE_INT && b->type == TYPE_INT)
     {
-        (*rV) = new vBool(get_vInt(a) < get_vInt(b));
+        rV = std::shared_ptr<Value>(new vBool(get_vInt(a) < get_vInt(b)));
     }
     else
     {
@@ -317,7 +317,7 @@ void value_less(const Value* a, const Value* b, Value** rV, const OpCode& op)
     }
 }
 
-void value_greater_equal(const Value* a, const Value* b, Value** rV, const OpCode& op)
+void value_greater_equal(std::shared_ptr<Value> a, std::shared_ptr<Value> b, std::shared_ptr<Value>& rV, const OpCode& op)
 {
     if (a->type != TYPE_INT)
         Error::runtimeError(op, "Invalid Type. %s was expected but found %s instead", ValueTypeString[TYPE_INT], ValueTypeString[a->type]);
@@ -326,7 +326,7 @@ void value_greater_equal(const Value* a, const Value* b, Value** rV, const OpCod
 
     if (a->type == TYPE_INT && b->type == TYPE_INT)
     {
-        (*rV) = new vBool(get_vInt(a) >= get_vInt(b));
+        rV = std::shared_ptr<Value>(new vBool(get_vInt(a) >= get_vInt(b)));
     }
     else
     {
@@ -334,7 +334,7 @@ void value_greater_equal(const Value* a, const Value* b, Value** rV, const OpCod
     }
 }
 
-void value_less_equal(const Value* a, const Value* b, Value** rV, const OpCode& op)
+void value_less_equal(std::shared_ptr<Value> a, std::shared_ptr<Value> b, std::shared_ptr<Value>& rV, const OpCode& op)
 {
     if (a->type != TYPE_INT)
         Error::runtimeError(op, "Invalid Type. %s was expected but found %s instead", ValueTypeString[TYPE_INT], ValueTypeString[a->type]);
@@ -343,7 +343,7 @@ void value_less_equal(const Value* a, const Value* b, Value** rV, const OpCode& 
 
     if (a->type == TYPE_INT && b->type == TYPE_INT)
     {
-        (*rV) = new vBool(get_vInt(a) <= get_vInt(b));
+        rV = std::shared_ptr<Value>(new vBool(get_vInt(a) <= get_vInt(b)));
     }
     else
     {
@@ -351,23 +351,23 @@ void value_less_equal(const Value* a, const Value* b, Value** rV, const OpCode& 
     }
 }
 
-void value_invert(const Value* a, Value** rV, const OpCode& op)
+void value_invert(std::shared_ptr<Value> a, std::shared_ptr<Value>& rV, const OpCode& op)
 {
     if (a->type != TYPE_BOOL)
         Error::runtimeError(op, "Invalid Type. %s was expected but found %s instead", ValueTypeString[TYPE_BOOL], ValueTypeString[a->type]);
 
-    (*rV) = new vBool(!get_vBool(a));
+    rV = std::shared_ptr<Value>(new vBool(!get_vBool(a)));
 }
 
-void value_lnot(const Value* a, Value** rV, const OpCode& op)
+void value_lnot(std::shared_ptr<Value> a, std::shared_ptr<Value>& rV, const OpCode& op)
 {
     if (a->type != TYPE_INT)
         Error::runtimeError(op, "Invalid Type. %s was expected but found %s instead", ValueTypeString[TYPE_INT], ValueTypeString[a->type]);
 
-    (*rV) = new vInt(~get_vInt(a));
+    rV = std::shared_ptr<Value>(new vInt(~get_vInt(a)));
 }
 
-void value_land(const Value* a, const Value* b, Value** rV, const OpCode& op)
+void value_land(std::shared_ptr<Value> a, std::shared_ptr<Value> b, std::shared_ptr<Value>& rV, const OpCode& op)
 {
     switch (a->type)
     {
@@ -392,11 +392,11 @@ void value_land(const Value* a, const Value* b, Value** rV, const OpCode& op)
 
     if (a->type == TYPE_INT && b->type == TYPE_INT)
     {
-        (*rV) = new vInt(get_vInt(a) & get_vInt(b));
+        rV = std::shared_ptr<Value>(new vInt(get_vInt(a) & get_vInt(b)));
     }
     else if (a->type == TYPE_BOOL && b->type == TYPE_BOOL)
     {
-        (*rV) = new vBool(get_vBool(a) && get_vBool(b));
+        rV = std::shared_ptr<Value>(new vBool(get_vBool(a) && get_vBool(b)));
     }
     else
     {
@@ -404,7 +404,7 @@ void value_land(const Value* a, const Value* b, Value** rV, const OpCode& op)
     }
 }
 
-void value_lor(const Value* a, const Value* b, Value** rV, const OpCode& op)
+void value_lor(std::shared_ptr<Value> a, std::shared_ptr<Value> b, std::shared_ptr<Value>& rV, const OpCode& op)
 {
     switch (a->type)
     {
@@ -429,11 +429,11 @@ void value_lor(const Value* a, const Value* b, Value** rV, const OpCode& op)
 
     if (a->type == TYPE_INT && b->type == TYPE_INT)
     {
-        (*rV) = new vInt(get_vInt(a) | get_vInt(b));
+        rV = std::shared_ptr<Value>(new vInt(get_vInt(a) | get_vInt(b)));
     }
     else if (a->type == TYPE_BOOL && b->type == TYPE_BOOL)
     {
-        (*rV) = new vBool(get_vBool(a) || get_vBool(b));
+        rV = std::shared_ptr<Value>(new vBool(get_vBool(a) || get_vBool(b)));
     }
     else
     {
@@ -441,7 +441,7 @@ void value_lor(const Value* a, const Value* b, Value** rV, const OpCode& op)
     }
 }
 
-void value_rshift(const Value* a, const Value* b, Value** rV, const OpCode& op)
+void value_rshift(std::shared_ptr<Value> a, std::shared_ptr<Value> b, std::shared_ptr<Value>& rV, const OpCode& op)
 {
     switch (a->type)
     {
@@ -459,10 +459,10 @@ void value_rshift(const Value* a, const Value* b, Value** rV, const OpCode& op)
             Error::runtimeError(op, "Invalid Type. %s was expected but found %s instead", ValueTypeString[TYPE_INT], ValueTypeString[a->type]);
     }
 
-    (*rV) = new vInt(get_vInt(a) >> get_vInt(b));
+    rV = std::shared_ptr<Value>(new vInt(get_vInt(a) >> get_vInt(b)));
 }
 
-void value_lshift(const Value* a, const Value* b, Value** rV, const OpCode& op)
+void value_lshift(std::shared_ptr<Value> a, std::shared_ptr<Value> b, std::shared_ptr<Value>& rV, const OpCode& op)
 {
     switch (a->type)
     {
@@ -480,5 +480,5 @@ void value_lshift(const Value* a, const Value* b, Value** rV, const OpCode& op)
             Error::runtimeError(op, "Invalid Type. %s was expected but found %s instead", ValueTypeString[TYPE_INT], ValueTypeString[a->type]);
     }
 
-    (*rV) = new vInt(get_vInt(a) << get_vInt(b));
+    rV = std::shared_ptr<Value>(new vInt(get_vInt(a) << get_vInt(b)));
 }

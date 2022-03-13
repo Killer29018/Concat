@@ -4,6 +4,7 @@
 #include <vector>
 #include <stack>
 #include <unordered_map>
+#include <memory>
 
 #include "OpCodes.hpp"
 
@@ -11,7 +12,7 @@ class VM
 {
 private:
     static std::vector<OpCode> m_OpCodes;
-    static std::stack<const Value*> m_Stack;
+    static std::stack<std::shared_ptr<Value>> m_Stack;
 
     static std::vector<uint8_t> m_Memory;
     static std::unordered_map<uint32_t, size_t> m_MemoryNames;
@@ -36,10 +37,10 @@ private:
 
     static void operation(const OpCode& op, size_t& ip);
 
-    static Value* loadMemory(const Value* address, size_t bytes);
-    static void writeMemory(const Value* address, const Value* value, size_t bytes);
+    static std::shared_ptr<Value> loadMemory(std::shared_ptr<Value> address, size_t bytes);
+    static void writeMemory(std::shared_ptr<Value> address, std::shared_ptr<Value> value, size_t bytes);
 
-    static const Value* pop() { const Value* v = m_Stack.top(); m_Stack.pop(); return v; }
+    static std::shared_ptr<Value> pop() { std::shared_ptr<Value> v = m_Stack.top(); m_Stack.pop(); return v; }
 
 };
 
