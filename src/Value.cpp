@@ -5,6 +5,9 @@
 
 #include "Error.hpp"
 
+#include <cstdlib>
+#include <cstring>
+
 // TODO: Type checking doesn't work if types are different
 // TODO: Return Type should be set within the operations themselves
 
@@ -65,6 +68,17 @@ void value_add(const Value* a, const Value* b, Value** rV, const OpCode& op)
 
         (*rV) = new vString((value + offset));
     }
+    else if(a->type == TYPE_STRING && b->type == TYPE_STRING)
+    {
+        size_t newLength = get_vStringSize(a) + get_vStringSize(b) + 1;
+        char* newString = new char[newLength];
+        newString[newLength - 1] = 0x00;
+
+        strcpy(newString, get_vString(a));
+        strcpy(newString + get_vStringSize(a), get_vString(b));
+
+        (*rV) = new vString(newString);
+    }
     else
     {
         Error::runtimeError(op, "Invalid types");
@@ -85,6 +99,7 @@ void value_subtract(const Value* a, const Value* b, Value** rV, const OpCode& op
     switch (b->type)
     {
         case TYPE_INT:
+        case TYPE_MEM_PTR:
             break;
         default:
         Error::runtimeError(op, "Invalid Type. %s was expected but found %s instead", ValueTypeString[TYPE_INT], ValueTypeString[b->type]);
@@ -97,6 +112,10 @@ void value_subtract(const Value* a, const Value* b, Value** rV, const OpCode& op
     else if (a->type == TYPE_MEM_PTR && b->type == TYPE_INT)
     {
         (*rV) = new vMemPtr(get_vMemPtr(a) - get_vInt(b));
+    }
+    else if (a->type == TYPE_MEM_PTR && b->type == TYPE_MEM_PTR)
+    {
+        (*rV) = new vMemPtr(get_vMemPtr(a) - get_vMemPtr(b));
     }
     else
     {

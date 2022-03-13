@@ -8,3 +8,5 @@ dup 5 + . cr
 
 "Escape code test\n\n\n3 New\nLines\n" print
 "Tab\tTab\n" print
+
+"Hello" " " "World\n" + + print

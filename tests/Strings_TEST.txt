@@ -12,6 +12,7 @@ Escape code test
 3 New
 Lines
 Tab	Tab
+Hello World
 
 --stderr--
 
@@ -27,6 +28,7 @@ Escape code test
 3 New
 Lines
 Tab	Tab
+Hello World
 
 --build stderr--
 
