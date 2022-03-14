@@ -178,8 +178,8 @@ void VM::simulate()
                 if (m_Stack.size() < 2)
                     Error::stackTooSmallError(op, 2);
 
-                std::shared_ptr<Value> address = pop();
                 std::shared_ptr<Value> value = pop();
+                std::shared_ptr<Value> address = pop();
 
                 if (address->type != TYPE_MEM_PTR)
                 {
@@ -195,6 +195,12 @@ void VM::simulate()
                 ip++;
                 break;
             }
+        case OP_ADD_WRITE_MEMORY_32:
+        case OP_SUBTRACT_WRITE_MEMORY_32:
+        case OP_MULTIPLY_WRITE_MEMORY_32:
+        case OP_DIVIDE_WRITE_MEMORY_32:
+            inplaceMemOperation(op); ip++; break;
+
         case OP_READ_MEMORY_8:
             {
                 if (m_Stack.size() < 1)
@@ -218,8 +224,8 @@ void VM::simulate()
                 if (m_Stack.size() < 2)
                     Error::stackTooSmallError(op, 2);
 
-                std::shared_ptr<Value> address = pop();
                 std::shared_ptr<Value> value = pop();
+                std::shared_ptr<Value> address = pop();
 
                 if (address->type != TYPE_MEM_PTR)
                 {
@@ -235,6 +241,11 @@ void VM::simulate()
                 ip++;
                 break;
             }
+        case OP_ADD_WRITE_MEMORY_8:
+        case OP_SUBTRACT_WRITE_MEMORY_8:
+        case OP_MULTIPLY_WRITE_MEMORY_8:
+        case OP_DIVIDE_WRITE_MEMORY_8:
+            inplaceMemOperation(op); ip++; break;
 
         case OP_PUSH_INT:
         case OP_PUSH_CHAR:
@@ -701,4 +712,64 @@ void VM::writeMemory(std::shared_ptr<Value> address, std::shared_ptr<Value> valu
         m_Memory[get_vMemPtr(address) + (bytes - i)] = v & 0xFF;
         v >>= 8;
     }
+}
+
+void VM::inplaceMemOperation(const OpCode& op)
+{
+    if (m_Stack.size() < 2)
+        Error::stackTooSmallError(op, 2);
+
+    std::shared_ptr<Value> operand = pop();
+    std::shared_ptr<Value> address = pop();
+
+    if (address->type != TYPE_MEM_PTR)
+    {
+        Error::runtimeError(op, "Invalid Type. %s was expected but found %s instead", ValueTypeString[TYPE_MEM_PTR], ValueTypeString[address->type]);
+    }
+
+    size_t size = 0;
+    switch (op.code)
+    {
+        case OP_ADD_WRITE_MEMORY_32:
+        case OP_SUBTRACT_WRITE_MEMORY_32:
+        case OP_MULTIPLY_WRITE_MEMORY_32:
+        case OP_DIVIDE_WRITE_MEMORY_32:
+            size = 4; break;
+
+        case OP_ADD_WRITE_MEMORY_8:
+        case OP_SUBTRACT_WRITE_MEMORY_8:
+        case OP_MULTIPLY_WRITE_MEMORY_8:
+        case OP_DIVIDE_WRITE_MEMORY_8:
+            size = 1; break;
+
+        default:
+            assert(false && "Not reachable"); break;
+    }
+
+    std::shared_ptr<Value> rV = loadMemory(address, size);
+    switch (op.code)
+    {
+        case OP_ADD_WRITE_MEMORY_32:
+            value_add(rV, operand, rV, op); break;
+        case OP_SUBTRACT_WRITE_MEMORY_32:
+            value_subtract(rV, operand, rV, op); break;
+        case OP_MULTIPLY_WRITE_MEMORY_32:
+            value_multiply(rV, operand, rV, op); break;
+        case OP_DIVIDE_WRITE_MEMORY_32:
+            value_divide(rV, operand, rV, op); break;
+
+        case OP_ADD_WRITE_MEMORY_8:
+            value_add(rV, operand, rV, op); break;
+        case OP_SUBTRACT_WRITE_MEMORY_8:
+            value_subtract(rV, operand, rV, op); break;
+        case OP_MULTIPLY_WRITE_MEMORY_8:
+            value_multiply(rV, operand, rV, op); break;
+        case OP_DIVIDE_WRITE_MEMORY_8:
+            value_divide(rV, operand, rV, op); break;
+
+        default:
+            assert(false && "Not reachable"); break;
+    }
+
+    writeMemory(address, rV, size);
 }

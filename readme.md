@@ -11,8 +11,6 @@ A language that could be considered similar to Forth or [Porth](https://gitlab.c
 
 ### Currently being added
 ```
-@8 !8 for 8 bit access to memory
-<< and >> bitwise operators
 +! -! *! /! for writing directly to the pointer
 ```
 

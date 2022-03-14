@@ -183,11 +183,27 @@ void Compiler::startCompiler()
                 addBasicOpcode(code, ip, OP_READ_MEMORY_32); break;
             case TOKEN_WRITE_MEMORY_32:
                 addBasicOpcode(code, ip, OP_WRITE_MEMORY_32); break;
+            case TOKEN_ADD_WRITE_MEMORY_32:
+                addBasicOpcode(code, ip, OP_ADD_WRITE_MEMORY_32); break;
+            case TOKEN_SUBTRACT_WRITE_MEMORY_32:
+                addBasicOpcode(code, ip, OP_SUBTRACT_WRITE_MEMORY_32); break;
+            case TOKEN_MULTIPLY_WRITE_MEMORY_32:
+                addBasicOpcode(code, ip, OP_MULTIPLY_WRITE_MEMORY_32); break;
+            case TOKEN_DIVIDE_WRITE_MEMORY_32:
+                addBasicOpcode(code, ip, OP_DIVIDE_WRITE_MEMORY_32); break;
 
             case TOKEN_READ_MEMORY_8:
                 addBasicOpcode(code, ip, OP_READ_MEMORY_8); break;
             case TOKEN_WRITE_MEMORY_8:
                 addBasicOpcode(code, ip, OP_WRITE_MEMORY_8); break;
+            case TOKEN_ADD_WRITE_MEMORY_8:
+                addBasicOpcode(code, ip, OP_ADD_WRITE_MEMORY_8); break;
+            case TOKEN_SUBTRACT_WRITE_MEMORY_8:
+                addBasicOpcode(code, ip, OP_SUBTRACT_WRITE_MEMORY_8); break;
+            case TOKEN_MULTIPLY_WRITE_MEMORY_8:
+                addBasicOpcode(code, ip, OP_MULTIPLY_WRITE_MEMORY_8); break;
+            case TOKEN_DIVIDE_WRITE_MEMORY_8:
+                addBasicOpcode(code, ip, OP_DIVIDE_WRITE_MEMORY_8); break;
 
             case TOKEN_INT:
                 {

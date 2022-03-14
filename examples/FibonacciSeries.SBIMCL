@@ -1,6 +1,6 @@
 mem n1 4 endmem
 mem n2 4 endmem
-1 n1 !
+n1 1 !
 
 macro times 46 endmacro
 
@@ -16,8 +16,8 @@ times
 0 while over over swap < do
     n1 @ n2 @ +
     n2 @
-    over n2 !
-    n1 !
+    over n2 swap !
+    n1 swap !
 
     printValue
 
