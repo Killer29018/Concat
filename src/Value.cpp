@@ -8,82 +8,67 @@
 #include <cstdlib>
 #include <cstring>
 
-// TODO: Type checking doesn't work if types are different
-// TODO: Return Type should be set within the operations themselves
-
-void value_add(std::shared_ptr<Value> a, std::shared_ptr<Value> b, std::shared_ptr<Value>& rV, const OpCode& op)
+bool CallFunction(const std::pair<ValueType, ValueType>& target, std::shared_ptr<Value> a, std::shared_ptr<Value> b, std::shared_ptr<Value>& rV, std::unordered_map<std::pair<ValueType, ValueType>, OperationFunc> map)
 {
-    switch (a->type)
+    const auto& output = map.find(target);
+
+    if (output != map.end())
     {
-        case TYPE_INT:
-        case TYPE_STRING:
-        case TYPE_MEM_PTR:
+        (*output->second)(a, b, rV);
+        return true;
+    }
+    return false;
+}
+
+void runValueOperation(std::shared_ptr<Value> a, std::shared_ptr<Value> b, std::shared_ptr<Value>& rV, const OpCode& op)
+{
+    std::pair<ValueType, ValueType> targetPair(a->type, b->type);
+
+    switch (op.code)
+    {
+    case OP_ADD:
+        {
+            CallFunction(targetPair, a, b, rV, ValueAddition);
             break;
-        default:
-            Error::runtimeError(op, "Invalid Type. %s %s or %s was expected but found %s instead",
-                    ValueTypeString[TYPE_INT],
-                    ValueTypeString[TYPE_STRING],
-                    ValueTypeString[TYPE_MEM_PTR],
-                    ValueTypeString[a->type]);
-    }
-
-    switch (b->type)
-    {
-        case TYPE_INT:
-        case TYPE_MEM_PTR:
-        case TYPE_STRING:
+        }
+    case OP_SUBTRACT:
+        {
+            CallFunction(targetPair, a, b, rV, ValueSubtraction);
             break;
-        default:
-            Error::runtimeError(op, "Invalid Type. %s %s or %s was expected but found %s instead",
-                    ValueTypeString[TYPE_INT],
-                    ValueTypeString[TYPE_STRING],
-                    ValueTypeString[TYPE_MEM_PTR],
-                    ValueTypeString[b->type]);
-    }
+        }
+    case OP_MULTIPLY:
+        {
+            CallFunction(targetPair, a, b, rV, ValueMultiply);
+            break;
+        }
+    case OP_DIVIDE:
+        {
+            CallFunction(targetPair, a, b, rV, ValueDivide);
+            break;
+        }
 
-    if (a->type == b->type)
-    {
-        if (a->type == TYPE_MEM_PTR)
-            Error::runtimeError(op, "Can not add two %s together", ValueTypeString[TYPE_MEM_PTR]);
-    }
 
-    if (a->type == TYPE_INT && b->type == TYPE_INT)
-    {
-        rV = std::shared_ptr<Value>(new vInt(get_vInt(a) + get_vInt(b)));
-    }
-    // else if ((a->type == TYPE_MEM_PTR && b->type == TYPE_INT) ||
-    //          (a->type == TYPE_INT && b->type == TYPE_MEM_PTR))
-    else if (a->type == TYPE_MEM_PTR && b->type == TYPE_INT)
-    {
-        rV = std::shared_ptr<Value>(new vMemPtr(get_vMemPtr(a) + get_vInt(b)));
-    }
-    else if (a->type == TYPE_INT && b->type == TYPE_MEM_PTR)
-    {
-        rV = std::shared_ptr<Value>(new vMemPtr(get_vInt(a) + get_vMemPtr(b)));
-    }
-    else if (a->type == TYPE_STRING && b->type == TYPE_INT)
-    {
-        size_t offset = get_vInt(b);
-        char* value = get_vString(a);
-
-        rV = std::shared_ptr<Value>(new vString((value + offset)));
-    }
-    else if(a->type == TYPE_STRING && b->type == TYPE_STRING)
-    {
-        size_t newLength = get_vStringSize(a) + get_vStringSize(b) + 1;
-        char* newString = new char[newLength];
-        newString[newLength - 1] = 0x00;
-
-        strcpy(newString, get_vString(a));
-        strcpy(newString + get_vStringSize(a), get_vString(b));
-
-        rV = std::shared_ptr<Value>(new vString(newString));
-    }
-    else
-    {
-        Error::runtimeError(op, "Invalid types");
+    default:
+        assert(false && "Not implemented");
     }
 }
+
+const std::unordered_map<std::pair<ValueType, ValueType>, operationFunc, hashPair> ValueAddition
+{
+    { std::make_pair(TYPE_INT, TYPE_INT),           [](operationInputs) { rV = std::shared_ptr<Value>(new vInt(get_vInt(a) + get_vInt(b))); } },
+    { std::make_pair(TYPE_MEM_PTR, TYPE_MEM_PTR),   [](operationInputs) { rV = std::shared_ptr<Value>(new vMemPtr(get_vMemPtr(a) + get_vMemPtr(b))); } },
+    { std::make_pair(TYPE_MEM_PTR, TYPE_INT),       [](operationInputs) { rV = std::shared_ptr<Value>(new vMemPtr(get_vMemPtr(a) + get_vInt(b))); } },
+    { std::make_pair(TYPE_STRING, TYPE_INT),        [](operationInputs) { rV = std::shared_ptr<Value>(new vString(get_vString(a) + get_vInt(b))); } },
+    { std::make_pair(TYPE_STRING, TYPE_STRING),     [](operationInputs) 
+        { 
+            size_t newLength = get_vStringSize(a) + get_vStringSize(b);
+            char* newString = new char[newLength + 1];
+            strcpy(newString, get_vString(a));
+            strcpy(newString + get_vStringSize(a), get_vString(b));
+            newString[newLength] = 0;
+            rV = std::shared_ptr<Value>(new vString(newString)); 
+        } },
+};
 
 void value_subtract(std::shared_ptr<Value> a, std::shared_ptr<Value> b, std::shared_ptr<Value>& rV, const OpCode& op)
 {
@@ -181,20 +166,22 @@ void value_equal(std::shared_ptr<Value> a, std::shared_ptr<Value> b, std::shared
     {
         case TYPE_INT:
         case TYPE_BOOL:
+        case TYPE_STRING:
         case TYPE_MEM_PTR:
             break;
         default:
-            Error::runtimeError(op, "Invalid Type. %s or %s was expected but found %s instead", ValueTypeString[TYPE_INT], ValueTypeString[TYPE_BOOL], ValueTypeString[a->type]);
+            Error::runtimeError(op, "Invalid Type %s", ValueTypeString[a->type]);
     }
 
     switch (b->type)
     {
         case TYPE_INT:
         case TYPE_BOOL:
+        case TYPE_STRING:
         case TYPE_MEM_PTR:
             break;
         default:
-            Error::runtimeError(op, "Invalid Type. %s or %s was expected but found %s instead", ValueTypeString[TYPE_INT], ValueTypeString[TYPE_BOOL], ValueTypeString[b->type]);
+            Error::runtimeError(op, "Invalid Type %s", ValueTypeString[b->type]);
     }
 
     if (a->type != b->type)
@@ -238,7 +225,7 @@ void value_not_equal(std::shared_ptr<Value> a, std::shared_ptr<Value> b, std::sh
         case TYPE_MEM_PTR:
             break;
         default:
-            Error::runtimeError(op, "Invalid Type. %s or %s was expected but found %s instead", ValueTypeString[TYPE_INT], ValueTypeString[TYPE_BOOL], ValueTypeString[a->type]);
+            Error::runtimeError(op, "Invalid Type %s", ValueTypeString[a->type]);
     }
 
     switch (b->type)
@@ -248,7 +235,7 @@ void value_not_equal(std::shared_ptr<Value> a, std::shared_ptr<Value> b, std::sh
         case TYPE_MEM_PTR:
             break;
         default:
-            Error::runtimeError(op, "Invalid Type. %s or %s was expected but found %s instead", ValueTypeString[TYPE_INT], ValueTypeString[TYPE_BOOL], ValueTypeString[b->type]);
+            Error::runtimeError(op, "Invalid Type %s", ValueTypeString[b->type]);
     }
 
     if (a->type != b->type)
@@ -286,9 +273,9 @@ void value_not_equal(std::shared_ptr<Value> a, std::shared_ptr<Value> b, std::sh
 void value_greater(std::shared_ptr<Value> a, std::shared_ptr<Value> b, std::shared_ptr<Value>& rV, const OpCode& op)
 {
     if (a->type != TYPE_INT)
-        Error::runtimeError(op, "Invalid Type. %s was expected but found %s instead", ValueTypeString[TYPE_INT], ValueTypeString[a->type]);
+        Error::runtimeError(op, "Invalid Type %s", ValueTypeString[a->type]);
     if (b->type != TYPE_INT)
-        Error::runtimeError(op, "Invalid Type. %s was expected but found %s instead", ValueTypeString[TYPE_INT], ValueTypeString[b->type]);
+        Error::runtimeError(op, "Invalid Type %s", ValueTypeString[b->type]);
 
     if (a->type == TYPE_INT && b->type == TYPE_INT)
     {
@@ -303,9 +290,9 @@ void value_greater(std::shared_ptr<Value> a, std::shared_ptr<Value> b, std::shar
 void value_less(std::shared_ptr<Value> a, std::shared_ptr<Value> b, std::shared_ptr<Value>& rV, const OpCode& op)
 {
     if (a->type != TYPE_INT)
-        Error::runtimeError(op, "Invalid Type. %s was expected but found %s instead", ValueTypeString[TYPE_INT], ValueTypeString[a->type]);
+        Error::runtimeError(op, "Invalid Type %s", ValueTypeString[a->type]);
     if (b->type != TYPE_INT)
-        Error::runtimeError(op, "Invalid Type. %s was expected but found %s instead", ValueTypeString[TYPE_INT], ValueTypeString[b->type]);
+        Error::runtimeError(op, "Invalid Type %s", ValueTypeString[b->type]);
 
     if (a->type == TYPE_INT && b->type == TYPE_INT)
     {
@@ -320,9 +307,9 @@ void value_less(std::shared_ptr<Value> a, std::shared_ptr<Value> b, std::shared_
 void value_greater_equal(std::shared_ptr<Value> a, std::shared_ptr<Value> b, std::shared_ptr<Value>& rV, const OpCode& op)
 {
     if (a->type != TYPE_INT)
-        Error::runtimeError(op, "Invalid Type. %s was expected but found %s instead", ValueTypeString[TYPE_INT], ValueTypeString[a->type]);
+        Error::runtimeError(op, "Invalid Type %s", ValueTypeString[a->type]);
     if (b->type != TYPE_INT)
-        Error::runtimeError(op, "Invalid Type. %s was expected but found %s instead", ValueTypeString[TYPE_INT], ValueTypeString[b->type]);
+        Error::runtimeError(op, "Invalid Type %s", ValueTypeString[b->type]);
 
     if (a->type == TYPE_INT && b->type == TYPE_INT)
     {
@@ -337,9 +324,9 @@ void value_greater_equal(std::shared_ptr<Value> a, std::shared_ptr<Value> b, std
 void value_less_equal(std::shared_ptr<Value> a, std::shared_ptr<Value> b, std::shared_ptr<Value>& rV, const OpCode& op)
 {
     if (a->type != TYPE_INT)
-        Error::runtimeError(op, "Invalid Type. %s was expected but found %s instead", ValueTypeString[TYPE_INT], ValueTypeString[a->type]);
+        Error::runtimeError(op, "Invalid Type %s", ValueTypeString[a->type]);
     if (b->type != TYPE_INT)
-        Error::runtimeError(op, "Invalid Type. %s was expected but found %s instead", ValueTypeString[TYPE_INT], ValueTypeString[b->type]);
+        Error::runtimeError(op, "Invalid Type %s", ValueTypeString[b->type]);
 
     if (a->type == TYPE_INT && b->type == TYPE_INT)
     {
@@ -354,7 +341,7 @@ void value_less_equal(std::shared_ptr<Value> a, std::shared_ptr<Value> b, std::s
 void value_invert(std::shared_ptr<Value> a, std::shared_ptr<Value>& rV, const OpCode& op)
 {
     if (a->type != TYPE_BOOL)
-        Error::runtimeError(op, "Invalid Type. %s was expected but found %s instead", ValueTypeString[TYPE_BOOL], ValueTypeString[a->type]);
+        Error::runtimeError(op, "Invalid Type %s", ValueTypeString[a->type]);
 
     rV = std::shared_ptr<Value>(new vBool(!get_vBool(a)));
 }
@@ -362,7 +349,7 @@ void value_invert(std::shared_ptr<Value> a, std::shared_ptr<Value>& rV, const Op
 void value_lnot(std::shared_ptr<Value> a, std::shared_ptr<Value>& rV, const OpCode& op)
 {
     if (a->type != TYPE_INT)
-        Error::runtimeError(op, "Invalid Type. %s was expected but found %s instead", ValueTypeString[TYPE_INT], ValueTypeString[a->type]);
+        Error::runtimeError(op, "Invalid Type %s", ValueTypeString[a->type]);
 
     rV = std::shared_ptr<Value>(new vInt(~get_vInt(a)));
 }
@@ -375,7 +362,7 @@ void value_land(std::shared_ptr<Value> a, std::shared_ptr<Value> b, std::shared_
         case TYPE_BOOL:
             break;
         default:
-            Error::runtimeError(op, "Invalid Type. %s or %s was expected but found %s instead", ValueTypeString[TYPE_INT], ValueTypeString[TYPE_BOOL], ValueTypeString[a->type]);
+            Error::runtimeError(op, "Invalid Type %s", ValueTypeString[a->type]);
     }
 
     switch (b->type)
@@ -384,7 +371,7 @@ void value_land(std::shared_ptr<Value> a, std::shared_ptr<Value> b, std::shared_
         case TYPE_BOOL:
             break;
         default:
-            Error::runtimeError(op, "Invalid Type. %s or %s was expected but found %s instead", ValueTypeString[TYPE_INT], ValueTypeString[TYPE_BOOL], ValueTypeString[b->type]);
+            Error::runtimeError(op, "Invalid Type %s", ValueTypeString[b->type]);
     }
 
     if (a->type != b->type)
@@ -412,7 +399,7 @@ void value_lor(std::shared_ptr<Value> a, std::shared_ptr<Value> b, std::shared_p
         case TYPE_BOOL:
             break;
         default:
-            Error::runtimeError(op, "Invalid Type. %s or %s was expected but found %s instead", ValueTypeString[TYPE_INT], ValueTypeString[TYPE_BOOL], ValueTypeString[a->type]);
+            Error::runtimeError(op, "Invalid Type %s", ValueTypeString[a->type]);
     }
 
     switch (b->type)
@@ -421,7 +408,7 @@ void value_lor(std::shared_ptr<Value> a, std::shared_ptr<Value> b, std::shared_p
         case TYPE_BOOL:
             break;
         default:
-            Error::runtimeError(op, "Invalid Type. %s or %s was expected but found %s instead", ValueTypeString[TYPE_INT], ValueTypeString[TYPE_BOOL], ValueTypeString[b->type]);
+            Error::runtimeError(op, "Invalid Type %s", ValueTypeString[b->type]);
     }
 
     if (a->type != b->type)

@@ -10,6 +10,10 @@
 
 #include <vector>
 
+#include <unordered_map>
+#include <utility>
+#include <functional>
+
 struct OpCode;
 
 enum ValueType
@@ -109,24 +113,62 @@ struct vIpOffset : Value
 #define as_vIpOffset(val)   ((vIpOffset*)(val.get()))
 #define get_vIpOffset(val)  (((vIpOffset*)(val.get()))->v)
 
-void value_add(std::shared_ptr<Value> a, std::shared_ptr<Value> b, std::shared_ptr<Value>& rV, const OpCode& op);
-void value_subtract(std::shared_ptr<Value> a, std::shared_ptr<Value> b, std::shared_ptr<Value>& rV, const OpCode& op);
-void value_multiply(std::shared_ptr<Value> a, std::shared_ptr<Value> b, std::shared_ptr<Value>& rV, const OpCode& op);
-void value_divide(std::shared_ptr<Value> a, std::shared_ptr<Value> b, std::shared_ptr<Value>& rV, const OpCode& op);
-void value_mod(std::shared_ptr<Value> a, std::shared_ptr<Value> b, std::shared_ptr<Value>& rV, const OpCode& op);
+void runValueOperation(std::shared_ptr<Value> a, std::shared_ptr<Value> b, std::shared_ptr<Value>& rV, const OpCode& op);
 
-void value_equal(std::shared_ptr<Value> a, std::shared_ptr<Value> b, std::shared_ptr<Value>& rV, const OpCode& op);
-void value_not_equal(std::shared_ptr<Value> a, std::shared_ptr<Value> b, std::shared_ptr<Value>& rV, const OpCode& op);
-void value_greater(std::shared_ptr<Value> a, std::shared_ptr<Value> b, std::shared_ptr<Value>& rV, const OpCode& op);
-void value_less(std::shared_ptr<Value> a, std::shared_ptr<Value> b, std::shared_ptr<Value>& rV, const OpCode& op);
-void value_greater_equal(std::shared_ptr<Value> a, std::shared_ptr<Value> b, std::shared_ptr<Value>& rV, const OpCode& op);
-void value_less_equal(std::shared_ptr<Value> a, std::shared_ptr<Value> b, std::shared_ptr<Value>& rV, const OpCode& op);
+// void value_add(std::shared_ptr<Value> a, std::shared_ptr<Value> b, std::shared_ptr<Value>& rV, const OpCode& op);
+// void value_subtract(std::shared_ptr<Value> a, std::shared_ptr<Value> b, std::shared_ptr<Value>& rV, const OpCode& op);
+// void value_multiply(std::shared_ptr<Value> a, std::shared_ptr<Value> b, std::shared_ptr<Value>& rV, const OpCode& op);
+// void value_divide(std::shared_ptr<Value> a, std::shared_ptr<Value> b, std::shared_ptr<Value>& rV, const OpCode& op);
+// void value_mod(std::shared_ptr<Value> a, std::shared_ptr<Value> b, std::shared_ptr<Value>& rV, const OpCode& op);
 
-void value_invert(std::shared_ptr<Value> a, std::shared_ptr<Value>& rV, const OpCode& op);
-void value_lnot(std::shared_ptr<Value> a, std::shared_ptr<Value>& rV, const OpCode& op);
-void value_land(std::shared_ptr<Value> a, std::shared_ptr<Value> b, std::shared_ptr<Value>& rV, const OpCode& op);
-void value_lor(std::shared_ptr<Value> a, std::shared_ptr<Value> b, std::shared_ptr<Value>& rV, const OpCode& op);
-void value_rshift(std::shared_ptr<Value> a, std::shared_ptr<Value> b, std::shared_ptr<Value>& rV, const OpCode& op);
-void value_lshift(std::shared_ptr<Value> a, std::shared_ptr<Value> b, std::shared_ptr<Value>& rV, const OpCode& op);
+// void value_equal(std::shared_ptr<Value> a, std::shared_ptr<Value> b, std::shared_ptr<Value>& rV, const OpCode& op);
+// void value_not_equal(std::shared_ptr<Value> a, std::shared_ptr<Value> b, std::shared_ptr<Value>& rV, const OpCode& op);
+// void value_greater(std::shared_ptr<Value> a, std::shared_ptr<Value> b, std::shared_ptr<Value>& rV, const OpCode& op);
+// void value_less(std::shared_ptr<Value> a, std::shared_ptr<Value> b, std::shared_ptr<Value>& rV, const OpCode& op);
+// void value_greater_equal(std::shared_ptr<Value> a, std::shared_ptr<Value> b, std::shared_ptr<Value>& rV, const OpCode& op);
+// void value_less_equal(std::shared_ptr<Value> a, std::shared_ptr<Value> b, std::shared_ptr<Value>& rV, const OpCode& op);
+
+// void value_invert(std::shared_ptr<Value> a, std::shared_ptr<Value>& rV, const OpCode& op);
+// void value_lnot(std::shared_ptr<Value> a, std::shared_ptr<Value>& rV, const OpCode& op);
+// void value_land(std::shared_ptr<Value> a, std::shared_ptr<Value> b, std::shared_ptr<Value>& rV, const OpCode& op);
+// void value_lor(std::shared_ptr<Value> a, std::shared_ptr<Value> b, std::shared_ptr<Value>& rV, const OpCode& op);
+// void value_rshift(std::shared_ptr<Value> a, std::shared_ptr<Value> b, std::shared_ptr<Value>& rV, const OpCode& op);
+// void value_lshift(std::shared_ptr<Value> a, std::shared_ptr<Value> b, std::shared_ptr<Value>& rV, const OpCode& op);
+
+
+typedef void (*operationFunc)(std::shared_ptr<Value>, std::shared_ptr<Value>, std::shared_ptr<Value>&);
+
+struct hashPair
+{
+    template<class T, class U>
+    size_t operator()(const std::pair<T, U> p) const
+    {
+        uintmax_t hash = std::hash<T>{}(p.first);
+        hash <<= sizeof(uintmax_t) * 4;
+        hash ^= std::hash<U>{}(p.second);
+        return std::hash<uintmax_t>{}(hash);
+    }
+};
+
+#define operationInputs std::shared_ptr<Value> a, std::shared_ptr<Value> b, std::shared_ptr<Value>& rV
+extern const std::unordered_map<std::pair<ValueType, ValueType>, operationFunc, hashPair> ValueAddition;
+extern const std::unordered_map<std::pair<ValueType, ValueType>, operationFunc, hashPair> ValueSubtraction;
+extern const std::unordered_map<std::pair<ValueType, ValueType>, operationFunc, hashPair> ValueMultiply;
+extern const std::unordered_map<std::pair<ValueType, ValueType>, operationFunc, hashPair> ValueDivision;
+extern const std::unordered_map<std::pair<ValueType, ValueType>, operationFunc, hashPair> ValueMod;
+
+extern const std::unordered_map<std::pair<ValueType, ValueType>, operationFunc, hashPair> ValueEqual;
+extern const std::unordered_map<std::pair<ValueType, ValueType>, operationFunc, hashPair> ValueNotEqual;
+extern const std::unordered_map<std::pair<ValueType, ValueType>, operationFunc, hashPair> ValueGreater;
+extern const std::unordered_map<std::pair<ValueType, ValueType>, operationFunc, hashPair> ValueLess;
+extern const std::unordered_map<std::pair<ValueType, ValueType>, operationFunc, hashPair> ValueGreaterEqual;
+extern const std::unordered_map<std::pair<ValueType, ValueType>, operationFunc, hashPair> ValueLessEqual;
+
+extern const std::unordered_map<std::pair<ValueType, ValueType>, operationFunc, hashPair> ValueInvert;
+extern const std::unordered_map<std::pair<ValueType, ValueType>, operationFunc, hashPair> ValueLNot;
+extern const std::unordered_map<std::pair<ValueType, ValueType>, operationFunc, hashPair> ValueLAnd;
+extern const std::unordered_map<std::pair<ValueType, ValueType>, operationFunc, hashPair> ValueLOr;
+extern const std::unordered_map<std::pair<ValueType, ValueType>, operationFunc, hashPair> ValueRShift;
+extern const std::unordered_map<std::pair<ValueType, ValueType>, operationFunc, hashPair> ValueLShift;
 
 #endif

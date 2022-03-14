@@ -649,43 +649,45 @@ void VM::operation(const OpCode& op, size_t& ip)
 
     std::shared_ptr<Value> v;
 
-    switch (op.code)
-    {
-    case OP_ADD:
-        value_add(a, b, v, op); break;
-    case OP_SUBTRACT:
-        value_subtract(a, b, v, op); break;
-    case OP_MULTIPLY:
-        value_multiply(a, b, v, op); break;
-    case OP_DIVIDE:
-        value_divide(a, b, v, op); break;
-    case OP_MOD:
-        value_mod(a, b, v, op); break;
+    runValueOperation(a, b, v, op);
 
-    case OP_EQUAL:
-        value_equal(a, b, v, op); break;
-    case OP_NOT_EQUAL:
-        value_not_equal(a, b, v, op); break;
-    case OP_GREATER:
-        value_greater(a, b, v, op); break;
-    case OP_LESS:
-        value_less(a, b, v, op); break;
-    case OP_GREATER_EQUAL:
-        value_greater_equal(a, b, v, op); break;
-    case OP_LESS_EQUAL:
-        value_less_equal(a, b, v, op); break;
+    // switch (op.code)
+    // {
+    // case OP_ADD:
+    //     value_add(a, b, v, op); break;
+    // case OP_SUBTRACT:
+    //     value_subtract(a, b, v, op); break;
+    // case OP_MULTIPLY:
+    //     value_multiply(a, b, v, op); break;
+    // case OP_DIVIDE:
+    //     value_divide(a, b, v, op); break;
+    // case OP_MOD:
+    //     value_mod(a, b, v, op); break;
 
-    case OP_LAND:
-        value_land(a, b, v, op); break;
-    case OP_LOR:
-        value_lor(a, b, v, op); break;
-    case OP_RSHIFT:
-        value_rshift(a, b, v, op); break;
-    case OP_LSHIFT:
-        value_lshift(a, b, v, op); break;
-    default:
-        assert(false && "Unreachable"); // UNREACHABLE
-    }
+    // case OP_EQUAL:
+    //     value_equal(a, b, v, op); break;
+    // case OP_NOT_EQUAL:
+    //     value_not_equal(a, b, v, op); break;
+    // case OP_GREATER:
+    //     value_greater(a, b, v, op); break;
+    // case OP_LESS:
+    //     value_less(a, b, v, op); break;
+    // case OP_GREATER_EQUAL:
+    //     value_greater_equal(a, b, v, op); break;
+    // case OP_LESS_EQUAL:
+    //     value_less_equal(a, b, v, op); break;
+
+    // case OP_LAND:
+    //     value_land(a, b, v, op); break;
+    // case OP_LOR:
+    //     value_lor(a, b, v, op); break;
+    // case OP_RSHIFT:
+    //     value_rshift(a, b, v, op); break;
+    // case OP_LSHIFT:
+    //     value_lshift(a, b, v, op); break;
+    // default:
+    //     assert(false && "Unreachable"); // UNREACHABLE
+    // }
 
     m_Stack.push(v);
     ip++;

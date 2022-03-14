@@ -56,6 +56,7 @@ private:
         for (size_t i = 0; i < size; i++)
         {
             value <<= 8;
+
             uint8_t element = output[index + i] & 0xFF;
             value |= element;
         }
@@ -68,8 +69,8 @@ private:
         value = 0;
         for (size_t i = 0; i < size; i++)
         {
-            if (size > 1)
-                value <<= 8;
+            value <<= 8;
+
             uint8_t element = output[i] & 0xFF;
             value |= element;
         }
