@@ -752,22 +752,22 @@ void VM::inplaceMemOperation(const OpCode& op)
     switch (op.code)
     {
         case OP_ADD_WRITE_MEMORY_32:
-            value_add(rV, operand, rV, op); break;
+            // value_add(rV, operand, rV, op); break;
         case OP_SUBTRACT_WRITE_MEMORY_32:
-            value_subtract(rV, operand, rV, op); break;
+            // value_subtract(rV, operand, rV, op); break;
         case OP_MULTIPLY_WRITE_MEMORY_32:
-            value_multiply(rV, operand, rV, op); break;
+            // value_multiply(rV, operand, rV, op); break;
         case OP_DIVIDE_WRITE_MEMORY_32:
-            value_divide(rV, operand, rV, op); break;
+            // value_divide(rV, operand, rV, op); break;
 
         case OP_ADD_WRITE_MEMORY_8:
-            value_add(rV, operand, rV, op); break;
+            // value_add(rV, operand, rV, op); break;
         case OP_SUBTRACT_WRITE_MEMORY_8:
-            value_subtract(rV, operand, rV, op); break;
+            // value_subtract(rV, operand, rV, op); break;
         case OP_MULTIPLY_WRITE_MEMORY_8:
-            value_multiply(rV, operand, rV, op); break;
+            // value_multiply(rV, operand, rV, op); break;
         case OP_DIVIDE_WRITE_MEMORY_8:
-            value_divide(rV, operand, rV, op); break;
+            // value_divide(rV, operand, rV, op); break;
 
         default:
             assert(false && "Not reachable"); break;

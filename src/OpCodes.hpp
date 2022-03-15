@@ -5,7 +5,7 @@
 
 #include "Value.hpp"
 
-enum OpCodeEnum
+enum OpCodeEnum : uint16_t
 {
     OP_ADD,
     OP_SUBTRACT,
