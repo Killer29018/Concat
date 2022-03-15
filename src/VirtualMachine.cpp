@@ -91,25 +91,7 @@ void VM::simulate()
             operation(op, ip); break;
                             
         case OP_INVERT:
-            {
-                std::shared_ptr<Value> a = pop();
-                std::shared_ptr<Value> rV;
-
-                value_invert(a, rV, op);
-                m_Stack.push(rV);
-                ip++;
-                break;
-            }
         case OP_LNOT:
-            {
-                std::shared_ptr<Value> a = pop();
-                std::shared_ptr<Value> rV;
-
-                value_lnot(a, rV, op);
-                m_Stack.push(rV);
-                ip++;
-                break;
-            }
         case OP_LAND:
         case OP_LOR:
         case OP_RSHIFT:
@@ -641,53 +623,28 @@ void VM::printValueDebug(size_t index)
 
 void VM::operation(const OpCode& op, size_t& ip)
 {
-    if (m_Stack.size() < 2)
-        Error::stackTooSmallError(op, 2);
+    if (m_Stack.size() == 0)
+        Error::stackTooSmallError(op, 1);
 
     std::shared_ptr<Value> b = pop();
-    std::shared_ptr<Value> a = pop();
 
     std::shared_ptr<Value> v;
 
-    runValueOperation(a, b, v, op);
+    switch (op.code)
+    {
+        case OP_INVERT:
+        case OP_LNOT:
+            runValueOperationSingle(b, v, op); 
+            break;
+        
+        default:
+            if (m_Stack.size() < 1) // One value already removed
+                Error::stackTooSmallError(op, 2);
 
-    // switch (op.code)
-    // {
-    // case OP_ADD:
-    //     value_add(a, b, v, op); break;
-    // case OP_SUBTRACT:
-    //     value_subtract(a, b, v, op); break;
-    // case OP_MULTIPLY:
-    //     value_multiply(a, b, v, op); break;
-    // case OP_DIVIDE:
-    //     value_divide(a, b, v, op); break;
-    // case OP_MOD:
-    //     value_mod(a, b, v, op); break;
-
-    // case OP_EQUAL:
-    //     value_equal(a, b, v, op); break;
-    // case OP_NOT_EQUAL:
-    //     value_not_equal(a, b, v, op); break;
-    // case OP_GREATER:
-    //     value_greater(a, b, v, op); break;
-    // case OP_LESS:
-    //     value_less(a, b, v, op); break;
-    // case OP_GREATER_EQUAL:
-    //     value_greater_equal(a, b, v, op); break;
-    // case OP_LESS_EQUAL:
-    //     value_less_equal(a, b, v, op); break;
-
-    // case OP_LAND:
-    //     value_land(a, b, v, op); break;
-    // case OP_LOR:
-    //     value_lor(a, b, v, op); break;
-    // case OP_RSHIFT:
-    //     value_rshift(a, b, v, op); break;
-    // case OP_LSHIFT:
-    //     value_lshift(a, b, v, op); break;
-    // default:
-    //     assert(false && "Unreachable"); // UNREACHABLE
-    // }
+            std::shared_ptr<Value> a = pop();
+            runValueOperationDouble(a, b, v, op); 
+            break;
+    }
 
     m_Stack.push(v);
     ip++;
@@ -749,25 +706,34 @@ void VM::inplaceMemOperation(const OpCode& op)
     }
 
     std::shared_ptr<Value> rV = loadMemory(address, size);
+    OpCode changeOp = op;
     switch (op.code)
     {
         case OP_ADD_WRITE_MEMORY_32:
-            // value_add(rV, operand, rV, op); break;
+            changeOp.code = OP_ADD;
+            runValueOperationDouble(rV, operand, rV, changeOp); break;
         case OP_SUBTRACT_WRITE_MEMORY_32:
-            // value_subtract(rV, operand, rV, op); break;
+            changeOp.code = OP_SUBTRACT;
+            runValueOperationDouble(rV, operand, rV, changeOp); break;
         case OP_MULTIPLY_WRITE_MEMORY_32:
-            // value_multiply(rV, operand, rV, op); break;
+            changeOp.code = OP_MULTIPLY;
+            runValueOperationDouble(rV, operand, rV, changeOp); break;
         case OP_DIVIDE_WRITE_MEMORY_32:
-            // value_divide(rV, operand, rV, op); break;
+            changeOp.code = OP_DIVIDE;
+            runValueOperationDouble(rV, operand, rV, changeOp); break;
 
         case OP_ADD_WRITE_MEMORY_8:
-            // value_add(rV, operand, rV, op); break;
+            changeOp.code = OP_ADD;
+            runValueOperationDouble(rV, operand, rV, changeOp); break;
         case OP_SUBTRACT_WRITE_MEMORY_8:
-            // value_subtract(rV, operand, rV, op); break;
+            changeOp.code = OP_SUBTRACT;
+            runValueOperationDouble(rV, operand, rV, changeOp); break;
         case OP_MULTIPLY_WRITE_MEMORY_8:
-            // value_multiply(rV, operand, rV, op); break;
+            changeOp.code = OP_MULTIPLY;
+            runValueOperationDouble(rV, operand, rV, changeOp); break;
         case OP_DIVIDE_WRITE_MEMORY_8:
-            // value_divide(rV, operand, rV, op); break;
+            changeOp.code = OP_DIVIDE;
+            runValueOperationDouble(rV, operand, rV, changeOp); break;
 
         default:
             assert(false && "Not reachable"); break;

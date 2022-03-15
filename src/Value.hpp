@@ -114,30 +114,6 @@ struct vIpOffset : Value
 #define as_vIpOffset(val)   ((vIpOffset*)(val.get()))
 #define get_vIpOffset(val)  (((vIpOffset*)(val.get()))->v)
 
-void runValueOperation(std::shared_ptr<Value> a, std::shared_ptr<Value> b, std::shared_ptr<Value>& rV, const OpCode& op);
-
-// void value_add(std::shared_ptr<Value> a, std::shared_ptr<Value> b, std::shared_ptr<Value>& rV, const OpCode& op);
-// void value_subtract(std::shared_ptr<Value> a, std::shared_ptr<Value> b, std::shared_ptr<Value>& rV, const OpCode& op);
-// void value_multiply(std::shared_ptr<Value> a, std::shared_ptr<Value> b, std::shared_ptr<Value>& rV, const OpCode& op);
-// void value_divide(std::shared_ptr<Value> a, std::shared_ptr<Value> b, std::shared_ptr<Value>& rV, const OpCode& op);
-// void value_mod(std::shared_ptr<Value> a, std::shared_ptr<Value> b, std::shared_ptr<Value>& rV, const OpCode& op);
-
-// void value_equal(std::shared_ptr<Value> a, std::shared_ptr<Value> b, std::shared_ptr<Value>& rV, const OpCode& op);
-// void value_not_equal(std::shared_ptr<Value> a, std::shared_ptr<Value> b, std::shared_ptr<Value>& rV, const OpCode& op);
-// void value_greater(std::shared_ptr<Value> a, std::shared_ptr<Value> b, std::shared_ptr<Value>& rV, const OpCode& op);
-// void value_less(std::shared_ptr<Value> a, std::shared_ptr<Value> b, std::shared_ptr<Value>& rV, const OpCode& op);
-// void value_greater_equal(std::shared_ptr<Value> a, std::shared_ptr<Value> b, std::shared_ptr<Value>& rV, const OpCode& op);
-// void value_less_equal(std::shared_ptr<Value> a, std::shared_ptr<Value> b, std::shared_ptr<Value>& rV, const OpCode& op);
-
-void value_invert(std::shared_ptr<Value> a, std::shared_ptr<Value>& rV, const OpCode& op);
-void value_lnot(std::shared_ptr<Value> a, std::shared_ptr<Value>& rV, const OpCode& op);
-// void value_land(std::shared_ptr<Value> a, std::shared_ptr<Value> b, std::shared_ptr<Value>& rV, const OpCode& op);
-// void value_lor(std::shared_ptr<Value> a, std::shared_ptr<Value> b, std::shared_ptr<Value>& rV, const OpCode& op);
-// void value_rshift(std::shared_ptr<Value> a, std::shared_ptr<Value> b, std::shared_ptr<Value>& rV, const OpCode& op);
-// void value_lshift(std::shared_ptr<Value> a, std::shared_ptr<Value> b, std::shared_ptr<Value>& rV, const OpCode& op);
-
-typedef void (*operationFunc)(std::shared_ptr<Value>, std::shared_ptr<Value>, std::shared_ptr<Value>&);
-
 struct hashPair
 {
     template<class T, class U>
@@ -150,8 +126,17 @@ struct hashPair
     }
 };
 
-#define operationInputs std::shared_ptr<Value> a, std::shared_ptr<Value> b, std::shared_ptr<Value>& rV
+void runValueOperationSingle(std::shared_ptr<Value> a, std::shared_ptr<Value>& rV, const OpCode& op);
+void runValueOperationDouble(std::shared_ptr<Value> a, std::shared_ptr<Value> b, std::shared_ptr<Value>& rV, const OpCode& op);
+
+typedef void (*operationFuncSingle)(std::shared_ptr<Value>, std::shared_ptr<Value>&);
+typedef void (*operationFuncDouble)(std::shared_ptr<Value>, std::shared_ptr<Value>, std::shared_ptr<Value>&);
+
+#define operationInputsSingle std::shared_ptr<Value> a, std::shared_ptr<Value>& rV
+#define operationInputsDouble std::shared_ptr<Value> a, std::shared_ptr<Value> b, std::shared_ptr<Value>& rV
 typedef std::pair<ValueType, ValueType> Operands;
-extern const std::unordered_map<OpCodeEnum, std::unordered_map<Operands, operationFunc, hashPair>> ValueOperations;
+
+extern const std::unordered_map<OpCodeEnum, std::unordered_map<ValueType, operationFuncSingle>>          ValueOperationSingle;
+extern const std::unordered_map<OpCodeEnum, std::unordered_map<Operands, operationFuncDouble, hashPair>> ValueOperationDouble;
 
 #endif
