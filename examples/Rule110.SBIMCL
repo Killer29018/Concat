@@ -1,4 +1,4 @@
-macro SIZE 10 endmacro
+macro SIZE 100 endmacro
 macro KEY 110 endmacro
 
 mem board SIZE endmem

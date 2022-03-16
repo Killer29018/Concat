@@ -42,7 +42,7 @@ private:
 
     static void inplaceMemOperation(const OpCode& op);
 
-    static const std::shared_ptr<Value>& pop() { const std::shared_ptr<Value>& v = m_Stack.top(); m_Stack.pop(); return v; }
+    static const std::shared_ptr<Value> pop() { const std::shared_ptr<Value> v = m_Stack.top(); m_Stack.pop(); return v; }
 };
 
 #endif

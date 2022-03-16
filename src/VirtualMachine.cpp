@@ -335,7 +335,7 @@ void VM::simulate()
                 if (m_Stack.empty())
                     Error::stackTooSmallError(op, 1);
 
-                const std::shared_ptr<Value> a = pop();
+                const std::shared_ptr<Value>& a = pop();
                 m_Stack.push(a);
                 m_Stack.push(a);
                 ip++;
@@ -355,8 +355,8 @@ void VM::simulate()
                 if (m_Stack.size() < 2)
                     Error::stackTooSmallError(op, 2);
 
-                const std::shared_ptr<Value> a = pop();
-                const std::shared_ptr<Value> b = pop();
+                const std::shared_ptr<Value>& a = pop();
+                const std::shared_ptr<Value>& b = pop();
                 m_Stack.push(a);
                 m_Stack.push(b);
                 ip++;
@@ -368,8 +368,8 @@ void VM::simulate()
                 if (m_Stack.size() < 2)
                     Error::stackTooSmallError(op, 2);
 
-                const std::shared_ptr<Value> a = pop();
-                const std::shared_ptr<Value> b = pop();
+                const std::shared_ptr<Value>& a = pop();
+                const std::shared_ptr<Value>& b = pop();
                 m_Stack.push(b);
                 m_Stack.push(a);
                 m_Stack.push(b);
@@ -382,9 +382,9 @@ void VM::simulate()
                 if (m_Stack.size() < 3)
                     Error::stackTooSmallError(op, 3);
 
-                const std::shared_ptr<Value> a = pop();
-                const std::shared_ptr<Value> b = pop();
-                const std::shared_ptr<Value> c = pop();
+                const std::shared_ptr<Value>& a = pop();
+                const std::shared_ptr<Value>& b = pop();
+                const std::shared_ptr<Value>& c = pop();
 
                 m_Stack.push(b);
                 m_Stack.push(a);
