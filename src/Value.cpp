@@ -22,6 +22,14 @@ void runValueOperationSingle(std::shared_ptr<Value> a, std::shared_ptr<Value>& r
         {
             (*operation->second)(a, rV);
         }
+        else
+        {
+            Error::runtimeError(op, "Type %s not supported for %s", ValueTypeString[a->type], OpCodeString[op.code]);
+        }
+    }
+    else
+    {
+        assert(false && "Operation not supported");
     }
 }
 
@@ -39,6 +47,14 @@ void runValueOperationDouble(std::shared_ptr<Value> a, std::shared_ptr<Value> b,
         {
             (*operation->second)(a, b, rV);
         }
+        else
+        {
+            Error::runtimeError(op, "Types %s and %s not supported for %s", ValueTypeString[a->type], ValueTypeString[b->type], OpCodeString[op.code]);
+        }
+    }
+    else
+    {
+        assert(false && "Operation not supported");
     }
 }
 
@@ -72,10 +88,6 @@ const std::unordered_map<OpCodeEnum, std::unordered_map<Operands, operationFuncD
             { 
                 std::make_pair(TYPE_INT, TYPE_INT),
                 [](operationInputsDouble) { rV = std::shared_ptr<Value>(new vInt(get_vInt(a) + get_vInt(b))); } 
-            },
-            { 
-                std::make_pair(TYPE_MEM_PTR, TYPE_MEM_PTR),
-                [](operationInputsDouble) { rV = std::shared_ptr<Value>(new vMemPtr(get_vMemPtr(a) + get_vMemPtr(b))); } 
             },
             { 
                 std::make_pair(TYPE_MEM_PTR, TYPE_INT),

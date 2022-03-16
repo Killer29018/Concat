@@ -1,0 +1,7 @@
+mem temp 1 endmem
+mem temp2 1 endmem
+
+temp print cr
+temp2 print cr
+
+temp temp2 + print cr

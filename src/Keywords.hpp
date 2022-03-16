@@ -72,5 +72,4 @@ const std::unordered_map<std::string, TokenType> Keywords({
     { "endwhile",   TOKEN_ENDWHILE },
 });
 
-
 #endif
