@@ -37,12 +37,12 @@ private:
 
     static void operation(const OpCode& op, size_t& ip);
 
-    static std::shared_ptr<Value> loadMemory(std::shared_ptr<Value> address, size_t bytes);
-    static void writeMemory(std::shared_ptr<Value> address, std::shared_ptr<Value> value, size_t bytes);
+    static const std::shared_ptr<Value> loadMemory(const std::shared_ptr<Value>& address, size_t bytes);
+    static void writeMemory(const std::shared_ptr<Value>& address, const std::shared_ptr<Value>& value, size_t bytes);
 
     static void inplaceMemOperation(const OpCode& op);
 
-    static std::shared_ptr<Value> pop() { std::shared_ptr<Value> v = m_Stack.top(); m_Stack.pop(); return v; }
+    static const std::shared_ptr<Value>& pop() { const std::shared_ptr<Value>& v = m_Stack.top(); m_Stack.pop(); return v; }
 };
 
 #endif

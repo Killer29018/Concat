@@ -126,17 +126,17 @@ struct hashPair
     }
 };
 
-void runValueOperationSingle(std::shared_ptr<Value> a, std::shared_ptr<Value>& rV, const OpCode& op);
-void runValueOperationDouble(std::shared_ptr<Value> a, std::shared_ptr<Value> b, std::shared_ptr<Value>& rV, const OpCode& op);
+void runValueOperationSingle(const std::shared_ptr<Value>& a, std::shared_ptr<Value>& rV, const OpCode& op);
+void runValueOperationDouble(const std::shared_ptr<Value>& a, const std::shared_ptr<Value>& b, std::shared_ptr<Value>& rV, const OpCode& op);
 
-typedef void (*operationFuncSingle)(std::shared_ptr<Value>, std::shared_ptr<Value>&);
-typedef void (*operationFuncDouble)(std::shared_ptr<Value>, std::shared_ptr<Value>, std::shared_ptr<Value>&);
+typedef void (*operationFuncSingle)(const std::shared_ptr<Value>&, std::shared_ptr<Value>&);
+typedef void (*operationFuncDouble)(const std::shared_ptr<Value>&, const std::shared_ptr<Value>&, std::shared_ptr<Value>&);
 
-#define operationInputsSingle std::shared_ptr<Value> a, std::shared_ptr<Value>& rV
-#define operationInputsDouble std::shared_ptr<Value> a, std::shared_ptr<Value> b, std::shared_ptr<Value>& rV
+#define operationInputsSingle const std::shared_ptr<Value>& a, std::shared_ptr<Value>& rV
+#define operationInputsDouble const std::shared_ptr<Value>& a, const std::shared_ptr<Value>& b, std::shared_ptr<Value>& rV
 typedef std::pair<ValueType, ValueType> Operands;
 
 extern const std::unordered_map<OpCodeEnum, std::unordered_map<ValueType, operationFuncSingle>>          ValueOperationSingle;
-extern const std::unordered_map<OpCodeEnum, std::unordered_map<Operands, operationFuncDouble, hashPair>> ValueOperationDouble;
+extern const std::unordered_map<OpCodeEnum, std::unordered_map<Operands,  operationFuncDouble, hashPair>> ValueOperationDouble;
 
 #endif

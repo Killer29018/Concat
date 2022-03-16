@@ -8,7 +8,7 @@
 #include <cstdlib>
 #include <cstring>
 
-void runValueOperationSingle(std::shared_ptr<Value> a, std::shared_ptr<Value>& rV, const OpCode& op)
+void runValueOperationSingle(const std::shared_ptr<Value>& a, std::shared_ptr<Value>& rV, const OpCode& op)
 {
     ValueType target = a->type;
 
@@ -33,7 +33,7 @@ void runValueOperationSingle(std::shared_ptr<Value> a, std::shared_ptr<Value>& r
     }
 }
 
-void runValueOperationDouble(std::shared_ptr<Value> a, std::shared_ptr<Value> b, std::shared_ptr<Value>& rV, const OpCode& op)
+void runValueOperationDouble(const std::shared_ptr<Value>& a, const std::shared_ptr<Value>& b, std::shared_ptr<Value>& rV, const OpCode& op)
 {
     Operands targetPair(a->type, b->type);
 
@@ -87,15 +87,15 @@ const std::unordered_map<OpCodeEnum, std::unordered_map<Operands, operationFuncD
         {
             { 
                 std::make_pair(TYPE_INT, TYPE_INT),
-                [](operationInputsDouble) { rV = std::shared_ptr<Value>(new vInt(get_vInt(a) + get_vInt(b))); } 
+                [](operationInputsDouble) { rV = std::make_shared<vInt>(get_vInt(a) + get_vInt(b)); } 
             },
             { 
                 std::make_pair(TYPE_MEM_PTR, TYPE_INT),
-                [](operationInputsDouble) { rV = std::shared_ptr<Value>(new vMemPtr(get_vMemPtr(a) + get_vInt(b))); } 
+                [](operationInputsDouble) { rV = std::make_shared<vMemPtr>(get_vMemPtr(a) + get_vInt(b)); } 
             },
             { 
                 std::make_pair(TYPE_STRING, TYPE_INT),
-                [](operationInputsDouble) { rV = std::shared_ptr<Value>(new vString(get_vString(a) + get_vInt(b))); } 
+                [](operationInputsDouble) { rV = std::make_shared<vString>(get_vString(a) + get_vInt(b)); } 
             },
             { 
                 std::make_pair(TYPE_STRING, TYPE_STRING),
@@ -105,7 +105,7 @@ const std::unordered_map<OpCodeEnum, std::unordered_map<Operands, operationFuncD
                     strcpy(newString, get_vString(a));
                     strcpy(newString + get_vStringSize(a), get_vString(b));
                     newString[newLength] = 0;
-                    rV = std::shared_ptr<Value>(new vString(newString)); 
+                    rV = std::make_shared<vString>(newString); 
                 }
             }
         } 
@@ -115,15 +115,15 @@ const std::unordered_map<OpCodeEnum, std::unordered_map<Operands, operationFuncD
         {
             { 
                 std::make_pair(TYPE_INT, TYPE_INT), 
-                [](operationInputsDouble) { rV = std::shared_ptr<Value>(new vInt(get_vInt(a) - get_vInt(b))); }
+                [](operationInputsDouble) { rV = std::make_shared<vInt>(get_vInt(a) - get_vInt(b)); }
             },
             { 
                 std::make_pair(TYPE_MEM_PTR, TYPE_INT),
-                [](operationInputsDouble) { rV = std::shared_ptr<Value>(new vMemPtr(get_vMemPtr(a) - get_vInt(b))); }
+                [](operationInputsDouble) { rV = std::make_shared<vMemPtr>(get_vMemPtr(a) - get_vInt(b)); }
             },
             { 
                 std::make_pair(TYPE_MEM_PTR, TYPE_MEM_PTR),
-                [](operationInputsDouble) { rV = std::shared_ptr<Value>(new vMemPtr(get_vMemPtr(a) - get_vMemPtr(b))); }
+                [](operationInputsDouble) { rV = std::make_shared<vMemPtr>(get_vMemPtr(a) - get_vMemPtr(b)); }
             }
         }
     },
@@ -132,7 +132,7 @@ const std::unordered_map<OpCodeEnum, std::unordered_map<Operands, operationFuncD
         {
             {
                 std::make_pair(TYPE_INT, TYPE_INT),
-                [](operationInputsDouble) { rV = std::shared_ptr<Value>(new vInt(get_vInt(a) * get_vInt(b))); }
+                [](operationInputsDouble) { rV = std::make_shared<vInt>(get_vInt(a) * get_vInt(b)); }
             }
         }
     },
@@ -141,7 +141,7 @@ const std::unordered_map<OpCodeEnum, std::unordered_map<Operands, operationFuncD
         {
             {
                 std::make_pair(TYPE_INT, TYPE_INT),
-                [](operationInputsDouble) { rV = std::shared_ptr<Value>(new vInt(get_vInt(a) / get_vInt(b))); }
+                [](operationInputsDouble) { rV = std::make_shared<vInt>(get_vInt(a) / get_vInt(b)); }
             }
         }
     },
@@ -150,7 +150,7 @@ const std::unordered_map<OpCodeEnum, std::unordered_map<Operands, operationFuncD
         {
             {
                 std::make_pair(TYPE_INT, TYPE_INT),
-                [](operationInputsDouble) { rV = std::shared_ptr<Value>(new vInt(get_vInt(a) % get_vInt(b))); }
+                [](operationInputsDouble) { rV = std::make_shared<vInt>(get_vInt(a) % get_vInt(b)); }
             }
         }
     },
@@ -161,27 +161,27 @@ const std::unordered_map<OpCodeEnum, std::unordered_map<Operands, operationFuncD
         {
             {
                 std::make_pair(TYPE_INT, TYPE_INT),
-                [](operationInputsDouble) { rV = std::shared_ptr<Value>(new vBool(get_vInt(a) == get_vInt(b))); }
+                [](operationInputsDouble) { rV = std::make_shared<vBool>(get_vInt(a) == get_vInt(b)); }
             },
             {
                 std::make_pair(TYPE_BOOL, TYPE_BOOL),
-                [](operationInputsDouble) { rV = std::shared_ptr<Value>(new vBool(get_vBool(a) == get_vBool(b))); }
+                [](operationInputsDouble) { rV = std::make_shared<vBool>(get_vBool(a) == get_vBool(b)); }
             },
             {
                 std::make_pair(TYPE_BOOL, TYPE_INT),
-                [](operationInputsDouble) { rV = std::shared_ptr<Value>(new vBool(get_vBool(a) == get_vInt(b))); }
+                [](operationInputsDouble) { rV = std::make_shared<vBool>(get_vBool(a) == get_vInt(b)); }
             },
             {
                 std::make_pair(TYPE_INT, TYPE_BOOL),
-                [](operationInputsDouble) { rV = std::shared_ptr<Value>(new vBool(get_vInt(a) == get_vBool(b))); }
+                [](operationInputsDouble) { rV = std::make_shared<vBool>(get_vInt(a) == get_vBool(b)); }
             },
             {
                 std::make_pair(TYPE_STRING, TYPE_STRING),
-                [](operationInputsDouble) { rV = std::shared_ptr<Value>(new vBool(strcmp(get_vString(a), get_vString(b)) == 0)); }
+                [](operationInputsDouble) { rV = std::make_shared<vBool>(strcmp(get_vString(a), get_vString(b)) == 0); }
             },
             {
                 std::make_pair(TYPE_MEM_PTR, TYPE_MEM_PTR),
-                [](operationInputsDouble) { rV = std::shared_ptr<Value>(new vBool(get_vMemPtr(a) == get_vMemPtr(b))); }
+                [](operationInputsDouble) { rV = std::make_shared<vBool>(get_vMemPtr(a) == get_vMemPtr(b)); }
             },
         }
     },
@@ -191,27 +191,27 @@ const std::unordered_map<OpCodeEnum, std::unordered_map<Operands, operationFuncD
         {
             {
                 std::make_pair(TYPE_INT, TYPE_INT),
-                [](operationInputsDouble) { rV = std::shared_ptr<Value>(new vBool(get_vInt(a) != get_vInt(b))); }
+                [](operationInputsDouble) { rV = std::make_shared<vBool>(get_vInt(a) != get_vInt(b)); }
             },
             {
                 std::make_pair(TYPE_BOOL, TYPE_BOOL),
-                [](operationInputsDouble) { rV = std::shared_ptr<Value>(new vBool(get_vBool(a) != get_vBool(b))); }
+                [](operationInputsDouble) { rV = std::make_shared<vBool>(get_vBool(a) != get_vBool(b)); }
             },
             {
                 std::make_pair(TYPE_BOOL, TYPE_INT),
-                [](operationInputsDouble) { rV = std::shared_ptr<Value>(new vBool(get_vBool(a) != get_vInt(b))); }
+                [](operationInputsDouble) { rV = std::make_shared<vBool>(get_vBool(a) != get_vInt(b)); }
             },
             {
                 std::make_pair(TYPE_INT, TYPE_BOOL),
-                [](operationInputsDouble) { rV = std::shared_ptr<Value>(new vBool(get_vInt(a) != get_vBool(b))); }
+                [](operationInputsDouble) { rV = std::make_shared<vBool>(get_vInt(a) != get_vBool(b)); }
             },
             {
                 std::make_pair(TYPE_STRING, TYPE_STRING),
-                [](operationInputsDouble) { rV = std::shared_ptr<Value>(new vBool(strcmp(get_vString(a), get_vString(b)) != 0)); }
+                [](operationInputsDouble) { rV = std::make_shared<vBool>(strcmp(get_vString(a), get_vString(b)) != 0); }
             },
             {
                 std::make_pair(TYPE_MEM_PTR, TYPE_MEM_PTR),
-                [](operationInputsDouble) { rV = std::shared_ptr<Value>(new vBool(get_vMemPtr(a) != get_vMemPtr(b))); }
+                [](operationInputsDouble) { rV = std::make_shared<vBool>(get_vMemPtr(a) != get_vMemPtr(b)); }
             },
         }
     },
@@ -221,7 +221,7 @@ const std::unordered_map<OpCodeEnum, std::unordered_map<Operands, operationFuncD
         {
             {
                 std::make_pair(TYPE_INT, TYPE_INT),
-                [](operationInputsDouble) { rV = std::shared_ptr<Value>(new vBool(get_vInt(a) > get_vInt(b))); }
+                [](operationInputsDouble) { rV = std::make_shared<vBool>(get_vInt(a) > get_vInt(b)); }
             }
         }
     },
@@ -230,7 +230,7 @@ const std::unordered_map<OpCodeEnum, std::unordered_map<Operands, operationFuncD
         {
             {
                 std::make_pair(TYPE_INT, TYPE_INT),
-                [](operationInputsDouble) { rV = std::shared_ptr<Value>(new vBool(get_vInt(a) < get_vInt(b))); }
+                [](operationInputsDouble) { rV = std::make_shared<vBool>(get_vInt(a) < get_vInt(b)); }
             }
         }
     },
@@ -239,7 +239,7 @@ const std::unordered_map<OpCodeEnum, std::unordered_map<Operands, operationFuncD
         {
             {
                 std::make_pair(TYPE_INT, TYPE_INT),
-                [](operationInputsDouble) { rV = std::shared_ptr<Value>(new vBool(get_vInt(a) >= get_vInt(b))); }
+                [](operationInputsDouble) { rV = std::make_shared<vBool>(get_vInt(a) >= get_vInt(b)); }
             }
         }
     },
@@ -248,7 +248,7 @@ const std::unordered_map<OpCodeEnum, std::unordered_map<Operands, operationFuncD
         {
             {
                 std::make_pair(TYPE_INT, TYPE_INT),
-                [](operationInputsDouble) { rV = std::shared_ptr<Value>(new vBool(get_vInt(a) <= get_vInt(b))); }
+                [](operationInputsDouble) { rV = std::make_shared<vBool>(get_vInt(a) <= get_vInt(b)); }
             }
         }
     },
@@ -258,11 +258,11 @@ const std::unordered_map<OpCodeEnum, std::unordered_map<Operands, operationFuncD
         {
             {
                 std::make_pair(TYPE_INT, TYPE_INT),
-                [](operationInputsDouble) { rV = std::shared_ptr<Value>(new vInt(get_vInt(a) & get_vInt(b))); }
+                [](operationInputsDouble) { rV = std::make_shared<vInt>(get_vInt(a) & get_vInt(b)); }
             },
             {
                 std::make_pair(TYPE_BOOL, TYPE_BOOL),
-                [](operationInputsDouble) { rV = std::shared_ptr<Value>(new vBool(get_vBool(a) && get_vBool(b))); }
+                [](operationInputsDouble) { rV = std::make_shared<vBool>(get_vBool(a) && get_vBool(b)); }
             }
         }
     },
@@ -271,11 +271,11 @@ const std::unordered_map<OpCodeEnum, std::unordered_map<Operands, operationFuncD
         {
             {
                 std::make_pair(TYPE_INT, TYPE_INT),
-                [](operationInputsDouble) { rV = std::shared_ptr<Value>(new vInt(get_vInt(a) | get_vInt(b))); }
+                [](operationInputsDouble) { rV = std::make_shared<vInt>(get_vInt(a) | get_vInt(b)); }
             },
             {
                 std::make_pair(TYPE_BOOL, TYPE_BOOL),
-                [](operationInputsDouble) { rV = std::shared_ptr<Value>(new vBool(get_vBool(a) || get_vBool(b))); }
+                [](operationInputsDouble) { rV = std::make_shared<vBool>(get_vBool(a) || get_vBool(b)); }
             }
         }
     },
@@ -284,7 +284,7 @@ const std::unordered_map<OpCodeEnum, std::unordered_map<Operands, operationFuncD
         {
             {
                 std::make_pair(TYPE_INT, TYPE_INT),
-                [](operationInputsDouble) { rV = std::shared_ptr<Value>(new vInt(get_vInt(a) >> get_vInt(b))); }
+                [](operationInputsDouble) { rV = std::make_shared<vInt>(get_vInt(a) >> get_vInt(b)); }
             }
         }
     },
@@ -293,7 +293,7 @@ const std::unordered_map<OpCodeEnum, std::unordered_map<Operands, operationFuncD
         {
             {
                 std::make_pair(TYPE_INT, TYPE_INT),
-                [](operationInputsDouble) { rV = std::shared_ptr<Value>(new vInt(get_vInt(a) << get_vInt(b))); }
+                [](operationInputsDouble) { rV = std::make_shared<vInt>(get_vInt(a) << get_vInt(b)); }
             }
         }
     }

@@ -32,7 +32,7 @@ void VM::pushInt(int32_t value)
 {
     OpCode op;
     op.code = OP_PUSH_INT;
-    op.value = std::shared_ptr<Value>(std::shared_ptr<Value>(new vInt(value)));
+    op.value = std::make_shared<vInt>(value);
     m_OpCodes.emplace_back(op);
 }
 
@@ -108,7 +108,7 @@ void VM::simulate()
         case OP_LOAD_MEM:
             {
                 size_t index = m_MemoryNames.at(get_vMemPtr(op.value));
-                std::shared_ptr<Value> a(std::shared_ptr<Value>(new vMemPtr(index)));
+                std::shared_ptr<Value> a = std::make_shared<vMemPtr>(index);
                 m_Stack.push(a);
                 ip++;
                 break;
@@ -118,7 +118,7 @@ void VM::simulate()
                 if (m_Stack.size() < 1)
                     Error::stackTooSmallError(op, 1);
 
-                std::shared_ptr<Value> a = pop();
+                const std::shared_ptr<Value>& a = pop();
 
                 if (m_CurrentVarIndex == -1)
                     assert(false && "Unreachable. Should be dealt with in Compiler");
@@ -142,14 +142,14 @@ void VM::simulate()
                 if (m_Stack.size() < 1)
                     Error::stackTooSmallError(op, 1);
 
-                std::shared_ptr<Value> a = pop();
+                const std::shared_ptr<Value>& a = pop();
 
                 if (a->type != TYPE_MEM_PTR)
                 {
                     Error::runtimeError(op, "Invalid Type. %s was expected but found %s instead", ValueTypeString[TYPE_MEM_PTR], ValueTypeString[a->type]);
                 }
 
-                std::shared_ptr<Value> rV = loadMemory(a, 4);
+                const std::shared_ptr<Value> rV = loadMemory(a, 4);
                 m_Stack.push(rV);
                 ip++;
 
@@ -160,8 +160,8 @@ void VM::simulate()
                 if (m_Stack.size() < 2)
                     Error::stackTooSmallError(op, 2);
 
-                std::shared_ptr<Value> value = pop();
-                std::shared_ptr<Value> address = pop();
+                const std::shared_ptr<Value>& value = pop();
+                const std::shared_ptr<Value>& address = pop();
 
                 if (address->type != TYPE_MEM_PTR)
                 {
@@ -188,14 +188,26 @@ void VM::simulate()
                 if (m_Stack.size() < 1)
                     Error::stackTooSmallError(op, 1);
 
-                std::shared_ptr<Value> a = pop();
+                const std::shared_ptr<Value>& a = pop();
+                std::shared_ptr<Value> rV;
 
-                if (a->type != TYPE_MEM_PTR)
+                if (a->type == TYPE_MEM_PTR)
                 {
-                    Error::runtimeError(op, "Invalid Type. %s was expected but found %s instead", ValueTypeString[TYPE_MEM_PTR], ValueTypeString[a->type]);
+                    rV = loadMemory(a, 1);
+
+                }
+                else if (a->type == TYPE_STRING)
+                {
+                    rV = std::make_shared<vChar>(get_vString(a)[0]);
+                }
+                else
+                {
+                    Error::runtimeError(op, "Invalid Type. %s or %s was expected but found %s instead", 
+                            ValueTypeString[TYPE_MEM_PTR], 
+                            ValueTypeString[TYPE_STRING], 
+                            ValueTypeString[a->type]);
                 }
 
-                std::shared_ptr<Value> rV = loadMemory(a, 1);
                 m_Stack.push(rV);
                 ip++;
 
@@ -206,20 +218,39 @@ void VM::simulate()
                 if (m_Stack.size() < 2)
                     Error::stackTooSmallError(op, 2);
 
-                std::shared_ptr<Value> value = pop();
-                std::shared_ptr<Value> address = pop();
+                const std::shared_ptr<Value>& value = pop();
+                const std::shared_ptr<Value>& address = pop();
 
-                if (address->type != TYPE_MEM_PTR)
+                if (address->type == TYPE_MEM_PTR)
                 {
-                    Error::runtimeError(op, "Invalid Type. %s was expected but found %s instead", ValueTypeString[TYPE_MEM_PTR], ValueTypeString[address->type]);
+                    if (value->type == TYPE_INT)
+                    {
+                        writeMemory(address, value, 1);
+                    }
+                    else
+                    {
+                        Error::runtimeError(op, "Invalid Type. %s was expected but found %s instead", ValueTypeString[TYPE_INT], ValueTypeString[address->type]);
+                    }
+                }
+                else if (address->type == TYPE_STRING)
+                {
+                    if (value->type == TYPE_CHAR)
+                    {
+                        get_vString(address)[0] = get_vChar(value);
+                    }
+                    else
+                    {
+                        Error::runtimeError(op, "Invalid Type. %s was expected but found %s instead", ValueTypeString[TYPE_CHAR], ValueTypeString[address->type]);
+                    }
+                }
+                else
+                {
+                    Error::runtimeError(op, "Invalid Type. %s or %s was expected but found %s instead", 
+                            ValueTypeString[TYPE_MEM_PTR], 
+                            ValueTypeString[TYPE_STRING], 
+                            ValueTypeString[address->type]);
                 }
 
-                if (value->type != TYPE_INT)
-                {
-                    Error::runtimeError(op, "Invalid Type. %s was expected but found %s instead", ValueTypeString[TYPE_INT], ValueTypeString[value->type]);
-                }
-
-                writeMemory(address, value, 1);
                 ip++;
                 break;
             }
@@ -252,7 +283,7 @@ void VM::simulate()
                 if (m_Stack.empty())
                     Error::stackTooSmallError(op, 1);
 
-                std::shared_ptr<Value> a = pop();
+                const std::shared_ptr<Value>& a = pop();
 
                 switch (a->type)
                 {
@@ -278,7 +309,7 @@ void VM::simulate()
                 if (m_Stack.empty())
                     Error::stackTooSmallError(op, 1);
 
-                std::shared_ptr<Value> a = pop();
+                const std::shared_ptr<Value>& a = pop();
 
                 switch (a->type)
                 {
@@ -304,7 +335,7 @@ void VM::simulate()
                 if (m_Stack.empty())
                     Error::stackTooSmallError(op, 1);
 
-                std::shared_ptr<Value> a = pop();
+                const std::shared_ptr<Value> a = pop();
                 m_Stack.push(a);
                 m_Stack.push(a);
                 ip++;
@@ -324,8 +355,8 @@ void VM::simulate()
                 if (m_Stack.size() < 2)
                     Error::stackTooSmallError(op, 2);
 
-                std::shared_ptr<Value> a = pop();
-                std::shared_ptr<Value> b = pop();
+                const std::shared_ptr<Value> a = pop();
+                const std::shared_ptr<Value> b = pop();
                 m_Stack.push(a);
                 m_Stack.push(b);
                 ip++;
@@ -337,8 +368,8 @@ void VM::simulate()
                 if (m_Stack.size() < 2)
                     Error::stackTooSmallError(op, 2);
 
-                std::shared_ptr<Value> a = pop();
-                std::shared_ptr<Value> b = pop();
+                const std::shared_ptr<Value> a = pop();
+                const std::shared_ptr<Value> b = pop();
                 m_Stack.push(b);
                 m_Stack.push(a);
                 m_Stack.push(b);
@@ -351,9 +382,9 @@ void VM::simulate()
                 if (m_Stack.size() < 3)
                     Error::stackTooSmallError(op, 3);
 
-                std::shared_ptr<Value> a = pop();
-                std::shared_ptr<Value> b = pop();
-                std::shared_ptr<Value> c = pop();
+                const std::shared_ptr<Value> a = pop();
+                const std::shared_ptr<Value> b = pop();
+                const std::shared_ptr<Value> c = pop();
 
                 m_Stack.push(b);
                 m_Stack.push(a);
@@ -371,7 +402,7 @@ void VM::simulate()
                 if (m_Stack.empty())
                     Error::stackTooSmallError(op, 1);
 
-                std::shared_ptr<Value> a = pop();
+                const std::shared_ptr<Value>& a = pop();
 
                 if (a->type != TYPE_BOOL)
                     Error::runtimeError(op, "Invalid Type. %s was expected but found %s instead", ValueTypeString[TYPE_BOOL], ValueTypeString[a->type]);
@@ -394,7 +425,7 @@ void VM::simulate()
                         {
                             if (ifCount == 0)
                             {
-                                op.value = std::shared_ptr<Value>(new vIpOffset(ipOffset));
+                                op.value = std::make_shared<vIpOffset>(ipOffset);
                                 break;
                             }
                             else
@@ -407,7 +438,7 @@ void VM::simulate()
                         {
                             if (ifCount == 0)
                             {
-                                op.value = std::shared_ptr<Value>(new vIpOffset(ipOffset + 1));
+                                op.value = std::make_shared<vIpOffset>(ipOffset + 1);
                                 break;
                             }
                             else
@@ -447,7 +478,7 @@ void VM::simulate()
                         {
                             if (ifCount == 0)
                             {
-                                op.value = std::shared_ptr<Value>(new vIpOffset(ipOffset));
+                                op.value = std::make_shared<vIpOffset>(ipOffset);
                                 break;
                             }
                             else
@@ -481,7 +512,7 @@ void VM::simulate()
                         {
                             if (ifCount == 0)
                             {
-                                op.value = std::shared_ptr<Value>(new vIpOffset(ipOffset));
+                                op.value = std::make_shared<vIpOffset>(ipOffset);
                                 break;
                             }
                             else
@@ -509,7 +540,7 @@ void VM::simulate()
                 if (m_Stack.empty())
                     Error::stackTooSmallError(op, 1);
 
-                std::shared_ptr<Value> a = pop();
+                const std::shared_ptr<Value>& a = pop();
 
                 if (a->type != TYPE_BOOL)
                     Error::runtimeError(op, "Invalid Type. %s was expected but found %s instead", ValueTypeString[TYPE_BOOL], ValueTypeString[a->type]);
@@ -532,7 +563,7 @@ void VM::simulate()
                         {
                             if (whileCount == 0)
                             {
-                                op.value = std::shared_ptr<Value>(new vIpOffset(ipOffset + 1));
+                                op.value = std::make_shared<vIpOffset>(ipOffset + 1);
                                 break;
                             }
                             else
@@ -571,7 +602,7 @@ void VM::simulate()
                         {
                             if (endWhileCount == 0)
                             {
-                                op.value = std::shared_ptr<Value>(new vIpOffset(ipOffset));
+                                op.value = std::make_shared<vIpOffset>(ipOffset);
                                 break;
                             }
                             else
@@ -626,7 +657,7 @@ void VM::operation(const OpCode& op, size_t& ip)
     if (m_Stack.size() == 0)
         Error::stackTooSmallError(op, 1);
 
-    std::shared_ptr<Value> b = pop();
+    const std::shared_ptr<Value>& b = pop();
 
     std::shared_ptr<Value> v;
 
@@ -641,7 +672,7 @@ void VM::operation(const OpCode& op, size_t& ip)
             if (m_Stack.size() < 1) // One value already removed
                 Error::stackTooSmallError(op, 2);
 
-            std::shared_ptr<Value> a = pop();
+            const std::shared_ptr<Value>& a = pop();
             runValueOperationDouble(a, b, v, op); 
             break;
     }
@@ -650,7 +681,7 @@ void VM::operation(const OpCode& op, size_t& ip)
     ip++;
 }
 
-std::shared_ptr<Value> VM::loadMemory(std::shared_ptr<Value> address, size_t bytes)
+const std::shared_ptr<Value> VM::loadMemory(const std::shared_ptr<Value>& address, size_t bytes)
 {
     int32_t v = 0;
     for (size_t i = 0; i < bytes; i++)
@@ -660,10 +691,10 @@ std::shared_ptr<Value> VM::loadMemory(std::shared_ptr<Value> address, size_t byt
         v |= element;
     }
 
-    return std::shared_ptr<Value>(std::shared_ptr<Value>(new vInt(v)));
+    return std::make_shared<vInt>(v);
 }
 
-void VM::writeMemory(std::shared_ptr<Value> address, std::shared_ptr<Value> value, size_t bytes)
+void VM::writeMemory(const std::shared_ptr<Value>& address, const std::shared_ptr<Value>& value, size_t bytes)
 {
     int32_t v = get_vInt(value);
     for (size_t i = 1; i <= bytes; i++)
@@ -678,8 +709,8 @@ void VM::inplaceMemOperation(const OpCode& op)
     if (m_Stack.size() < 2)
         Error::stackTooSmallError(op, 2);
 
-    std::shared_ptr<Value> operand = pop();
-    std::shared_ptr<Value> address = pop();
+    const std::shared_ptr<Value>& operand = pop();
+    const std::shared_ptr<Value>& address = pop();
 
     if (address->type != TYPE_MEM_PTR)
     {

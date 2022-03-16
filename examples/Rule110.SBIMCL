@@ -1,21 +1,21 @@
-macro SIZE 100 endmacro
+macro SIZE 10 endmacro
 macro KEY 110 endmacro
 
 mem board SIZE endmem
 mem left 1 endmem
 
-macro printArray // string -> string
+macro printArray // -> 
     0 while dup SIZE < do
         dup board swap + @8
         if 0 == then
-            swap " " + swap
+            " " print
         else
-            swap "*" + swap
+            "*" print
         endif
         1 +
     endwhile
     drop
-    "\n" +
+    "\n" print
 endmacro
 
 macro getValue // InitialPtr -> value
@@ -28,7 +28,6 @@ board SIZE 2 - + 1 !8 // Setup board
 
 left board @8 !8
 
-""
 printArray
 
 0 while dup SIZE < do
@@ -55,10 +54,8 @@ printArray
     endwhile
     drop
     
-    swap printArray swap
+    printArray 
 
     1 +
 endwhile
 drop
-
-print

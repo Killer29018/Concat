@@ -29,13 +29,13 @@ private:
     static void writeOpCode(char* buffer, const OpCode& op, size_t& index);
     static void readOpCode(char* buffer, OpCode& op, std::ifstream& file);
 
-    static size_t getValueSize(std::shared_ptr<Value> value);
+    static size_t getValueSize(const std::shared_ptr<Value>& value);
     static size_t getValueSize(const ValueType value);
 
-    static void addValue(char* buffer, std::shared_ptr<Value> value, size_t& index);
+    static void addValue(char* buffer, const std::shared_ptr<Value>& value, size_t& index);
     static void readValue(char* buffer, ValueType type, OpCode& op, size_t bufferSize);
 
-    static void addString(char* buffer, size_t& index, std::shared_ptr<Value> value);
+    static void addString(char* buffer, size_t& index, const std::shared_ptr<Value>& value);
     static void readString(char* buffer, char** value, size_t bufferSize);
 
     template<typename T>

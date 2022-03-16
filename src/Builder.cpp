@@ -158,7 +158,7 @@ void Builder::readOpCode(char* buffer, OpCode& op, std::ifstream& file)
     delete value;
 }
 
-size_t Builder::getValueSize(std::shared_ptr<Value> value)
+size_t Builder::getValueSize(const std::shared_ptr<Value>& value)
 {
     size_t size = enumSize;
     if (!value)
@@ -220,7 +220,7 @@ size_t Builder::getValueSize(const ValueType value)
     return size;
 }
 
-void Builder::addValue(char* buffer, std::shared_ptr<Value> value, size_t& index)
+void Builder::addValue(char* buffer, const std::shared_ptr<Value>& value, size_t& index)
 {
     if (!value)
         return;
@@ -258,47 +258,47 @@ void Builder::readValue(char* buffer, ValueType type, OpCode& op, size_t bufferS
     switch (type)
     {
     case TYPE_NULL:
-        op.value = std::shared_ptr<Value>(new vNull()); break;
+        op.value = std::make_shared<vNull>(); break;
     case TYPE_INT:
         {
             int32_t value;
             readElement(buffer, value, sizeof(value));
-            op.value = std::shared_ptr<Value>(new vInt(value));
+            op.value = std::make_shared<vInt>(value);
             break;
         }
     case TYPE_BOOL:
         {
             bool value;
             readElement(buffer, value, sizeof(value));
-            op.value = std::shared_ptr<Value>(new vBool(value));
+            op.value = std::make_shared<vBool>(value);
             break;
         }
     case TYPE_CHAR:
         {
             char value;
             readElement(buffer, value, sizeof(value));
-            op.value = std::shared_ptr<Value>(new vChar(value));
+            op.value = std::make_shared<vChar>(value);
             break;
         }
     case TYPE_STRING:
         {
             char* value;
             readString(buffer, &value, bufferSize);
-            op.value = std::shared_ptr<Value>(new vString(value));
+            op.value = std::make_shared<vString>(value);
             break;
         }
     case TYPE_MEM_PTR:
         {
             uint32_t value;
             readElement(buffer, value, sizeof(value));
-            op.value = std::shared_ptr<Value>(new vMemPtr(value));
+            op.value = std::make_shared<vMemPtr>(value);
             break;
         }
     case TYPE_IP_OFFSET:
         {
             int32_t value;
             readElement(buffer, value, sizeof(value));
-            op.value = std::shared_ptr<Value>(new vIpOffset(value));
+            op.value = std::make_shared<vIpOffset>(value);
             break;
         }
 
@@ -307,7 +307,7 @@ void Builder::readValue(char* buffer, ValueType type, OpCode& op, size_t bufferS
     }
 }
 
-void Builder::addString(char* buffer, size_t& index, std::shared_ptr<Value> value)
+void Builder::addString(char* buffer, size_t& index, const std::shared_ptr<Value>& value)
 {
     vString* str = as_vString(value);
     size_t size = strlen(get_vString(value));
