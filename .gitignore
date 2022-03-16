@@ -6,5 +6,4 @@ compile_commands.json
 
 # File
 SBIMCL
-examples/**_TEST.txt
 **/**.SBIMCL_BIN

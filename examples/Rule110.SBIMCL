@@ -1,0 +1,64 @@
+macro SIZE 100 endmacro
+macro KEY 110 endmacro
+
+mem board SIZE endmem
+mem left 1 endmem
+
+macro printArray // string -> string
+    0 while dup SIZE < do
+        dup board swap + @8
+        if 0 == then
+            swap " " + swap
+        else
+            swap "*" + swap
+        endif
+        1 +
+    endwhile
+    drop
+    "\n" +
+endmacro
+
+macro getValue // InitialPtr -> value
+    left @8 1 land 2 <<
+    swap dup @8 1 land 1 << rot lor
+    swap 1 + @8 1 land 0 << lor
+endmacro 
+
+board SIZE 2 - + 1 !8 // Setup board
+
+left board @8 !8
+
+""
+printArray
+
+0 while dup SIZE < do
+
+    1 while dup SIZE 1 - < do
+        // j i (board + i)
+        dup board swap +
+        dup getValue
+        // i  value (board + i)
+        swap dup 1 - @8 left swap !8
+
+        dup @8 left swap !8
+        swap
+        // i (board + i) value
+
+        // i (board + i) (([key] >> value) & 1)
+        KEY swap >> 1 land swap dup rot !8
+
+        // i (board + i)
+        drop
+        
+        // i
+        1 +
+    endwhile
+    drop
+    
+    swap printArray swap
+
+    1 +
+endwhile
+drop
+
+print
