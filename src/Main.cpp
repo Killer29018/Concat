@@ -11,6 +11,8 @@
 
 #include "Program.hpp"
 
+#include "SP.hpp"
+
 int main(int argc, char** argv)
 {
     cxxopts::Options options("SBIMCL", "Stack Based Interpreted Maybe Compiled Language");
