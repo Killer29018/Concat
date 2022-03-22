@@ -5,10 +5,12 @@
 
 #include "Error.hpp"
 
+#include "SmartPointer.hpp"
+
 #include <cstdlib>
 #include <cstring>
 
-void runValueOperationSingle(const std::shared_ptr<Value>& a, std::shared_ptr<Value>& rV, const OpCode& op)
+void runValueOperationSingle(const SmartPointer& a, SmartPointer& rV, const OpCode& op)
 {
     ValueType target = a->type;
 
@@ -33,7 +35,7 @@ void runValueOperationSingle(const std::shared_ptr<Value>& a, std::shared_ptr<Va
     }
 }
 
-void runValueOperationDouble(const std::shared_ptr<Value>& a, const std::shared_ptr<Value>& b, std::shared_ptr<Value>& rV, const OpCode& op)
+void runValueOperationDouble(const SmartPointer& a, const SmartPointer& b, SmartPointer& rV, const OpCode& op)
 {
     Operands targetPair(a->type, b->type);
 
@@ -65,7 +67,7 @@ const std::unordered_map<OpCodeEnum, std::unordered_map<ValueType, operationFunc
         {
             {
                 TYPE_BOOL,
-                [](operationInputsSingle) { rV = std::shared_ptr<Value>(new vBool(!get_vBool(a))); }
+                [](operationInputsSingle) { rV = SmartPointer(new vBool(!get_vBool(a))); }
             }
         }
     },
@@ -74,7 +76,7 @@ const std::unordered_map<OpCodeEnum, std::unordered_map<ValueType, operationFunc
         {
             {
                 TYPE_INT,
-                [](operationInputsSingle) { rV = std::shared_ptr<Value>(new vInt(~get_vInt(a))); }
+                [](operationInputsSingle) { rV = SmartPointer(new vInt(~get_vInt(a))); }
             }
         }
     }
@@ -87,15 +89,15 @@ const std::unordered_map<OpCodeEnum, std::unordered_map<Operands, operationFuncD
         {
             { 
                 std::make_pair(TYPE_INT, TYPE_INT),
-                [](operationInputsDouble) { rV = std::make_shared<vInt>(get_vInt(a) + get_vInt(b)); } 
+                [](operationInputsDouble) { rV = makeSmartPointer<vInt>(get_vInt(a) + get_vInt(b)); } 
             },
             { 
                 std::make_pair(TYPE_MEM_PTR, TYPE_INT),
-                [](operationInputsDouble) { rV = std::make_shared<vMemPtr>(get_vMemPtr(a) + get_vInt(b)); } 
+                [](operationInputsDouble) { rV = makeSmartPointer<vMemPtr>(get_vMemPtr(a) + get_vInt(b)); } 
             },
             { 
                 std::make_pair(TYPE_STRING, TYPE_INT),
-                [](operationInputsDouble) { rV = std::make_shared<vString>(get_vString(a) + get_vInt(b)); } 
+                [](operationInputsDouble) { rV = makeSmartPointer<vString>(get_vString(a) + get_vInt(b)); } 
             },
             { 
                 std::make_pair(TYPE_STRING, TYPE_STRING),
@@ -105,7 +107,7 @@ const std::unordered_map<OpCodeEnum, std::unordered_map<Operands, operationFuncD
                     strcpy(newString, get_vString(a));
                     strcpy(newString + get_vStringSize(a), get_vString(b));
                     newString[newLength] = 0;
-                    rV = std::make_shared<vString>(newString); 
+                    rV = makeSmartPointer<vString>(newString); 
                 }
             }
         } 
@@ -115,15 +117,15 @@ const std::unordered_map<OpCodeEnum, std::unordered_map<Operands, operationFuncD
         {
             { 
                 std::make_pair(TYPE_INT, TYPE_INT), 
-                [](operationInputsDouble) { rV = std::make_shared<vInt>(get_vInt(a) - get_vInt(b)); }
+                [](operationInputsDouble) { rV = makeSmartPointer<vInt>(get_vInt(a) - get_vInt(b)); }
             },
             { 
                 std::make_pair(TYPE_MEM_PTR, TYPE_INT),
-                [](operationInputsDouble) { rV = std::make_shared<vMemPtr>(get_vMemPtr(a) - get_vInt(b)); }
+                [](operationInputsDouble) { rV = makeSmartPointer<vMemPtr>(get_vMemPtr(a) - get_vInt(b)); }
             },
             { 
                 std::make_pair(TYPE_MEM_PTR, TYPE_MEM_PTR),
-                [](operationInputsDouble) { rV = std::make_shared<vMemPtr>(get_vMemPtr(a) - get_vMemPtr(b)); }
+                [](operationInputsDouble) { rV = makeSmartPointer<vMemPtr>(get_vMemPtr(a) - get_vMemPtr(b)); }
             }
         }
     },
@@ -132,7 +134,7 @@ const std::unordered_map<OpCodeEnum, std::unordered_map<Operands, operationFuncD
         {
             {
                 std::make_pair(TYPE_INT, TYPE_INT),
-                [](operationInputsDouble) { rV = std::make_shared<vInt>(get_vInt(a) * get_vInt(b)); }
+                [](operationInputsDouble) { rV = makeSmartPointer<vInt>(get_vInt(a) * get_vInt(b)); }
             }
         }
     },
@@ -141,7 +143,7 @@ const std::unordered_map<OpCodeEnum, std::unordered_map<Operands, operationFuncD
         {
             {
                 std::make_pair(TYPE_INT, TYPE_INT),
-                [](operationInputsDouble) { rV = std::make_shared<vInt>(get_vInt(a) / get_vInt(b)); }
+                [](operationInputsDouble) { rV = makeSmartPointer<vInt>(get_vInt(a) / get_vInt(b)); }
             }
         }
     },
@@ -150,7 +152,7 @@ const std::unordered_map<OpCodeEnum, std::unordered_map<Operands, operationFuncD
         {
             {
                 std::make_pair(TYPE_INT, TYPE_INT),
-                [](operationInputsDouble) { rV = std::make_shared<vInt>(get_vInt(a) % get_vInt(b)); }
+                [](operationInputsDouble) { rV = makeSmartPointer<vInt>(get_vInt(a) % get_vInt(b)); }
             }
         }
     },
@@ -161,27 +163,27 @@ const std::unordered_map<OpCodeEnum, std::unordered_map<Operands, operationFuncD
         {
             {
                 std::make_pair(TYPE_INT, TYPE_INT),
-                [](operationInputsDouble) { rV = std::make_shared<vBool>(get_vInt(a) == get_vInt(b)); }
+                [](operationInputsDouble) { rV = makeSmartPointer<vBool>(get_vInt(a) == get_vInt(b)); }
             },
             {
                 std::make_pair(TYPE_BOOL, TYPE_BOOL),
-                [](operationInputsDouble) { rV = std::make_shared<vBool>(get_vBool(a) == get_vBool(b)); }
+                [](operationInputsDouble) { rV = makeSmartPointer<vBool>(get_vBool(a) == get_vBool(b)); }
             },
             {
                 std::make_pair(TYPE_BOOL, TYPE_INT),
-                [](operationInputsDouble) { rV = std::make_shared<vBool>(get_vBool(a) == get_vInt(b)); }
+                [](operationInputsDouble) { rV = makeSmartPointer<vBool>(get_vBool(a) == get_vInt(b)); }
             },
             {
                 std::make_pair(TYPE_INT, TYPE_BOOL),
-                [](operationInputsDouble) { rV = std::make_shared<vBool>(get_vInt(a) == get_vBool(b)); }
+                [](operationInputsDouble) { rV = makeSmartPointer<vBool>(get_vInt(a) == get_vBool(b)); }
             },
             {
                 std::make_pair(TYPE_STRING, TYPE_STRING),
-                [](operationInputsDouble) { rV = std::make_shared<vBool>(strcmp(get_vString(a), get_vString(b)) == 0); }
+                [](operationInputsDouble) { rV = makeSmartPointer<vBool>(strcmp(get_vString(a), get_vString(b)) == 0); }
             },
             {
                 std::make_pair(TYPE_MEM_PTR, TYPE_MEM_PTR),
-                [](operationInputsDouble) { rV = std::make_shared<vBool>(get_vMemPtr(a) == get_vMemPtr(b)); }
+                [](operationInputsDouble) { rV = makeSmartPointer<vBool>(get_vMemPtr(a) == get_vMemPtr(b)); }
             },
         }
     },
@@ -191,27 +193,27 @@ const std::unordered_map<OpCodeEnum, std::unordered_map<Operands, operationFuncD
         {
             {
                 std::make_pair(TYPE_INT, TYPE_INT),
-                [](operationInputsDouble) { rV = std::make_shared<vBool>(get_vInt(a) != get_vInt(b)); }
+                [](operationInputsDouble) { rV = makeSmartPointer<vBool>(get_vInt(a) != get_vInt(b)); }
             },
             {
                 std::make_pair(TYPE_BOOL, TYPE_BOOL),
-                [](operationInputsDouble) { rV = std::make_shared<vBool>(get_vBool(a) != get_vBool(b)); }
+                [](operationInputsDouble) { rV = makeSmartPointer<vBool>(get_vBool(a) != get_vBool(b)); }
             },
             {
                 std::make_pair(TYPE_BOOL, TYPE_INT),
-                [](operationInputsDouble) { rV = std::make_shared<vBool>(get_vBool(a) != get_vInt(b)); }
+                [](operationInputsDouble) { rV = makeSmartPointer<vBool>(get_vBool(a) != get_vInt(b)); }
             },
             {
                 std::make_pair(TYPE_INT, TYPE_BOOL),
-                [](operationInputsDouble) { rV = std::make_shared<vBool>(get_vInt(a) != get_vBool(b)); }
+                [](operationInputsDouble) { rV = makeSmartPointer<vBool>(get_vInt(a) != get_vBool(b)); }
             },
             {
                 std::make_pair(TYPE_STRING, TYPE_STRING),
-                [](operationInputsDouble) { rV = std::make_shared<vBool>(strcmp(get_vString(a), get_vString(b)) != 0); }
+                [](operationInputsDouble) { rV = makeSmartPointer<vBool>(strcmp(get_vString(a), get_vString(b)) != 0); }
             },
             {
                 std::make_pair(TYPE_MEM_PTR, TYPE_MEM_PTR),
-                [](operationInputsDouble) { rV = std::make_shared<vBool>(get_vMemPtr(a) != get_vMemPtr(b)); }
+                [](operationInputsDouble) { rV = makeSmartPointer<vBool>(get_vMemPtr(a) != get_vMemPtr(b)); }
             },
         }
     },
@@ -221,7 +223,7 @@ const std::unordered_map<OpCodeEnum, std::unordered_map<Operands, operationFuncD
         {
             {
                 std::make_pair(TYPE_INT, TYPE_INT),
-                [](operationInputsDouble) { rV = std::make_shared<vBool>(get_vInt(a) > get_vInt(b)); }
+                [](operationInputsDouble) { rV = makeSmartPointer<vBool>(get_vInt(a) > get_vInt(b)); }
             }
         }
     },
@@ -230,7 +232,7 @@ const std::unordered_map<OpCodeEnum, std::unordered_map<Operands, operationFuncD
         {
             {
                 std::make_pair(TYPE_INT, TYPE_INT),
-                [](operationInputsDouble) { rV = std::make_shared<vBool>(get_vInt(a) < get_vInt(b)); }
+                [](operationInputsDouble) { rV = makeSmartPointer<vBool>(get_vInt(a) < get_vInt(b)); }
             }
         }
     },
@@ -239,7 +241,7 @@ const std::unordered_map<OpCodeEnum, std::unordered_map<Operands, operationFuncD
         {
             {
                 std::make_pair(TYPE_INT, TYPE_INT),
-                [](operationInputsDouble) { rV = std::make_shared<vBool>(get_vInt(a) >= get_vInt(b)); }
+                [](operationInputsDouble) { rV = makeSmartPointer<vBool>(get_vInt(a) >= get_vInt(b)); }
             }
         }
     },
@@ -248,7 +250,7 @@ const std::unordered_map<OpCodeEnum, std::unordered_map<Operands, operationFuncD
         {
             {
                 std::make_pair(TYPE_INT, TYPE_INT),
-                [](operationInputsDouble) { rV = std::make_shared<vBool>(get_vInt(a) <= get_vInt(b)); }
+                [](operationInputsDouble) { rV = makeSmartPointer<vBool>(get_vInt(a) <= get_vInt(b)); }
             }
         }
     },
@@ -258,11 +260,11 @@ const std::unordered_map<OpCodeEnum, std::unordered_map<Operands, operationFuncD
         {
             {
                 std::make_pair(TYPE_INT, TYPE_INT),
-                [](operationInputsDouble) { rV = std::make_shared<vInt>(get_vInt(a) & get_vInt(b)); }
+                [](operationInputsDouble) { rV = makeSmartPointer<vInt>(get_vInt(a) & get_vInt(b)); }
             },
             {
                 std::make_pair(TYPE_BOOL, TYPE_BOOL),
-                [](operationInputsDouble) { rV = std::make_shared<vBool>(get_vBool(a) && get_vBool(b)); }
+                [](operationInputsDouble) { rV = makeSmartPointer<vBool>(get_vBool(a) && get_vBool(b)); }
             }
         }
     },
@@ -271,11 +273,11 @@ const std::unordered_map<OpCodeEnum, std::unordered_map<Operands, operationFuncD
         {
             {
                 std::make_pair(TYPE_INT, TYPE_INT),
-                [](operationInputsDouble) { rV = std::make_shared<vInt>(get_vInt(a) | get_vInt(b)); }
+                [](operationInputsDouble) { rV = makeSmartPointer<vInt>(get_vInt(a) | get_vInt(b)); }
             },
             {
                 std::make_pair(TYPE_BOOL, TYPE_BOOL),
-                [](operationInputsDouble) { rV = std::make_shared<vBool>(get_vBool(a) || get_vBool(b)); }
+                [](operationInputsDouble) { rV = makeSmartPointer<vBool>(get_vBool(a) || get_vBool(b)); }
             }
         }
     },
@@ -284,7 +286,7 @@ const std::unordered_map<OpCodeEnum, std::unordered_map<Operands, operationFuncD
         {
             {
                 std::make_pair(TYPE_INT, TYPE_INT),
-                [](operationInputsDouble) { rV = std::make_shared<vInt>(get_vInt(a) >> get_vInt(b)); }
+                [](operationInputsDouble) { rV = makeSmartPointer<vInt>(get_vInt(a) >> get_vInt(b)); }
             }
         }
     },
@@ -293,13 +295,13 @@ const std::unordered_map<OpCodeEnum, std::unordered_map<Operands, operationFuncD
         {
             {
                 std::make_pair(TYPE_INT, TYPE_INT),
-                [](operationInputsDouble) { rV = std::make_shared<vInt>(get_vInt(a) << get_vInt(b)); }
+                [](operationInputsDouble) { rV = makeSmartPointer<vInt>(get_vInt(a) << get_vInt(b)); }
             }
         }
     }
 };
 
-// void value_subtract(std::shared_ptr<Value> a, std::shared_ptr<Value> b, std::shared_ptr<Value>& rV, const OpCode& op)
+// void value_subtract(SmartPointer a, SmartPointer b, SmartPointer& rV, const OpCode& op)
 // {
 //     switch (a->type)
 //     {
@@ -321,15 +323,15 @@ const std::unordered_map<OpCodeEnum, std::unordered_map<Operands, operationFuncD
 
 //     if (a->type == TYPE_INT && b->type == TYPE_INT)
 //     {
-//         rV = std::shared_ptr<Value>(new vInt(get_vInt(a) - get_vInt(b)));
+//         rV = SmartPointer(new vInt(get_vInt(a) - get_vInt(b)));
 //     }
 //     else if (a->type == TYPE_MEM_PTR && b->type == TYPE_INT)
 //     {
-//         rV = std::shared_ptr<Value>(new vMemPtr(get_vMemPtr(a) - get_vInt(b)));
+//         rV = SmartPointer(new vMemPtr(get_vMemPtr(a) - get_vInt(b)));
 //     }
 //     else if (a->type == TYPE_MEM_PTR && b->type == TYPE_MEM_PTR)
 //     {
-//         rV = std::shared_ptr<Value>(new vMemPtr(get_vMemPtr(a) - get_vMemPtr(b)));
+//         rV = SmartPointer(new vMemPtr(get_vMemPtr(a) - get_vMemPtr(b)));
 //     }
 //     else
 //     {
@@ -337,7 +339,7 @@ const std::unordered_map<OpCodeEnum, std::unordered_map<Operands, operationFuncD
 //     }
 // }
 
-// void value_multiply(std::shared_ptr<Value> a, std::shared_ptr<Value> b, std::shared_ptr<Value>& rV, const OpCode& op)
+// void value_multiply(SmartPointer a, SmartPointer b, SmartPointer& rV, const OpCode& op)
 // {
 //     if (a->type != TYPE_INT)
 //         Error::runtimeError(op, "Invalid Type. %s was expected but found %s instead", ValueTypeString[TYPE_INT], ValueTypeString[a->type]);
@@ -346,7 +348,7 @@ const std::unordered_map<OpCodeEnum, std::unordered_map<Operands, operationFuncD
 
 //     if (a->type == TYPE_INT && b->type == TYPE_INT)
 //     {
-//         rV = std::shared_ptr<Value>(new vInt(get_vInt(a) * get_vInt(b)));
+//         rV = SmartPointer(new vInt(get_vInt(a) * get_vInt(b)));
 //     }
 //     else
 //     {
@@ -354,7 +356,7 @@ const std::unordered_map<OpCodeEnum, std::unordered_map<Operands, operationFuncD
 //     }
 // }
 
-// void value_divide(std::shared_ptr<Value> a, std::shared_ptr<Value> b, std::shared_ptr<Value>& rV, const OpCode& op)
+// void value_divide(SmartPointer a, SmartPointer b, SmartPointer& rV, const OpCode& op)
 // {
 //     if (a->type != TYPE_INT)
 //         Error::runtimeError(op, "Invalid Type. %s was expected but found %s instead", ValueTypeString[TYPE_INT], ValueTypeString[a->type]);
@@ -363,7 +365,7 @@ const std::unordered_map<OpCodeEnum, std::unordered_map<Operands, operationFuncD
 
 //     if (a->type == TYPE_INT && b->type == TYPE_INT)
 //     {
-//         rV = std::shared_ptr<Value>(new vInt(get_vInt(a) / get_vInt(b)));
+//         rV = SmartPointer(new vInt(get_vInt(a) / get_vInt(b)));
 //     }
 //     else
 //     {
@@ -371,7 +373,7 @@ const std::unordered_map<OpCodeEnum, std::unordered_map<Operands, operationFuncD
 //     }
 // }
 
-// void value_mod(std::shared_ptr<Value> a, std::shared_ptr<Value> b, std::shared_ptr<Value>& rV, const OpCode& op)
+// void value_mod(SmartPointer a, SmartPointer b, SmartPointer& rV, const OpCode& op)
 // {
 //     if (a->type != TYPE_INT)
 //         Error::runtimeError(op, "Invalid Type. %s was expected but found %s instead", ValueTypeString[TYPE_INT], ValueTypeString[a->type]);
@@ -380,7 +382,7 @@ const std::unordered_map<OpCodeEnum, std::unordered_map<Operands, operationFuncD
 
 //     if (a->type == TYPE_INT && b->type == TYPE_INT)
 //     {
-//         rV = std::shared_ptr<Value>(new vInt(get_vInt(a) % get_vInt(b)));
+//         rV = SmartPointer(new vInt(get_vInt(a) % get_vInt(b)));
 //     }
 //     else
 //     {
@@ -389,7 +391,7 @@ const std::unordered_map<OpCodeEnum, std::unordered_map<Operands, operationFuncD
 // }
 
 
-// void value_equal(std::shared_ptr<Value> a, std::shared_ptr<Value> b, std::shared_ptr<Value>& rV, const OpCode& op)
+// void value_equal(SmartPointer a, SmartPointer b, SmartPointer& rV, const OpCode& op)
 // {
 //     switch (a->type)
 //     {
@@ -421,23 +423,23 @@ const std::unordered_map<OpCodeEnum, std::unordered_map<Operands, operationFuncD
 
 //     if (a->type == TYPE_INT && b->type == TYPE_INT)
 //     {
-//         rV = std::shared_ptr<Value>(new vBool(get_vInt(a) == get_vInt(b)));
+//         rV = SmartPointer(new vBool(get_vInt(a) == get_vInt(b)));
 //     }
 //     else if (a->type == TYPE_BOOL && b->type == TYPE_BOOL)
 //     {
-//         rV = std::shared_ptr<Value>(new vBool(get_vBool(a) == get_vBool(b)));
+//         rV = SmartPointer(new vBool(get_vBool(a) == get_vBool(b)));
 //     }
 //     else if (a->type == TYPE_BOOL && b->type == TYPE_INT)
 //     {
-//         rV = std::shared_ptr<Value>(new vBool(get_vBool(a) == get_vInt(b)));
+//         rV = SmartPointer(new vBool(get_vBool(a) == get_vInt(b)));
 //     }
 //     else if (a->type == TYPE_INT && b->type == TYPE_BOOL)
 //     {
-//         rV = std::shared_ptr<Value>(new vBool(get_vInt(a) == get_vBool(b)));
+//         rV = SmartPointer(new vBool(get_vInt(a) == get_vBool(b)));
 //     }
 //     else if (a->type == TYPE_MEM_PTR) // Both are equal
 //     {
-//         rV = std::shared_ptr<Value>(new vBool(get_vMemPtr(a) == get_vMemPtr(b)));
+//         rV = SmartPointer(new vBool(get_vMemPtr(a) == get_vMemPtr(b)));
 //     }
 //     else
 //     {
@@ -445,7 +447,7 @@ const std::unordered_map<OpCodeEnum, std::unordered_map<Operands, operationFuncD
 //     }
 // }
 
-// void value_not_equal(std::shared_ptr<Value> a, std::shared_ptr<Value> b, std::shared_ptr<Value>& rV, const OpCode& op)
+// void value_not_equal(SmartPointer a, SmartPointer b, SmartPointer& rV, const OpCode& op)
 // {
 //     switch (a->type)
 //     {
@@ -475,23 +477,23 @@ const std::unordered_map<OpCodeEnum, std::unordered_map<Operands, operationFuncD
 
 //     if (a->type == TYPE_INT && b->type == TYPE_INT)
 //     {
-//         rV = std::shared_ptr<Value>(new vBool(get_vInt(a) != get_vInt(b)));
+//         rV = SmartPointer(new vBool(get_vInt(a) != get_vInt(b)));
 //     }
 //     else if (a->type == TYPE_BOOL && b->type == TYPE_BOOL)
 //     {
-//         rV = std::shared_ptr<Value>(new vBool(get_vBool(a) != get_vBool(b)));
+//         rV = SmartPointer(new vBool(get_vBool(a) != get_vBool(b)));
 //     }
 //     else if (a->type == TYPE_BOOL && b->type == TYPE_INT)
 //     {
-//         rV = std::shared_ptr<Value>(new vBool(get_vBool(a) != get_vInt(b)));
+//         rV = SmartPointer(new vBool(get_vBool(a) != get_vInt(b)));
 //     }
 //     else if (a->type == TYPE_INT && b->type == TYPE_BOOL)
 //     {
-//         rV = std::shared_ptr<Value>(new vBool(get_vInt(a) != get_vBool(b)));
+//         rV = SmartPointer(new vBool(get_vInt(a) != get_vBool(b)));
 //     }
 //     else if (a->type == TYPE_MEM_PTR) // Both are equal
 //     {
-//         rV = std::shared_ptr<Value>(new vBool(get_vMemPtr(a) != get_vMemPtr(b)));
+//         rV = SmartPointer(new vBool(get_vMemPtr(a) != get_vMemPtr(b)));
 //     }
 //     else
 //     {
@@ -499,7 +501,7 @@ const std::unordered_map<OpCodeEnum, std::unordered_map<Operands, operationFuncD
 //     }
 // }
 
-// void value_greater(std::shared_ptr<Value> a, std::shared_ptr<Value> b, std::shared_ptr<Value>& rV, const OpCode& op)
+// void value_greater(SmartPointer a, SmartPointer b, SmartPointer& rV, const OpCode& op)
 // {
 //     if (a->type != TYPE_INT)
 //         Error::runtimeError(op, "Invalid Type %s", ValueTypeString[a->type]);
@@ -508,7 +510,7 @@ const std::unordered_map<OpCodeEnum, std::unordered_map<Operands, operationFuncD
 
 //     if (a->type == TYPE_INT && b->type == TYPE_INT)
 //     {
-//         rV = std::shared_ptr<Value>(new vBool(get_vInt(a) > get_vInt(b)));
+//         rV = SmartPointer(new vBool(get_vInt(a) > get_vInt(b)));
 //     }
 //     else
 //     {
@@ -516,7 +518,7 @@ const std::unordered_map<OpCodeEnum, std::unordered_map<Operands, operationFuncD
 //     }
 // }
 
-// void value_less(std::shared_ptr<Value> a, std::shared_ptr<Value> b, std::shared_ptr<Value>& rV, const OpCode& op)
+// void value_less(SmartPointer a, SmartPointer b, SmartPointer& rV, const OpCode& op)
 // {
 //     if (a->type != TYPE_INT)
 //         Error::runtimeError(op, "Invalid Type %s", ValueTypeString[a->type]);
@@ -525,7 +527,7 @@ const std::unordered_map<OpCodeEnum, std::unordered_map<Operands, operationFuncD
 
 //     if (a->type == TYPE_INT && b->type == TYPE_INT)
 //     {
-//         rV = std::shared_ptr<Value>(new vBool(get_vInt(a) < get_vInt(b)));
+//         rV = SmartPointer(new vBool(get_vInt(a) < get_vInt(b)));
 //     }
 //     else
 //     {
@@ -533,7 +535,7 @@ const std::unordered_map<OpCodeEnum, std::unordered_map<Operands, operationFuncD
 //     }
 // }
 
-// void value_greater_equal(std::shared_ptr<Value> a, std::shared_ptr<Value> b, std::shared_ptr<Value>& rV, const OpCode& op)
+// void value_greater_equal(SmartPointer a, SmartPointer b, SmartPointer& rV, const OpCode& op)
 // {
 //     if (a->type != TYPE_INT)
 //         Error::runtimeError(op, "Invalid Type %s", ValueTypeString[a->type]);
@@ -542,7 +544,7 @@ const std::unordered_map<OpCodeEnum, std::unordered_map<Operands, operationFuncD
 
 //     if (a->type == TYPE_INT && b->type == TYPE_INT)
 //     {
-//         rV = std::shared_ptr<Value>(new vBool(get_vInt(a) >= get_vInt(b)));
+//         rV = SmartPointer(new vBool(get_vInt(a) >= get_vInt(b)));
 //     }
 //     else
 //     {
@@ -550,7 +552,7 @@ const std::unordered_map<OpCodeEnum, std::unordered_map<Operands, operationFuncD
 //     }
 // }
 
-// void value_less_equal(std::shared_ptr<Value> a, std::shared_ptr<Value> b, std::shared_ptr<Value>& rV, const OpCode& op)
+// void value_less_equal(SmartPointer a, SmartPointer b, SmartPointer& rV, const OpCode& op)
 // {
 //     if (a->type != TYPE_INT)
 //         Error::runtimeError(op, "Invalid Type %s", ValueTypeString[a->type]);
@@ -559,7 +561,7 @@ const std::unordered_map<OpCodeEnum, std::unordered_map<Operands, operationFuncD
 
 //     if (a->type == TYPE_INT && b->type == TYPE_INT)
 //     {
-//         rV = std::shared_ptr<Value>(new vBool(get_vInt(a) <= get_vInt(b)));
+//         rV = SmartPointer(new vBool(get_vInt(a) <= get_vInt(b)));
 //     }
 //     else
 //     {
@@ -567,23 +569,23 @@ const std::unordered_map<OpCodeEnum, std::unordered_map<Operands, operationFuncD
 //     }
 // }
 
-// void value_invert(std::shared_ptr<Value> a, std::shared_ptr<Value>& rV, const OpCode& op)
+// void value_invert(SmartPointer a, SmartPointer& rV, const OpCode& op)
 // {
 //     if (a->type != TYPE_BOOL)
 //         Error::runtimeError(op, "Invalid Type %s", ValueTypeString[a->type]);
 
-//     rV = std::shared_ptr<Value>(new vBool(!get_vBool(a)));
+//     rV = SmartPointer(new vBool(!get_vBool(a)));
 // }
 
-// void value_lnot(std::shared_ptr<Value> a, std::shared_ptr<Value>& rV, const OpCode& op)
+// void value_lnot(SmartPointer a, SmartPointer& rV, const OpCode& op)
 // {
 //     if (a->type != TYPE_INT)
 //         Error::runtimeError(op, "Invalid Type %s", ValueTypeString[a->type]);
 
-//     rV = std::shared_ptr<Value>(new vInt(~get_vInt(a)));
+//     rV = SmartPointer(new vInt(~get_vInt(a)));
 // }
 
-// void value_land(std::shared_ptr<Value> a, std::shared_ptr<Value> b, std::shared_ptr<Value>& rV, const OpCode& op)
+// void value_land(SmartPointer a, SmartPointer b, SmartPointer& rV, const OpCode& op)
 // {
 //     switch (a->type)
 //     {
@@ -608,11 +610,11 @@ const std::unordered_map<OpCodeEnum, std::unordered_map<Operands, operationFuncD
 
 //     if (a->type == TYPE_INT && b->type == TYPE_INT)
 //     {
-//         rV = std::shared_ptr<Value>(new vInt(get_vInt(a) & get_vInt(b)));
+//         rV = SmartPointer(new vInt(get_vInt(a) & get_vInt(b)));
 //     }
 //     else if (a->type == TYPE_BOOL && b->type == TYPE_BOOL)
 //     {
-//         rV = std::shared_ptr<Value>(new vBool(get_vBool(a) && get_vBool(b)));
+//         rV = SmartPointer(new vBool(get_vBool(a) && get_vBool(b)));
 //     }
 //     else
 //     {
@@ -620,7 +622,7 @@ const std::unordered_map<OpCodeEnum, std::unordered_map<Operands, operationFuncD
 //     }
 // }
 
-// void value_lor(std::shared_ptr<Value> a, std::shared_ptr<Value> b, std::shared_ptr<Value>& rV, const OpCode& op)
+// void value_lor(SmartPointer a, SmartPointer b, SmartPointer& rV, const OpCode& op)
 // {
 //     switch (a->type)
 //     {
@@ -645,11 +647,11 @@ const std::unordered_map<OpCodeEnum, std::unordered_map<Operands, operationFuncD
 
 //     if (a->type == TYPE_INT && b->type == TYPE_INT)
 //     {
-//         rV = std::shared_ptr<Value>(new vInt(get_vInt(a) | get_vInt(b)));
+//         rV = SmartPointer(new vInt(get_vInt(a) | get_vInt(b)));
 //     }
 //     else if (a->type == TYPE_BOOL && b->type == TYPE_BOOL)
 //     {
-//         rV = std::shared_ptr<Value>(new vBool(get_vBool(a) || get_vBool(b)));
+//         rV = SmartPointer(new vBool(get_vBool(a) || get_vBool(b)));
 //     }
 //     else
 //     {
@@ -657,7 +659,7 @@ const std::unordered_map<OpCodeEnum, std::unordered_map<Operands, operationFuncD
 //     }
 // }
 
-// void value_rshift(std::shared_ptr<Value> a, std::shared_ptr<Value> b, std::shared_ptr<Value>& rV, const OpCode& op)
+// void value_rshift(SmartPointer a, SmartPointer b, SmartPointer& rV, const OpCode& op)
 // {
 //     switch (a->type)
 //     {
@@ -675,10 +677,10 @@ const std::unordered_map<OpCodeEnum, std::unordered_map<Operands, operationFuncD
 //             Error::runtimeError(op, "Invalid Type. %s was expected but found %s instead", ValueTypeString[TYPE_INT], ValueTypeString[a->type]);
 //     }
 
-//     rV = std::shared_ptr<Value>(new vInt(get_vInt(a) >> get_vInt(b)));
+//     rV = SmartPointer(new vInt(get_vInt(a) >> get_vInt(b)));
 // }
 
-// void value_lshift(std::shared_ptr<Value> a, std::shared_ptr<Value> b, std::shared_ptr<Value>& rV, const OpCode& op)
+// void value_lshift(SmartPointer a, SmartPointer b, SmartPointer& rV, const OpCode& op)
 // {
 //     switch (a->type)
 //     {
@@ -696,5 +698,5 @@ const std::unordered_map<OpCodeEnum, std::unordered_map<Operands, operationFuncD
 //             Error::runtimeError(op, "Invalid Type. %s was expected but found %s instead", ValueTypeString[TYPE_INT], ValueTypeString[a->type]);
 //     }
 
-//     rV = std::shared_ptr<Value>(new vInt(get_vInt(a) << get_vInt(b)));
+//     rV = SmartPointer(new vInt(get_vInt(a) << get_vInt(b)));
 // }

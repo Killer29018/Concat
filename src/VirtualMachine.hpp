@@ -4,15 +4,15 @@
 #include <vector>
 #include <stack>
 #include <unordered_map>
-#include <memory>
 
+#include "SmartPointer.hpp"
 #include "OpCodes.hpp"
 
 class VM
 {
 private:
     static std::vector<OpCode> m_OpCodes;
-    static std::stack<std::shared_ptr<Value>> m_Stack;
+    static std::stack<SmartPointer> m_Stack;
 
     static std::vector<uint8_t> m_Memory;
     static std::unordered_map<uint32_t, size_t> m_MemoryNames;
@@ -37,12 +37,12 @@ private:
 
     static void operation(const OpCode& op, size_t& ip);
 
-    static const std::shared_ptr<Value> loadMemory(const std::shared_ptr<Value>& address, size_t bytes);
-    static void writeMemory(const std::shared_ptr<Value>& address, const std::shared_ptr<Value>& value, size_t bytes);
+    static const SmartPointer loadMemory(const SmartPointer& address, size_t bytes);
+    static void writeMemory(const SmartPointer& address, const SmartPointer& value, size_t bytes);
 
     static void inplaceMemOperation(const OpCode& op);
 
-    static const std::shared_ptr<Value> pop() { const std::shared_ptr<Value> v = m_Stack.top(); m_Stack.pop(); return v; }
+    static const SmartPointer pop() { const SmartPointer v = m_Stack.top(); m_Stack.pop(); return v; }
 };
 
 #endif

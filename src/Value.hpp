@@ -6,8 +6,6 @@
 #include <cstdlib>
 #include <cstdio>
 
-#include <memory>
-
 #include <vector>
 
 #include <unordered_map>
@@ -91,6 +89,7 @@ struct vString : Value
 {
     char* v;
     vString(char* value) : Value(TYPE_STRING), v(value) {}
+    ~vString() { printf("Freed\n"); free(v); }
 };
 #define as_vString(val)    ((vString*)(val.get()))
 #define get_vString(val)   (((vString*)(val.get()))->v)
@@ -126,14 +125,16 @@ struct hashPair
     }
 };
 
-void runValueOperationSingle(const std::shared_ptr<Value>& a, std::shared_ptr<Value>& rV, const OpCode& op);
-void runValueOperationDouble(const std::shared_ptr<Value>& a, const std::shared_ptr<Value>& b, std::shared_ptr<Value>& rV, const OpCode& op);
+class SmartPointer;
 
-typedef void (*operationFuncSingle)(const std::shared_ptr<Value>&, std::shared_ptr<Value>&);
-typedef void (*operationFuncDouble)(const std::shared_ptr<Value>&, const std::shared_ptr<Value>&, std::shared_ptr<Value>&);
+void runValueOperationSingle(const SmartPointer& a, SmartPointer& rV, const OpCode& op);
+void runValueOperationDouble(const SmartPointer& a, const SmartPointer& b, SmartPointer& rV, const OpCode& op);
 
-#define operationInputsSingle const std::shared_ptr<Value>& a, std::shared_ptr<Value>& rV
-#define operationInputsDouble const std::shared_ptr<Value>& a, const std::shared_ptr<Value>& b, std::shared_ptr<Value>& rV
+typedef void (*operationFuncSingle)(const SmartPointer&, SmartPointer&);
+typedef void (*operationFuncDouble)(const SmartPointer&, const SmartPointer&, SmartPointer&);
+
+#define operationInputsSingle const SmartPointer& a, SmartPointer& rV
+#define operationInputsDouble const SmartPointer& a, const SmartPointer& b, SmartPointer& rV
 typedef std::pair<ValueType, ValueType> Operands;
 
 extern const std::unordered_map<OpCodeEnum, std::unordered_map<ValueType, operationFuncSingle>>          ValueOperationSingle;

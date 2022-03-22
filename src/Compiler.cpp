@@ -97,7 +97,7 @@ void Compiler::startCompiler()
                         size_t index = std::distance(m_Variables.begin(), m_Variables.find(word));
                         // addBasicOpCode(code, ip, OP_LOAD_VAR);
                         code.code = OP_LOAD_MEM;
-                        code.value = std::shared_ptr<Value>(new vMemPtr(index));
+                        code.value = makeSmartPointer<vMemPtr>(index);
                         VM::addOpCode(code);
                         ip++;
                     }
@@ -129,7 +129,7 @@ void Compiler::startCompiler()
                                 size_t index = std::distance(m_Variables.begin(), m_Variables.find(word));
                                 // addBasicOpCode(code, ip, OP_LOAD_VAR);
                                 code.code = OP_CREATE_MEM;
-                                code.value = std::shared_ptr<Value>(new vMemPtr(index));
+                                code.value = makeSmartPointer<vMemPtr>(index);
                                 VM::addOpCode(code);
                                 break;
                             }
@@ -209,7 +209,7 @@ void Compiler::startCompiler()
                 {
                     code.code = OP_PUSH_INT;
                     int32_t value = atoi(word);
-                    code.value = std::shared_ptr<Value>(new vInt(value));
+                    code.value = makeSmartPointer<vInt>(value);
 
                     VM::addOpCode(code);
                     ip++;
@@ -221,7 +221,7 @@ void Compiler::startCompiler()
                     char c = *(word + 1);
                     if (length == 4) c = parseEscapeCharacter(word);
 
-                    code.value = std::shared_ptr<Value>(new vChar(c));
+                    code.value = makeSmartPointer<vChar>(c);
 
                     VM::addOpCode(code);
                     ip++;
@@ -237,7 +237,7 @@ void Compiler::startCompiler()
                     strncpy(c, parsed.c_str(), parsed.size() - 1);
                     c[parsed.size() - 1] = 0x00;
 
-                    code.value = std::shared_ptr<Value>(new vString(c));
+                    code.value = makeSmartPointer<vString>(c);
 
                     VM::addOpCode(code);
                     ip++;
@@ -246,7 +246,7 @@ void Compiler::startCompiler()
             case TOKEN_TRUE:
                 {
                     code.code = OP_TRUE;
-                    code.value = std::shared_ptr<Value>(new vBool(true));
+                    code.value = makeSmartPointer<vBool>(true);
 
                     VM::addOpCode(code);
                     ip++;
@@ -256,7 +256,7 @@ void Compiler::startCompiler()
                 {
                     code.code = OP_FALSE;
                     // code.value = { TYPE_BOOL, 0 };
-                    code.value = std::shared_ptr<Value>(new vBool(false));
+                    code.value = makeSmartPointer<vBool>(false);
 
                     VM::addOpCode(code);
                     ip++;
@@ -401,7 +401,7 @@ void Compiler::startCompiler()
 
                     code.code = OP_THEN;
                     // code.value = { TYPE_IP_OFFSET, 0 };
-                    code.value = std::shared_ptr<Value>(new vIpOffset(0));
+                    code.value = makeSmartPointer<vIpOffset>(0);
                     VM::addOpCode(code);
                     ip++;
                     break;
@@ -474,7 +474,7 @@ void Compiler::startCompiler()
 
                    code.code = OP_ELSEIF;
                    // code.value = { TYPE_IP_OFFSET, 0 };
-                   code.value = std::shared_ptr<Value>(new vIpOffset(0));
+                   code.value = makeSmartPointer<vIpOffset>(0);
                    VM::addOpCode(code);
                    ip++;
                    break;
@@ -513,15 +513,15 @@ void Compiler::startCompiler()
 
                    code.code = OP_ELSE;
                    // code.value = { TYPE_IP_OFFSET, 0 };
-                   code.value = std::shared_ptr<Value>(new vIpOffset(0));
+                   code.value = makeSmartPointer<vIpOffset>(0);
                    VM::addOpCode(code);
                    ip++;
                    break;
                }
-            case TOKEN_ENDIF: // TODO Check for if
+            case TOKEN_ENDIF:
                addBasicOpcode(code, ip, OP_ENDIF); break;
 
-            case TOKEN_WHILE: // TODO Check for do
+            case TOKEN_WHILE:
                addBasicOpcode(code, ip, OP_WHILE); break;
             case TOKEN_DO:
                 {
@@ -588,7 +588,7 @@ void Compiler::startCompiler()
 
                     code.code = OP_DO;
                     // code.value = { TYPE_IP_OFFSET, 0 };
-                    code.value = std::shared_ptr<Value>(new vIpOffset(0));
+                    code.value = makeSmartPointer<vIpOffset>(0);
                     VM::addOpCode(code);
                     ip++;
                     break;
@@ -627,7 +627,7 @@ void Compiler::startCompiler()
 
                     code.code = OP_ENDWHILE;
                     // code.value = { TYPE_IP_OFFSET, 0 };
-                    code.value = std::shared_ptr<Value>(new vIpOffset(0));
+                    code.value = makeSmartPointer<vIpOffset>(0);
                     VM::addOpCode(code);
                     ip++;
                     break;

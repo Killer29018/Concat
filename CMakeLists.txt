@@ -8,6 +8,7 @@ set (linker "")
 
 set (OUTPUT_DIRECTORY "${PROJECT_SOURCE_DIR}")
 set (CMAKE_RUNTIME_OUTPUT_DIRECTORY "${OUTPUT_DIRECTORY}")
+set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++2a")
 
 if (CMAKE_BUILD_TYPE MATCHES Debug)
     message  ("Building Debug")

@@ -4,6 +4,7 @@
 #include <vector>
 
 #include "Value.hpp"
+#include "SmartPointer.hpp"
 
 enum OpCodeEnum : uint16_t
 {
@@ -148,7 +149,8 @@ struct OpCode
     size_t line;        // 4
     size_t column;      // 4
 
-    std::shared_ptr<Value> value;
+    // std::shared_ptr<Value> value;
+    SmartPointer value;
 };
 
 #endif

@@ -9,7 +9,7 @@
 #include "Builder.hpp"
 
 std::vector<OpCode> VM::m_OpCodes;
-std::stack<std::shared_ptr<Value>> VM::m_Stack;
+std::stack<SmartPointer> VM::m_Stack;
 std::vector<uint8_t> VM::m_Memory;
 std::unordered_map<uint32_t, size_t> VM::m_MemoryNames;
 int32_t VM::m_CurrentVarIndex = -1;
@@ -32,7 +32,7 @@ void VM::pushInt(int32_t value)
 {
     OpCode op;
     op.code = OP_PUSH_INT;
-    op.value = std::make_shared<vInt>(value);
+    op.value = makeSmartPointer<vInt>(value);
     m_OpCodes.emplace_back(op);
 }
 
@@ -108,7 +108,7 @@ void VM::simulate()
         case OP_LOAD_MEM:
             {
                 size_t index = m_MemoryNames.at(get_vMemPtr(op.value));
-                std::shared_ptr<Value> a = std::make_shared<vMemPtr>(index);
+                SmartPointer a = makeSmartPointer<vMemPtr>(index);
                 m_Stack.push(a);
                 ip++;
                 break;
@@ -118,7 +118,7 @@ void VM::simulate()
                 if (m_Stack.size() < 1)
                     Error::stackTooSmallError(op, 1);
 
-                const std::shared_ptr<Value>& a = pop();
+                const SmartPointer& a = pop();
 
                 if (m_CurrentVarIndex == -1)
                     assert(false && "Unreachable. Should be dealt with in Compiler");
@@ -142,14 +142,14 @@ void VM::simulate()
                 if (m_Stack.size() < 1)
                     Error::stackTooSmallError(op, 1);
 
-                const std::shared_ptr<Value>& a = pop();
+                const SmartPointer& a = pop();
 
                 if (a->type != TYPE_MEM_PTR)
                 {
                     Error::runtimeError(op, "Invalid Type. %s was expected but found %s instead", ValueTypeString[TYPE_MEM_PTR], ValueTypeString[a->type]);
                 }
 
-                const std::shared_ptr<Value> rV = loadMemory(a, 4);
+                const SmartPointer rV = loadMemory(a, 4);
                 m_Stack.push(rV);
                 ip++;
 
@@ -160,8 +160,8 @@ void VM::simulate()
                 if (m_Stack.size() < 2)
                     Error::stackTooSmallError(op, 2);
 
-                const std::shared_ptr<Value>& value = pop();
-                const std::shared_ptr<Value>& address = pop();
+                const SmartPointer& value = pop();
+                const SmartPointer& address = pop();
 
                 if (address->type != TYPE_MEM_PTR)
                 {
@@ -188,8 +188,8 @@ void VM::simulate()
                 if (m_Stack.size() < 1)
                     Error::stackTooSmallError(op, 1);
 
-                const std::shared_ptr<Value>& a = pop();
-                std::shared_ptr<Value> rV;
+                const SmartPointer& a = pop();
+                SmartPointer rV;
 
                 if (a->type == TYPE_MEM_PTR)
                 {
@@ -198,7 +198,7 @@ void VM::simulate()
                 }
                 else if (a->type == TYPE_STRING)
                 {
-                    rV = std::make_shared<vChar>(get_vString(a)[0]);
+                    rV = makeSmartPointer<vChar>(get_vString(a)[0]);
                 }
                 else
                 {
@@ -218,8 +218,8 @@ void VM::simulate()
                 if (m_Stack.size() < 2)
                     Error::stackTooSmallError(op, 2);
 
-                const std::shared_ptr<Value>& value = pop();
-                const std::shared_ptr<Value>& address = pop();
+                const SmartPointer& value = pop();
+                const SmartPointer& address = pop();
 
                 if (address->type == TYPE_MEM_PTR)
                 {
@@ -283,7 +283,7 @@ void VM::simulate()
                 if (m_Stack.empty())
                     Error::stackTooSmallError(op, 1);
 
-                const std::shared_ptr<Value>& a = pop();
+                const SmartPointer& a = pop();
 
                 switch (a->type)
                 {
@@ -309,7 +309,7 @@ void VM::simulate()
                 if (m_Stack.empty())
                     Error::stackTooSmallError(op, 1);
 
-                const std::shared_ptr<Value>& a = pop();
+                const SmartPointer& a = pop();
 
                 switch (a->type)
                 {
@@ -335,7 +335,7 @@ void VM::simulate()
                 if (m_Stack.empty())
                     Error::stackTooSmallError(op, 1);
 
-                const std::shared_ptr<Value>& a = pop();
+                const SmartPointer& a = pop();
                 m_Stack.push(a);
                 m_Stack.push(a);
                 ip++;
@@ -355,8 +355,8 @@ void VM::simulate()
                 if (m_Stack.size() < 2)
                     Error::stackTooSmallError(op, 2);
 
-                const std::shared_ptr<Value>& a = pop();
-                const std::shared_ptr<Value>& b = pop();
+                const SmartPointer& a = pop();
+                const SmartPointer& b = pop();
                 m_Stack.push(a);
                 m_Stack.push(b);
                 ip++;
@@ -368,8 +368,8 @@ void VM::simulate()
                 if (m_Stack.size() < 2)
                     Error::stackTooSmallError(op, 2);
 
-                const std::shared_ptr<Value>& a = pop();
-                const std::shared_ptr<Value>& b = pop();
+                const SmartPointer& a = pop();
+                const SmartPointer& b = pop();
                 m_Stack.push(b);
                 m_Stack.push(a);
                 m_Stack.push(b);
@@ -382,9 +382,9 @@ void VM::simulate()
                 if (m_Stack.size() < 3)
                     Error::stackTooSmallError(op, 3);
 
-                const std::shared_ptr<Value>& a = pop();
-                const std::shared_ptr<Value>& b = pop();
-                const std::shared_ptr<Value>& c = pop();
+                const SmartPointer& a = pop();
+                const SmartPointer& b = pop();
+                const SmartPointer& c = pop();
 
                 m_Stack.push(b);
                 m_Stack.push(a);
@@ -402,7 +402,7 @@ void VM::simulate()
                 if (m_Stack.empty())
                     Error::stackTooSmallError(op, 1);
 
-                const std::shared_ptr<Value>& a = pop();
+                const SmartPointer& a = pop();
 
                 if (a->type != TYPE_BOOL)
                     Error::runtimeError(op, "Invalid Type. %s was expected but found %s instead", ValueTypeString[TYPE_BOOL], ValueTypeString[a->type]);
@@ -425,7 +425,7 @@ void VM::simulate()
                         {
                             if (ifCount == 0)
                             {
-                                op.value = std::make_shared<vIpOffset>(ipOffset);
+                                op.value = makeSmartPointer<vIpOffset>(ipOffset);
                                 break;
                             }
                             else
@@ -438,7 +438,7 @@ void VM::simulate()
                         {
                             if (ifCount == 0)
                             {
-                                op.value = std::make_shared<vIpOffset>(ipOffset + 1);
+                                op.value = makeSmartPointer<vIpOffset>(ipOffset + 1);
                                 break;
                             }
                             else
@@ -478,7 +478,7 @@ void VM::simulate()
                         {
                             if (ifCount == 0)
                             {
-                                op.value = std::make_shared<vIpOffset>(ipOffset);
+                                op.value = makeSmartPointer<vIpOffset>(ipOffset);
                                 break;
                             }
                             else
@@ -512,7 +512,7 @@ void VM::simulate()
                         {
                             if (ifCount == 0)
                             {
-                                op.value = std::make_shared<vIpOffset>(ipOffset);
+                                op.value = makeSmartPointer<vIpOffset>(ipOffset);
                                 break;
                             }
                             else
@@ -540,7 +540,7 @@ void VM::simulate()
                 if (m_Stack.empty())
                     Error::stackTooSmallError(op, 1);
 
-                const std::shared_ptr<Value>& a = pop();
+                const SmartPointer& a = pop();
 
                 if (a->type != TYPE_BOOL)
                     Error::runtimeError(op, "Invalid Type. %s was expected but found %s instead", ValueTypeString[TYPE_BOOL], ValueTypeString[a->type]);
@@ -563,7 +563,7 @@ void VM::simulate()
                         {
                             if (whileCount == 0)
                             {
-                                op.value = std::make_shared<vIpOffset>(ipOffset + 1);
+                                op.value = makeSmartPointer<vIpOffset>(ipOffset + 1);
                                 break;
                             }
                             else
@@ -602,7 +602,7 @@ void VM::simulate()
                         {
                             if (endWhileCount == 0)
                             {
-                                op.value = std::make_shared<vIpOffset>(ipOffset);
+                                op.value = makeSmartPointer<vIpOffset>(ipOffset);
                                 break;
                             }
                             else
@@ -657,9 +657,9 @@ void VM::operation(const OpCode& op, size_t& ip)
     if (m_Stack.size() == 0)
         Error::stackTooSmallError(op, 1);
 
-    const std::shared_ptr<Value>& b = pop();
+    const SmartPointer& b = pop();
 
-    std::shared_ptr<Value> v;
+    SmartPointer v;
 
     switch (op.code)
     {
@@ -672,7 +672,7 @@ void VM::operation(const OpCode& op, size_t& ip)
             if (m_Stack.size() < 1) // One value already removed
                 Error::stackTooSmallError(op, 2);
 
-            const std::shared_ptr<Value>& a = pop();
+            const SmartPointer& a = pop();
             runValueOperationDouble(a, b, v, op); 
             break;
     }
@@ -681,7 +681,7 @@ void VM::operation(const OpCode& op, size_t& ip)
     ip++;
 }
 
-const std::shared_ptr<Value> VM::loadMemory(const std::shared_ptr<Value>& address, size_t bytes)
+const SmartPointer VM::loadMemory(const SmartPointer& address, size_t bytes)
 {
     int32_t v = 0;
     for (size_t i = 0; i < bytes; i++)
@@ -691,10 +691,10 @@ const std::shared_ptr<Value> VM::loadMemory(const std::shared_ptr<Value>& addres
         v |= element;
     }
 
-    return std::make_shared<vInt>(v);
+    return makeSmartPointer<vInt>(v);
 }
 
-void VM::writeMemory(const std::shared_ptr<Value>& address, const std::shared_ptr<Value>& value, size_t bytes)
+void VM::writeMemory(const SmartPointer& address, const SmartPointer& value, size_t bytes)
 {
     int32_t v = get_vInt(value);
     for (size_t i = 1; i <= bytes; i++)
@@ -709,8 +709,8 @@ void VM::inplaceMemOperation(const OpCode& op)
     if (m_Stack.size() < 2)
         Error::stackTooSmallError(op, 2);
 
-    const std::shared_ptr<Value>& operand = pop();
-    const std::shared_ptr<Value>& address = pop();
+    const SmartPointer& operand = pop();
+    const SmartPointer& address = pop();
 
     if (address->type != TYPE_MEM_PTR)
     {
@@ -736,7 +736,7 @@ void VM::inplaceMemOperation(const OpCode& op)
             assert(false && "Not reachable"); break;
     }
 
-    std::shared_ptr<Value> rV = loadMemory(address, size);
+    SmartPointer rV = loadMemory(address, size);
     OpCode changeOp = op;
     switch (op.code)
     {
