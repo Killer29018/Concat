@@ -3,7 +3,7 @@
 
 #include <vector>
 
-#include "Value.hpp"
+#include "Values/Value.hpp"
 #include "SmartPointer.hpp"
 
 enum OpCodeEnum : uint16_t

@@ -1,305 +1,345 @@
 #include "Value.hpp"
 
-#include "OpCodes.hpp"
-#include "VirtualMachine.hpp"
+#include "../OpCodes.hpp"
+#include "../VirtualMachine.hpp"
 
-#include "Error.hpp"
+#include "../Error.hpp"
 
-#include "SmartPointer.hpp"
+#include "../SmartPointer.hpp"
 
 #include <cstdlib>
 #include <cstring>
 
-void runValueOperationSingle(const SmartPointer& a, SmartPointer& rV, const OpCode& op)
+void runOperation(const SmartPointer& a, SmartPointer& rV, const OpCode& op)
 {
-    ValueType target = a->type;
-
-    const auto& operationMap = ValueOperationSingle.find(op.code);
-
-    if (operationMap != ValueOperationSingle.end())
+    switch (op.code)
     {
-        const auto& operation = (operationMap->second).find(target);
+    case OP_INVERT:
+        a->invert(rV); break;
+    case OP_LNOT:
+        a->lnot(rV); break;
 
-        if (operation != (operationMap->second).end())
-        {
-            (*operation->second)(a, rV);
-        }
-        else
-        {
-            Error::runtimeError(op, "Type %s not supported for %s", ValueTypeString[a->type], OpCodeString[op.code]);
-        }
-    }
-    else
-    {
-        assert(false && "Operation not supported");
+    default:
+        assert(false && "Not possible");
     }
 }
 
-void runValueOperationDouble(const SmartPointer& a, const SmartPointer& b, SmartPointer& rV, const OpCode& op)
+void runOperation(const SmartPointer& a, const SmartPointer& b, SmartPointer& rV, const OpCode& op)
 {
-    Operands targetPair(a->type, b->type);
-
-    const auto& operationMap = ValueOperationDouble.find(op.code);
-
-    if (operationMap != ValueOperationDouble.end())
+    switch (op.code)
     {
-        const auto& operation = (operationMap->second).find(targetPair);
+    case OP_ADD: a->add(b, rV); break;
+    case OP_SUBTRACT: a->subtract(b, rV); break;
+    case OP_MULTIPLY: a->multiply(b, rV); break;
+    case OP_DIVIDE: a->divide(b, rV); break;
+    case OP_MOD: a->mod(b, rV); break;
 
-        if (operation != (operationMap->second).end())
-        {
-            (*operation->second)(a, b, rV);
-        }
-        else
-        {
-            Error::runtimeError(op, "Types %s and %s not supported for %s", ValueTypeString[a->type], ValueTypeString[b->type], OpCodeString[op.code]);
-        }
-    }
-    else
-    {
-        assert(false && "Operation not supported");
+    case OP_EQUAL: a->equal(b, rV); break;
+    case OP_NOT_EQUAL: a->notEqual(b, rV); break;
+    case OP_GREATER: a->greater(b, rV); break;
+    case OP_LESS: a->less(b, rV); break;
+    case OP_GREATER_EQUAL: a->greaterEqual(b, rV); break;
+    case OP_LESS_EQUAL: a->lessEqual(b, rV); break;
+    case OP_LAND: a->land(b, rV); break;
+    case OP_LOR: a->lor(b, rV); break;
+    case OP_RSHIFT: a->rShift(b, rV); break;
+    case OP_LSHIFT: a->lShift(b, rV); break;
+
+    default:
+        assert(false && "Not possible");
     }
 }
 
-const std::unordered_map<OpCodeEnum, std::unordered_map<ValueType, operationFuncSingle>> ValueOperationSingle
-{
-    {
-        OP_INVERT,
-        {
-            {
-                TYPE_BOOL,
-                [](operationInputsSingle) { rV = SmartPointer(new vBool(!get_vBool(a))); }
-            }
-        }
-    },
-    {
-        OP_LNOT,
-        {
-            {
-                TYPE_INT,
-                [](operationInputsSingle) { rV = SmartPointer(new vInt(~get_vInt(a))); }
-            }
-        }
-    }
-};
+// void runValueOperationSingle(const SmartPointer& a, SmartPointer& rV, const OpCode& op)
+// {
+//     ValueType target = a->type;
 
-const std::unordered_map<OpCodeEnum, std::unordered_map<Operands, operationFuncDouble, hashPair>> ValueOperationDouble
-{
-    { 
-        OP_ADD, 
-        {
-            { 
-                std::make_pair(TYPE_INT, TYPE_INT),
-                [](operationInputsDouble) { rV = makeSmartPointer<vInt>(get_vInt(a) + get_vInt(b)); } 
-            },
-            { 
-                std::make_pair(TYPE_MEM_PTR, TYPE_INT),
-                [](operationInputsDouble) { rV = makeSmartPointer<vMemPtr>(get_vMemPtr(a) + get_vInt(b)); } 
-            },
-            { 
-                std::make_pair(TYPE_STRING, TYPE_INT),
-                [](operationInputsDouble) { rV = makeSmartPointer<vString>(get_vString(a) + get_vInt(b)); } 
-            },
-            { 
-                std::make_pair(TYPE_STRING, TYPE_STRING),
-                [](operationInputsDouble) { 
-                    size_t newLength = get_vStringSize(a) + get_vStringSize(b);
-                    char* newString = new char[newLength + 1];
-                    strcpy(newString, get_vString(a));
-                    strcpy(newString + get_vStringSize(a), get_vString(b));
-                    newString[newLength] = 0;
-                    rV = makeSmartPointer<vString>(newString); 
-                }
-            }
-        } 
-    },
-    {
-        OP_SUBTRACT, 
-        {
-            { 
-                std::make_pair(TYPE_INT, TYPE_INT), 
-                [](operationInputsDouble) { rV = makeSmartPointer<vInt>(get_vInt(a) - get_vInt(b)); }
-            },
-            { 
-                std::make_pair(TYPE_MEM_PTR, TYPE_INT),
-                [](operationInputsDouble) { rV = makeSmartPointer<vMemPtr>(get_vMemPtr(a) - get_vInt(b)); }
-            },
-            { 
-                std::make_pair(TYPE_MEM_PTR, TYPE_MEM_PTR),
-                [](operationInputsDouble) { rV = makeSmartPointer<vMemPtr>(get_vMemPtr(a) - get_vMemPtr(b)); }
-            }
-        }
-    },
-    {
-        OP_MULTIPLY,
-        {
-            {
-                std::make_pair(TYPE_INT, TYPE_INT),
-                [](operationInputsDouble) { rV = makeSmartPointer<vInt>(get_vInt(a) * get_vInt(b)); }
-            }
-        }
-    },
-    {
-        OP_DIVIDE,
-        {
-            {
-                std::make_pair(TYPE_INT, TYPE_INT),
-                [](operationInputsDouble) { rV = makeSmartPointer<vInt>(get_vInt(a) / get_vInt(b)); }
-            }
-        }
-    },
-    {
-        OP_MOD,
-        {
-            {
-                std::make_pair(TYPE_INT, TYPE_INT),
-                [](operationInputsDouble) { rV = makeSmartPointer<vInt>(get_vInt(a) % get_vInt(b)); }
-            }
-        }
-    },
+//     const auto& operationMap = ValueOperationSingle.find(op.code);
+
+//     if (operationMap != ValueOperationSingle.end())
+//     {
+//         const auto& operation = (operationMap->second).find(target);
+
+//         if (operation != (operationMap->second).end())
+//         {
+//             (*operation->second)(a, rV);
+//         }
+//         else
+//         {
+//             Error::runtimeError(op, "Type %s not supported for %s", ValueTypeString[a->type], OpCodeString[op.code]);
+//         }
+//     }
+//     else
+//     {
+//         assert(false && "Operation not supported");
+//     }
+// }
+
+// void runValueOperationDouble(const SmartPointer& a, const SmartPointer& b, SmartPointer& rV, const OpCode& op)
+// {
+//     Operands targetPair(a->type, b->type);
+
+//     const auto& operationMap = ValueOperationDouble.find(op.code);
+
+//     if (operationMap != ValueOperationDouble.end())
+//     {
+//         const auto& operation = (operationMap->second).find(targetPair);
+
+//         if (operation != (operationMap->second).end())
+//         {
+//             (*operation->second)(a, b, rV);
+//         }
+//         else
+//         {
+//             Error::runtimeError(op, "Types %s and %s not supported for %s", ValueTypeString[a->type], ValueTypeString[b->type], OpCodeString[op.code]);
+//         }
+//     }
+//     else
+//     {
+//         assert(false && "Operation not supported");
+//     }
+// }
+
+// const std::unordered_map<OpCodeEnum, std::unordered_map<ValueType, operationFuncSingle>> ValueOperationSingle
+// {
+//     {
+//         OP_INVERT,
+//         {
+//             {
+//                 TYPE_BOOL,
+//                 [](operationInputsSingle) { rV = SmartPointer(new vBool(!get_vBool(a))); }
+//             }
+//         }
+//     },
+//     {
+//         OP_LNOT,
+//         {
+//             {
+//                 TYPE_INT,
+//                 [](operationInputsSingle) { rV = SmartPointer(new vInt(~get_vInt(a))); }
+//             }
+//         }
+//     }
+// };
+
+// const std::unordered_map<OpCodeEnum, std::unordered_map<Operands, operationFuncDouble, hashPair>> ValueOperationDouble
+// {
+//     { 
+//         OP_ADD, 
+//         {
+//             { 
+//                 std::make_pair(TYPE_INT, TYPE_INT),
+//                 [](operationInputsDouble) { rV = makeSmartPointer<vInt>(get_vInt(a) + get_vInt(b)); } 
+//             },
+//             { 
+//                 std::make_pair(TYPE_MEM_PTR, TYPE_INT),
+//                 [](operationInputsDouble) { rV = makeSmartPointer<vMemPtr>(get_vMemPtr(a) + get_vInt(b)); } 
+//             },
+//             { 
+//                 std::make_pair(TYPE_STRING, TYPE_INT),
+//                 [](operationInputsDouble) { rV = makeSmartPointer<vString>(get_vString(a) + get_vInt(b)); } 
+//             },
+//             { 
+//                 std::make_pair(TYPE_STRING, TYPE_STRING),
+//                 [](operationInputsDouble) { 
+//                     size_t newLength = get_vStringSize(a) + get_vStringSize(b);
+//                     char* newString = new char[newLength + 1];
+//                     strcpy(newString, get_vString(a));
+//                     strcpy(newString + get_vStringSize(a), get_vString(b));
+//                     newString[newLength] = 0;
+//                     rV = makeSmartPointer<vString>(newString); 
+//                 }
+//             }
+//         } 
+//     },
+//     {
+//         OP_SUBTRACT, 
+//         {
+//             { 
+//                 std::make_pair(TYPE_INT, TYPE_INT), 
+//                 [](operationInputsDouble) { rV = makeSmartPointer<vInt>(get_vInt(a) - get_vInt(b)); }
+//             },
+//             { 
+//                 std::make_pair(TYPE_MEM_PTR, TYPE_INT),
+//                 [](operationInputsDouble) { rV = makeSmartPointer<vMemPtr>(get_vMemPtr(a) - get_vInt(b)); }
+//             },
+//             { 
+//                 std::make_pair(TYPE_MEM_PTR, TYPE_MEM_PTR),
+//                 [](operationInputsDouble) { rV = makeSmartPointer<vMemPtr>(get_vMemPtr(a) - get_vMemPtr(b)); }
+//             }
+//         }
+//     },
+//     {
+//         OP_MULTIPLY,
+//         {
+//             {
+//                 std::make_pair(TYPE_INT, TYPE_INT),
+//                 [](operationInputsDouble) { rV = makeSmartPointer<vInt>(get_vInt(a) * get_vInt(b)); }
+//             }
+//         }
+//     },
+//     {
+//         OP_DIVIDE,
+//         {
+//             {
+//                 std::make_pair(TYPE_INT, TYPE_INT),
+//                 [](operationInputsDouble) { rV = makeSmartPointer<vInt>(get_vInt(a) / get_vInt(b)); }
+//             }
+//         }
+//     },
+//     {
+//         OP_MOD,
+//         {
+//             {
+//                 std::make_pair(TYPE_INT, TYPE_INT),
+//                 [](operationInputsDouble) { rV = makeSmartPointer<vInt>(get_vInt(a) % get_vInt(b)); }
+//             }
+//         }
+//     },
 
 
-    {
-        OP_EQUAL,
-        {
-            {
-                std::make_pair(TYPE_INT, TYPE_INT),
-                [](operationInputsDouble) { rV = makeSmartPointer<vBool>(get_vInt(a) == get_vInt(b)); }
-            },
-            {
-                std::make_pair(TYPE_BOOL, TYPE_BOOL),
-                [](operationInputsDouble) { rV = makeSmartPointer<vBool>(get_vBool(a) == get_vBool(b)); }
-            },
-            {
-                std::make_pair(TYPE_BOOL, TYPE_INT),
-                [](operationInputsDouble) { rV = makeSmartPointer<vBool>(get_vBool(a) == get_vInt(b)); }
-            },
-            {
-                std::make_pair(TYPE_INT, TYPE_BOOL),
-                [](operationInputsDouble) { rV = makeSmartPointer<vBool>(get_vInt(a) == get_vBool(b)); }
-            },
-            {
-                std::make_pair(TYPE_STRING, TYPE_STRING),
-                [](operationInputsDouble) { rV = makeSmartPointer<vBool>(strcmp(get_vString(a), get_vString(b)) == 0); }
-            },
-            {
-                std::make_pair(TYPE_MEM_PTR, TYPE_MEM_PTR),
-                [](operationInputsDouble) { rV = makeSmartPointer<vBool>(get_vMemPtr(a) == get_vMemPtr(b)); }
-            },
-        }
-    },
+//     {
+//         OP_EQUAL,
+//         {
+//             {
+//                 std::make_pair(TYPE_INT, TYPE_INT),
+//                 [](operationInputsDouble) { rV = makeSmartPointer<vBool>(get_vInt(a) == get_vInt(b)); }
+//             },
+//             {
+//                 std::make_pair(TYPE_BOOL, TYPE_BOOL),
+//                 [](operationInputsDouble) { rV = makeSmartPointer<vBool>(get_vBool(a) == get_vBool(b)); }
+//             },
+//             {
+//                 std::make_pair(TYPE_BOOL, TYPE_INT),
+//                 [](operationInputsDouble) { rV = makeSmartPointer<vBool>(get_vBool(a) == get_vInt(b)); }
+//             },
+//             {
+//                 std::make_pair(TYPE_INT, TYPE_BOOL),
+//                 [](operationInputsDouble) { rV = makeSmartPointer<vBool>(get_vInt(a) == get_vBool(b)); }
+//             },
+//             {
+//                 std::make_pair(TYPE_STRING, TYPE_STRING),
+//                 [](operationInputsDouble) { rV = makeSmartPointer<vBool>(strcmp(get_vString(a), get_vString(b)) == 0); }
+//             },
+//             {
+//                 std::make_pair(TYPE_MEM_PTR, TYPE_MEM_PTR),
+//                 [](operationInputsDouble) { rV = makeSmartPointer<vBool>(get_vMemPtr(a) == get_vMemPtr(b)); }
+//             },
+//         }
+//     },
 
-    {
-        OP_NOT_EQUAL,
-        {
-            {
-                std::make_pair(TYPE_INT, TYPE_INT),
-                [](operationInputsDouble) { rV = makeSmartPointer<vBool>(get_vInt(a) != get_vInt(b)); }
-            },
-            {
-                std::make_pair(TYPE_BOOL, TYPE_BOOL),
-                [](operationInputsDouble) { rV = makeSmartPointer<vBool>(get_vBool(a) != get_vBool(b)); }
-            },
-            {
-                std::make_pair(TYPE_BOOL, TYPE_INT),
-                [](operationInputsDouble) { rV = makeSmartPointer<vBool>(get_vBool(a) != get_vInt(b)); }
-            },
-            {
-                std::make_pair(TYPE_INT, TYPE_BOOL),
-                [](operationInputsDouble) { rV = makeSmartPointer<vBool>(get_vInt(a) != get_vBool(b)); }
-            },
-            {
-                std::make_pair(TYPE_STRING, TYPE_STRING),
-                [](operationInputsDouble) { rV = makeSmartPointer<vBool>(strcmp(get_vString(a), get_vString(b)) != 0); }
-            },
-            {
-                std::make_pair(TYPE_MEM_PTR, TYPE_MEM_PTR),
-                [](operationInputsDouble) { rV = makeSmartPointer<vBool>(get_vMemPtr(a) != get_vMemPtr(b)); }
-            },
-        }
-    },
+//     {
+//         OP_NOT_EQUAL,
+//         {
+//             {
+//                 std::make_pair(TYPE_INT, TYPE_INT),
+//                 [](operationInputsDouble) { rV = makeSmartPointer<vBool>(get_vInt(a) != get_vInt(b)); }
+//             },
+//             {
+//                 std::make_pair(TYPE_BOOL, TYPE_BOOL),
+//                 [](operationInputsDouble) { rV = makeSmartPointer<vBool>(get_vBool(a) != get_vBool(b)); }
+//             },
+//             {
+//                 std::make_pair(TYPE_BOOL, TYPE_INT),
+//                 [](operationInputsDouble) { rV = makeSmartPointer<vBool>(get_vBool(a) != get_vInt(b)); }
+//             },
+//             {
+//                 std::make_pair(TYPE_INT, TYPE_BOOL),
+//                 [](operationInputsDouble) { rV = makeSmartPointer<vBool>(get_vInt(a) != get_vBool(b)); }
+//             },
+//             {
+//                 std::make_pair(TYPE_STRING, TYPE_STRING),
+//                 [](operationInputsDouble) { rV = makeSmartPointer<vBool>(strcmp(get_vString(a), get_vString(b)) != 0); }
+//             },
+//             {
+//                 std::make_pair(TYPE_MEM_PTR, TYPE_MEM_PTR),
+//                 [](operationInputsDouble) { rV = makeSmartPointer<vBool>(get_vMemPtr(a) != get_vMemPtr(b)); }
+//             },
+//         }
+//     },
 
-    {
-        OP_GREATER,
-        {
-            {
-                std::make_pair(TYPE_INT, TYPE_INT),
-                [](operationInputsDouble) { rV = makeSmartPointer<vBool>(get_vInt(a) > get_vInt(b)); }
-            }
-        }
-    },
-    {
-        OP_LESS,
-        {
-            {
-                std::make_pair(TYPE_INT, TYPE_INT),
-                [](operationInputsDouble) { rV = makeSmartPointer<vBool>(get_vInt(a) < get_vInt(b)); }
-            }
-        }
-    },
-    {
-        OP_GREATER_EQUAL,
-        {
-            {
-                std::make_pair(TYPE_INT, TYPE_INT),
-                [](operationInputsDouble) { rV = makeSmartPointer<vBool>(get_vInt(a) >= get_vInt(b)); }
-            }
-        }
-    },
-    {
-        OP_LESS_EQUAL,
-        {
-            {
-                std::make_pair(TYPE_INT, TYPE_INT),
-                [](operationInputsDouble) { rV = makeSmartPointer<vBool>(get_vInt(a) <= get_vInt(b)); }
-            }
-        }
-    },
+//     {
+//         OP_GREATER,
+//         {
+//             {
+//                 std::make_pair(TYPE_INT, TYPE_INT),
+//                 [](operationInputsDouble) { rV = makeSmartPointer<vBool>(get_vInt(a) > get_vInt(b)); }
+//             }
+//         }
+//     },
+//     {
+//         OP_LESS,
+//         {
+//             {
+//                 std::make_pair(TYPE_INT, TYPE_INT),
+//                 [](operationInputsDouble) { rV = makeSmartPointer<vBool>(get_vInt(a) < get_vInt(b)); }
+//             }
+//         }
+//     },
+//     {
+//         OP_GREATER_EQUAL,
+//         {
+//             {
+//                 std::make_pair(TYPE_INT, TYPE_INT),
+//                 [](operationInputsDouble) { rV = makeSmartPointer<vBool>(get_vInt(a) >= get_vInt(b)); }
+//             }
+//         }
+//     },
+//     {
+//         OP_LESS_EQUAL,
+//         {
+//             {
+//                 std::make_pair(TYPE_INT, TYPE_INT),
+//                 [](operationInputsDouble) { rV = makeSmartPointer<vBool>(get_vInt(a) <= get_vInt(b)); }
+//             }
+//         }
+//     },
 
-    {
-        OP_LAND,
-        {
-            {
-                std::make_pair(TYPE_INT, TYPE_INT),
-                [](operationInputsDouble) { rV = makeSmartPointer<vInt>(get_vInt(a) & get_vInt(b)); }
-            },
-            {
-                std::make_pair(TYPE_BOOL, TYPE_BOOL),
-                [](operationInputsDouble) { rV = makeSmartPointer<vBool>(get_vBool(a) && get_vBool(b)); }
-            }
-        }
-    },
-    {
-        OP_LOR,
-        {
-            {
-                std::make_pair(TYPE_INT, TYPE_INT),
-                [](operationInputsDouble) { rV = makeSmartPointer<vInt>(get_vInt(a) | get_vInt(b)); }
-            },
-            {
-                std::make_pair(TYPE_BOOL, TYPE_BOOL),
-                [](operationInputsDouble) { rV = makeSmartPointer<vBool>(get_vBool(a) || get_vBool(b)); }
-            }
-        }
-    },
-    {
-        OP_RSHIFT,
-        {
-            {
-                std::make_pair(TYPE_INT, TYPE_INT),
-                [](operationInputsDouble) { rV = makeSmartPointer<vInt>(get_vInt(a) >> get_vInt(b)); }
-            }
-        }
-    },
-    {
-        OP_LSHIFT,
-        {
-            {
-                std::make_pair(TYPE_INT, TYPE_INT),
-                [](operationInputsDouble) { rV = makeSmartPointer<vInt>(get_vInt(a) << get_vInt(b)); }
-            }
-        }
-    }
-};
+//     {
+//         OP_LAND,
+//         {
+//             {
+//                 std::make_pair(TYPE_INT, TYPE_INT),
+//                 [](operationInputsDouble) { rV = makeSmartPointer<vInt>(get_vInt(a) & get_vInt(b)); }
+//             },
+//             {
+//                 std::make_pair(TYPE_BOOL, TYPE_BOOL),
+//                 [](operationInputsDouble) { rV = makeSmartPointer<vBool>(get_vBool(a) && get_vBool(b)); }
+//             }
+//         }
+//     },
+//     {
+//         OP_LOR,
+//         {
+//             {
+//                 std::make_pair(TYPE_INT, TYPE_INT),
+//                 [](operationInputsDouble) { rV = makeSmartPointer<vInt>(get_vInt(a) | get_vInt(b)); }
+//             },
+//             {
+//                 std::make_pair(TYPE_BOOL, TYPE_BOOL),
+//                 [](operationInputsDouble) { rV = makeSmartPointer<vBool>(get_vBool(a) || get_vBool(b)); }
+//             }
+//         }
+//     },
+//     {
+//         OP_RSHIFT,
+//         {
+//             {
+//                 std::make_pair(TYPE_INT, TYPE_INT),
+//                 [](operationInputsDouble) { rV = makeSmartPointer<vInt>(get_vInt(a) >> get_vInt(b)); }
+//             }
+//         }
+//     },
+//     {
+//         OP_LSHIFT,
+//         {
+//             {
+//                 std::make_pair(TYPE_INT, TYPE_INT),
+//                 [](operationInputsDouble) { rV = makeSmartPointer<vInt>(get_vInt(a) << get_vInt(b)); }
+//             }
+//         }
+//     }
+// };
 
 // void value_subtract(SmartPointer a, SmartPointer b, SmartPointer& rV, const OpCode& op)
 // {
