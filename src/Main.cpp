@@ -13,7 +13,7 @@
 
 int main(int argc, char** argv)
 {
-    cxxopts::Options options("SBIMCL", "Stack Based Interpreted Maybe Compiled Language");
+    cxxopts::Options options("Concat", "Concatenative - Imperitive Language");
     options.add_options()
         ("t,print-tokens", "Print Debug Tokens", cxxopts::value<bool>()->default_value("false"))
         ("o,print-opcodes", "Print Debug OpCodes", cxxopts::value<bool>()->default_value("false"))
@@ -25,8 +25,8 @@ int main(int argc, char** argv)
 
     if (argc <= 1 || result.count("help"))
     {
-        std::cout << "Stack Based Interpreted Maybe Compiled Language\n";
         std::cout << "Usage: \n";
+        std::cout << "  Concatenative - Imperitive Language\n";
         std::cout << "  SBIMCL <MODE> [<OPTIONS>] <filepath>\n";
         std::cout << "  MODE\n";
         std::cout << "    run                   Run either a source file or Compiled File\n";
