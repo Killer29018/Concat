@@ -1,0 +1,35 @@
+/*
+    Fizz buzz between 1 and 1000 made with while loops
+*/
+macro space ' ' print endmacro
+
+macro fizz 
+    if 3 mod 0 == dup then
+        "FIZZ" print
+    endif
+endmacro
+
+macro buzz
+    if 5 mod 0 == dup then
+        "BUZZ" print
+    endif
+endmacro
+
+
+macro fizzbuzz
+    1 while dup 200 < do
+        dup
+        dup fizz
+        over buzz
+
+        if 0 == swap 0 == and then
+            print
+        endif
+
+        cr
+
+        1 +
+    endwhile
+endmacro
+
+fizzbuzz

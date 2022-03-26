@@ -3,19 +3,19 @@ import os
 import sys
 
 def buildFile(file):
-    process = subprocess.Popen(['./SBIMCL', 'build', file], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    process = subprocess.Popen(['./Concat', 'build', file], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     stdout, stderr = process.communicate()
     return stdout, stderr
 
 def getFileOutput(file):
-    process = subprocess.Popen(['./SBIMCL', 'run', file], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    process = subprocess.Popen(['./Concat', 'run', file], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     stdout, stderr = process.communicate()
     return stdout, stderr
 
 def getOutput(file, stdout, stderr, bStdout, bStderr):
     output = ""
     output += ("-" * 50) + "\n"
-    output += file + ".SBIMCL\n"
+    output += file + ".CONCAT\n"
 
     output += "--stdout--\n"
     output += stdout.decode("utf-8") + "\n"
@@ -37,13 +37,13 @@ def build(path):
         exit(-1)
 
     count = 0;
-    files = [os.path.splitext(f)[0] for f in os.listdir(path) if os.path.isfile(os.path.join(path, f)) and os.path.splitext(os.path.join(path, f))[1] == ".SBIMCL"]
+    files = [os.path.splitext(f)[0] for f in os.listdir(path) if os.path.isfile(os.path.join(path, f)) and os.path.splitext(os.path.join(path, f))[1] == ".CONCAT"]
     totalCount = len(files)
     for f in files:
         count += 1
         path = os.path.join(path, "")
         testFileName = path + f + "_TEST.txt"
-        programFileName = path + f + ".SBIMCL"
+        programFileName = path + f + ".CONCAT"
         builtFileName = programFileName + "_BIN"
 
         print(f"Checking {f}")
@@ -74,7 +74,7 @@ def run(path):
     files = [os.path.splitext(f)[0] 
              for f in os.listdir(path) 
              if os.path.isfile(os.path.join(path, f)) and 
-             os.path.splitext(os.path.join(path, f))[1] == ".SBIMCL" and
+             os.path.splitext(os.path.join(path, f))[1] == ".CONCAT" and
              os.path.exists(os.path.join(path, "") + os.path.splitext(f)[0] + "_TEST.txt")]
 
     failed = []
@@ -86,7 +86,7 @@ def run(path):
         count += 1
         path = os.path.join(path, "")
         testFileName = path + f + "_TEST.txt"
-        programFileName = path + f + ".SBIMCL"
+        programFileName = path + f + ".CONCAT"
         builtFileName = programFileName + "_BIN"
 
         buildFile(programFileName)

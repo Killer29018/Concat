@@ -1,5 +1,5 @@
 --------------------------------------------------
-Conditionals.SBIMCL
+Conditionals.CONCAT
 --stdout--
 0 1 1 0 1 0 
 A

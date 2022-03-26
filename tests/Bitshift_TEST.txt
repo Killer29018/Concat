@@ -1,5 +1,5 @@
 --------------------------------------------------
-Bitshift.SBIMCL
+Bitshift.CONCAT
 --stdout--
 2
 4
