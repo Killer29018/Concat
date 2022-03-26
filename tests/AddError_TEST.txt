@@ -1,5 +1,5 @@
 --------------------------------------------------
-AddError.SBIMCL
+AddError.CONCAT
 --stdout--
 0
 1

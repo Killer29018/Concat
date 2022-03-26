@@ -1,5 +1,5 @@
 --------------------------------------------------
-SwapOverRot.SBIMCL
+SwapOverRot.CONCAT
 --stdout--
 10 20
 10 20 10 20 10

@@ -1,0 +1,5 @@
+macro hello 10   endmacro
+macro abc? 32 . endmacro
+
+hello print abc?
+hello print cr

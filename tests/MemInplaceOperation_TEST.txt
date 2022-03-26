@@ -1,5 +1,5 @@
 --------------------------------------------------
-MemInplaceOperation.SBIMCL
+MemInplaceOperation.CONCAT
 --stdout--
 15
 5

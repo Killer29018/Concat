@@ -1,5 +1,5 @@
-# SBIMCL
-### Stack Based Interpreted Maybe Compiled Language
+# Concat
+### Concatenative Imperitive language
 
 A language that could be considered similar to Forth or [Porth](https://gitlab.com/tsoding/porth)
 

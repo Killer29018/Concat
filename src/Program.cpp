@@ -21,7 +21,7 @@ void Program::createProgram(bool runmode, const char* filename)
 void Program::buildProgramFromFile(const char* filename)
 {
     std::filesystem::path path(filename);
-    if (path.extension() == ".SBIMCL")
+    if (path.extension() == ".CONCAT")
     {
         createOpcodes(filename);
     }
@@ -41,11 +41,11 @@ void Program::runProgramFromFile(const char* filename)
 {
     std::filesystem::path path(filename);
 
-    if (path.extension() == ".SBIMCL")
+    if (path.extension() == ".CONCAT")
     {
         createOpcodes(filename);
     }
-    else if (path.extension() == ".SBIMCL_BIN")
+    else if (path.extension() == ".CONCAT_BIN")
     {
         if (printDebugTokens)
         {

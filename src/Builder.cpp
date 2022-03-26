@@ -11,7 +11,7 @@ void Builder::buildCompiled(const char* filename, std::vector<OpCode>* OpCodes)
 {
     std::filesystem::path path(filename);
 
-    path.replace_extension(".SBIMCL_BIN");
+    path.replace_extension(".CONCAT_BIN");
 
     std::string filenameOnly = path.stem().generic_string();
 

@@ -1,5 +1,5 @@
 --------------------------------------------------
-Character.SBIMCL
+Character.CONCAT
 --stdout--
 HELLO WORLD
 

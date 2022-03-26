@@ -1,0 +1,13 @@
+macro space 32 . endmacro
+
+0 while dup 10 <= do
+    if dup 2 mod 0 == then
+        420 print space
+    endif
+
+    if dup 2 mod 1 == then
+        69 print space
+    endif
+
+    1 +
+endwhile

@@ -1,5 +1,5 @@
 --------------------------------------------------
-BitwiseAndLogical.SBIMCL
+BitwiseAndLogical.CONCAT
 --stdout--
 420
 69

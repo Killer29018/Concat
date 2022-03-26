@@ -5,5 +5,5 @@ build/**
 compile_commands.json
 
 # File
-SBIMCL
-**/**.SBIMCL_BIN
+CONCAT
+**/**.CONCAT_BIN
