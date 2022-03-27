@@ -7,8 +7,6 @@ void vMemPtr::add(const SmartPointer& v2, SmartPointer& rV) const
     {
     case TYPE_INT:
         rV = makeSmartPointer<vMemPtr>(v + get_vInt(v2)); break;
-    case TYPE_MEM_PTR:
-        rV = makeSmartPointer<vMemPtr>(v + get_vInt(v2)); break;
     }
 }
 

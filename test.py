@@ -2,9 +2,9 @@ import subprocess
 import os
 import sys
 
-programName = "./Concat"
-programExt = ".Concat"
-binExt = "Bin"
+programName = "./concat"
+programExt = ".concat"
+binExt = "_bin"
 
 def buildFile(file):
     process = subprocess.Popen([programName, 'build', file], stdout=subprocess.PIPE, stderr=subprocess.PIPE)

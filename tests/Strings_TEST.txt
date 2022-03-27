@@ -1,5 +1,5 @@
 --------------------------------------------------
-Strings.CONCAT
+Strings.concat
 --stdout--
 String Test
 S

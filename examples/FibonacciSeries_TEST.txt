@@ -1,5 +1,5 @@
 --------------------------------------------------
-FibonacciSeries.SBIMCL
+FibonacciSeries.concat
 --stdout--
 1 : 1
 2 : 1

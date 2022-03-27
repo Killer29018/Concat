@@ -1,5 +1,5 @@
 --------------------------------------------------
-PrintError.CONCAT
+PrintError.concat
 --stdout--
 1010
 --stderr--

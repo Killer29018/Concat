@@ -1,5 +1,5 @@
 --------------------------------------------------
-AddError.CONCAT
+AddError.concat
 --stdout--
 0
 1

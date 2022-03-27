@@ -1,5 +1,5 @@
 --------------------------------------------------
-BitwiseAndLogical.CONCAT
+BitwiseAndLogical.concat
 --stdout--
 420
 69
