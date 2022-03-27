@@ -1,5 +1,6 @@
 #include "Value.hpp"
 #include "../SmartPointer.hpp"
+#include "../Error.hpp"
 
 void vBool::equal(const SmartPointer& v2, SmartPointer& rV, const OpCode& op) const 
 {
@@ -9,6 +10,9 @@ void vBool::equal(const SmartPointer& v2, SmartPointer& rV, const OpCode& op) co
         rV = makeSmartPointer<vBool>(v == get_vInt(v2)); break;
     case TYPE_BOOL:
         rV = makeSmartPointer<vBool>(v == get_vBool(v2)); break;
+
+    default:
+        Error::operationError(op, "Equal", type, v2->type);
     }
 }
 
@@ -20,6 +24,9 @@ void vBool::notEqual(const SmartPointer& v2, SmartPointer& rV, const OpCode& op)
         rV = makeSmartPointer<vBool>(v != get_vInt(v2)); break;
     case TYPE_BOOL:
         rV = makeSmartPointer<vBool>(v != get_vBool(v2)); break;
+
+    default:
+        Error::operationError(op, "Not Equal", type, v2->type);
     }
 }
 
@@ -29,6 +36,9 @@ void vBool::land(const SmartPointer& v2, SmartPointer& rV, const OpCode& op) con
     {
     case TYPE_BOOL:
         rV = makeSmartPointer<vBool>(v && get_vBool(v2)); break;
+
+    default:
+        Error::operationError(op, "Land", type, v2->type);
     }
 }
 
@@ -38,6 +48,9 @@ void vBool::lor(const SmartPointer& v2, SmartPointer& rV, const OpCode& op) cons
     {
     case TYPE_BOOL:
         rV = makeSmartPointer<vBool>(v || get_vBool(v2)); break;
+
+    default:
+        Error::operationError(op, "Lor", type, v2->type);
     }
 }
 
