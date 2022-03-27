@@ -5,13 +5,15 @@
 
 #include "VirtualMachine.hpp"
 
+#include "Filetypes.hpp"
+
 size_t Builder::s_HeaderSize = (size_tSize * 2); // Doesnt include filename
 
 void Builder::buildCompiled(const char* filename, std::vector<OpCode>* OpCodes)
 {
     std::filesystem::path path(filename);
 
-    path.replace_extension(".CONCAT_BIN");
+    path.replace_extension(binExt);
 
     std::string filenameOnly = path.stem().generic_string();
 
@@ -38,9 +40,9 @@ void Builder::buildCompiled(const char* filename, std::vector<OpCode>* OpCodes)
         index = 0;
         OpCode& op = OpCodes->at(i);
 
-        size_t vSize = getValueSize(op.value);
-        size_t opSize = enumSize + size_tSize + size_tSize;
-        size_t totalSize = sizeof(char) * (vSize + opSize);
+        size_t vSize = getValueSize(op.value); // Type Value
+        size_t opSize = enumSize + size_tSize + size_tSize; // Operation Line Column
+        size_t totalSize = sizeof(char) * (vSize + opSize); // Operation Type Line Column Value
         buffer = (char*)realloc(buffer, totalSize);
 
         writeOpCode(buffer, op, index);
@@ -166,61 +168,55 @@ void Builder::readOpCode(char* buffer, OpCode& op, std::ifstream& file)
 size_t Builder::getValueSize(const SmartPointer& value)
 {
     size_t size = enumSize;
-    if (!value)
-        size += sizeof(vNull);
-    else
+    if (value.get())
     {
         switch (value->type)
         {
         case TYPE_NULL:
             break;
         case TYPE_INT:
-            size += sizeof(vInt); break;
+            size += sizeof(int32_t); break;
         case TYPE_BOOL:
-            size += sizeof(vBool); break;
+            size += sizeof(bool); break;
         case TYPE_CHAR:
-            size += sizeof(vChar); break;
+            size += sizeof(char); break;
         case TYPE_STRING:
-            size += sizeof(vNull) + size_tSize + get_vStringSize(value); break;
+            size += size_tSize + get_vStringSize(value); break;
         case TYPE_MEM_PTR:
-            size += sizeof(vMemPtr); break;
+            size += sizeof(uint32_t); break;
         case TYPE_IP_OFFSET:
-            size += sizeof(vIpOffset); break;
+            size += sizeof(int32_t); break;
 
         default:
             assert(false && "Unreachable");
         }
     }
 
-    size -= sizeof(ValueType);
-
     return size;
 }
 
 size_t Builder::getValueSize(const ValueType value)
 {
-    size_t size = 0;
+    size_t size;
 
     switch (value)
     {
     case TYPE_NULL:
-        size += sizeof(vNull); break;
+        size = 0; break;
     case TYPE_INT:
-        size += sizeof(vInt); break;
+        size = sizeof(int32_t); break;
     case TYPE_BOOL:
-        size += sizeof(vBool); break;
+        size = sizeof(bool); break;
     case TYPE_CHAR:
-        size += sizeof(vChar); break;
+        size = sizeof(char); break;
     case TYPE_MEM_PTR:
-        size += sizeof(vMemPtr); break;
+        size = sizeof(uint32_t); break;
     case TYPE_IP_OFFSET:
-        size += sizeof(vIpOffset); break;
+        size = sizeof(int32_t); break;
 
     default:
         assert(false && "Unreachable");
     }
-
-    size -= sizeof(ValueType);
 
     return size;
 }

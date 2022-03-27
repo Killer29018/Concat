@@ -3,7 +3,7 @@
 
 #include <string>
 
-const char* programExt = ".Concat";
-const char* binExt = ".ConcatBin";
+static const char* programExt = ".Concat";
+static const char* binExt = ".ConcatBin";
 
 #endif
