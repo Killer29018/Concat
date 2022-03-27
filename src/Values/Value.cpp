@@ -15,9 +15,9 @@ void runOperation(const SmartPointer& a, SmartPointer& rV, const OpCode& op)
     switch (op.code)
     {
     case OP_INVERT:
-        a->invert(rV); break;
+        a->invert(rV, op); break;
     case OP_LNOT:
-        a->lnot(rV); break;
+        a->lnot(rV, op); break;
 
     default:
         assert(false && "Not possible");
@@ -28,22 +28,22 @@ void runOperation(const SmartPointer& a, const SmartPointer& b, SmartPointer& rV
 {
     switch (op.code)
     {
-    case OP_ADD: a->add(b, rV); break;
-    case OP_SUBTRACT: a->subtract(b, rV); break;
-    case OP_MULTIPLY: a->multiply(b, rV); break;
-    case OP_DIVIDE: a->divide(b, rV); break;
-    case OP_MOD: a->mod(b, rV); break;
+    case OP_ADD: a->add(b, rV, op); break;
+    case OP_SUBTRACT: a->subtract(b, rV, op); break;
+    case OP_MULTIPLY: a->multiply(b, rV, op); break;
+    case OP_DIVIDE: a->divide(b, rV, op); break;
+    case OP_MOD: a->mod(b, rV, op); break;
 
-    case OP_EQUAL: a->equal(b, rV); break;
-    case OP_NOT_EQUAL: a->notEqual(b, rV); break;
-    case OP_GREATER: a->greater(b, rV); break;
-    case OP_LESS: a->less(b, rV); break;
-    case OP_GREATER_EQUAL: a->greaterEqual(b, rV); break;
-    case OP_LESS_EQUAL: a->lessEqual(b, rV); break;
-    case OP_LAND: a->land(b, rV); break;
-    case OP_LOR: a->lor(b, rV); break;
-    case OP_RSHIFT: a->rShift(b, rV); break;
-    case OP_LSHIFT: a->lShift(b, rV); break;
+    case OP_EQUAL: a->equal(b, rV, op); break;
+    case OP_NOT_EQUAL: a->notEqual(b, rV, op); break;
+    case OP_GREATER: a->greater(b, rV, op); break;
+    case OP_LESS: a->less(b, rV, op); break;
+    case OP_GREATER_EQUAL: a->greaterEqual(b, rV, op); break;
+    case OP_LESS_EQUAL: a->lessEqual(b, rV, op); break;
+    case OP_LAND: a->land(b, rV, op); break;
+    case OP_LOR: a->lor(b, rV, op); break;
+    case OP_RSHIFT: a->rShift(b, rV, op); break;
+    case OP_LSHIFT: a->lShift(b, rV, op); break;
 
     default:
         assert(false && "Not possible");

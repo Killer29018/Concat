@@ -1,7 +1,7 @@
 #include "Value.hpp"
 #include "../SmartPointer.hpp"
 
-void vInt::add(const SmartPointer& v2, SmartPointer& rV) const
+void vInt::add(const SmartPointer& v2, SmartPointer& rV, const OpCode& op) const
 {
     switch (v2->type)
     {
@@ -10,7 +10,7 @@ void vInt::add(const SmartPointer& v2, SmartPointer& rV) const
     }
 }
 
-void vInt::subtract(const SmartPointer &v2, SmartPointer &rV) const
+void vInt::subtract(const SmartPointer &v2, SmartPointer &rV, const OpCode& op) const
 {
     switch (v2->type)
     {
@@ -19,7 +19,7 @@ void vInt::subtract(const SmartPointer &v2, SmartPointer &rV) const
     }
 }
 
-void vInt::multiply(const SmartPointer &v2, SmartPointer &rV) const
+void vInt::multiply(const SmartPointer &v2, SmartPointer &rV, const OpCode& op) const
 {
     switch (v2->type)
     {
@@ -28,7 +28,7 @@ void vInt::multiply(const SmartPointer &v2, SmartPointer &rV) const
     }
 }
 
-void vInt::divide(const SmartPointer &v2, SmartPointer &rV) const
+void vInt::divide(const SmartPointer &v2, SmartPointer &rV, const OpCode& op) const
 {
     switch (v2->type)
     {
@@ -37,7 +37,7 @@ void vInt::divide(const SmartPointer &v2, SmartPointer &rV) const
     }
 }
 
-void vInt::mod(const SmartPointer &v2, SmartPointer &rV) const
+void vInt::mod(const SmartPointer &v2, SmartPointer &rV, const OpCode& op) const
 {
     switch (v2->type)
     {
@@ -46,7 +46,7 @@ void vInt::mod(const SmartPointer &v2, SmartPointer &rV) const
     }
 }
 
-void vInt::equal(const SmartPointer &v2, SmartPointer &rV) const
+void vInt::equal(const SmartPointer &v2, SmartPointer &rV, const OpCode& op) const
 {
     switch (v2->type)
     {
@@ -57,7 +57,7 @@ void vInt::equal(const SmartPointer &v2, SmartPointer &rV) const
     }
 }
 
-void vInt::notEqual(const SmartPointer &v2, SmartPointer &rV) const
+void vInt::notEqual(const SmartPointer &v2, SmartPointer &rV, const OpCode& op) const
 {
     switch (v2->type)
     {
@@ -68,7 +68,7 @@ void vInt::notEqual(const SmartPointer &v2, SmartPointer &rV) const
     }
 }
 
-void vInt::greater(const SmartPointer &v2, SmartPointer &rV) const
+void vInt::greater(const SmartPointer &v2, SmartPointer &rV, const OpCode& op) const
 {
     switch (v2->type)
     {
@@ -77,7 +77,7 @@ void vInt::greater(const SmartPointer &v2, SmartPointer &rV) const
     }
 }
 
-void vInt::less(const SmartPointer &v2, SmartPointer &rV) const
+void vInt::less(const SmartPointer &v2, SmartPointer &rV, const OpCode& op) const
 {
     switch (v2->type)
     {
@@ -86,7 +86,7 @@ void vInt::less(const SmartPointer &v2, SmartPointer &rV) const
     }
 }
 
-void vInt::greaterEqual(const SmartPointer &v2, SmartPointer &rV) const
+void vInt::greaterEqual(const SmartPointer &v2, SmartPointer &rV, const OpCode& op) const
 {
     switch (v2->type)
     {
@@ -95,7 +95,7 @@ void vInt::greaterEqual(const SmartPointer &v2, SmartPointer &rV) const
     }
 }
 
-void vInt::lessEqual(const SmartPointer &v2, SmartPointer &rV) const
+void vInt::lessEqual(const SmartPointer &v2, SmartPointer &rV, const OpCode& op) const
 {
     switch (v2->type)
     {
@@ -104,7 +104,7 @@ void vInt::lessEqual(const SmartPointer &v2, SmartPointer &rV) const
     }
 }
 
-void vInt::land(const SmartPointer &v2, SmartPointer &rV) const
+void vInt::land(const SmartPointer &v2, SmartPointer &rV, const OpCode& op) const
 {
     switch (v2->type)
     {
@@ -113,7 +113,7 @@ void vInt::land(const SmartPointer &v2, SmartPointer &rV) const
     }
 }
 
-void vInt::lor(const SmartPointer &v2, SmartPointer &rV) const
+void vInt::lor(const SmartPointer &v2, SmartPointer &rV, const OpCode& op) const
 {
     switch (v2->type)
     {
@@ -122,7 +122,7 @@ void vInt::lor(const SmartPointer &v2, SmartPointer &rV) const
     }
 }
 
-void vInt::rShift(const SmartPointer &v2, SmartPointer &rV) const
+void vInt::rShift(const SmartPointer &v2, SmartPointer &rV, const OpCode& op) const
 {
     switch (v2->type)
     {
@@ -130,7 +130,7 @@ void vInt::rShift(const SmartPointer &v2, SmartPointer &rV) const
         rV = makeSmartPointer<vInt>(v >> get_vInt(v2)); break;
     }
 }
-void vInt::lShift(const SmartPointer &v2, SmartPointer &rV) const
+void vInt::lShift(const SmartPointer &v2, SmartPointer &rV, const OpCode& op) const
 {
     switch (v2->type)
     {
@@ -139,7 +139,7 @@ void vInt::lShift(const SmartPointer &v2, SmartPointer &rV) const
     }
 }
 
-void vInt::lnot(SmartPointer& rV) const
+void vInt::lnot(SmartPointer& rV, const OpCode& op) const
 {
     rV = makeSmartPointer<vInt>(~v);
 }

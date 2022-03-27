@@ -3,7 +3,7 @@
 
 #include <cstring>
 
-void vString::add(const SmartPointer& v2, SmartPointer& rV) const
+void vString::add(const SmartPointer& v2, SmartPointer& rV, const OpCode& op) const
 {
     switch (v2->type)
     {
@@ -22,7 +22,7 @@ void vString::add(const SmartPointer& v2, SmartPointer& rV) const
     }
 }
 
-void vString::equal(const SmartPointer& v2, SmartPointer& rV) const
+void vString::equal(const SmartPointer& v2, SmartPointer& rV, const OpCode& op) const
 {
     switch (v2->type)
     {
@@ -31,7 +31,7 @@ void vString::equal(const SmartPointer& v2, SmartPointer& rV) const
     }
 }
 
-void vString::notEqual(const SmartPointer& v2, SmartPointer& rV) const
+void vString::notEqual(const SmartPointer& v2, SmartPointer& rV, const OpCode& op) const
 {
     switch (v2->type)
     {

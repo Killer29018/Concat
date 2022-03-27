@@ -56,24 +56,24 @@ public:
 
     virtual ~Value() {}
 
-    virtual void add(const SmartPointer& v2, SmartPointer& rV) const {}
-    virtual void subtract(const SmartPointer& v2, SmartPointer& rV) const {}
-    virtual void multiply(const SmartPointer& v2, SmartPointer& rV) const {}
-    virtual void divide(const SmartPointer& v2, SmartPointer& rV) const {}
-    virtual void mod(const SmartPointer& v2, SmartPointer& rV) const {}
-    virtual void equal(const SmartPointer& v2, SmartPointer& rV) const {}
-    virtual void notEqual(const SmartPointer& v2, SmartPointer& rV) const {}
-    virtual void greater(const SmartPointer& v2, SmartPointer& rV) const {}
-    virtual void less(const SmartPointer& v2, SmartPointer& rV) const {}
-    virtual void greaterEqual(const SmartPointer& v2, SmartPointer& rV) const {}
-    virtual void lessEqual(const SmartPointer& v2, SmartPointer& rV) const {}
-    virtual void land(const SmartPointer& v2, SmartPointer& rV) const {}
-    virtual void lor(const SmartPointer& v2, SmartPointer& rV) const {}
-    virtual void rShift(const SmartPointer& v2, SmartPointer& rV) const {}
-    virtual void lShift(const SmartPointer& v2, SmartPointer& rV) const {}
+    virtual void add(const SmartPointer& v2, SmartPointer& rV, const OpCode& op) const {}
+    virtual void subtract(const SmartPointer& v2, SmartPointer& rV, const OpCode& op) const {}
+    virtual void multiply(const SmartPointer& v2, SmartPointer& rV, const OpCode& op) const {}
+    virtual void divide(const SmartPointer& v2, SmartPointer& rV, const OpCode& op) const {}
+    virtual void mod(const SmartPointer& v2, SmartPointer& rV, const OpCode& op) const {}
+    virtual void equal(const SmartPointer& v2, SmartPointer& rV, const OpCode& op) const {}
+    virtual void notEqual(const SmartPointer& v2, SmartPointer& rV, const OpCode& op) const {}
+    virtual void greater(const SmartPointer& v2, SmartPointer& rV, const OpCode& op) const {}
+    virtual void less(const SmartPointer& v2, SmartPointer& rV, const OpCode& op) const {}
+    virtual void greaterEqual(const SmartPointer& v2, SmartPointer& rV, const OpCode& op) const {}
+    virtual void lessEqual(const SmartPointer& v2, SmartPointer& rV, const OpCode& op) const {}
+    virtual void land(const SmartPointer& v2, SmartPointer& rV, const OpCode& op) const {}
+    virtual void lor(const SmartPointer& v2, SmartPointer& rV, const OpCode& op) const {}
+    virtual void rShift(const SmartPointer& v2, SmartPointer& rV, const OpCode& op) const {}
+    virtual void lShift(const SmartPointer& v2, SmartPointer& rV, const OpCode& op) const {}
 
-    virtual void invert(SmartPointer& rV) const {}
-    virtual void lnot(SmartPointer& rV) const {}
+    virtual void invert(SmartPointer& rV, const OpCode& op) const {}
+    virtual void lnot(SmartPointer& rV, const OpCode& op) const {}
 };
 
 struct vNull : Value
@@ -87,23 +87,23 @@ struct vInt : Value
 
     vInt(int32_t value) : Value(TYPE_INT), v(value) {}
 
-    void add(const SmartPointer& v2, SmartPointer& rV) const override;
-    void subtract(const SmartPointer& v2, SmartPointer& rV) const override;
-    void multiply(const SmartPointer& v2, SmartPointer& rV) const override;
-    void divide(const SmartPointer& v2, SmartPointer& rV) const override;
-    void mod(const SmartPointer& v2, SmartPointer& rV) const override;
-    void equal(const SmartPointer& v2, SmartPointer& rV) const override;
-    void notEqual(const SmartPointer& v2, SmartPointer& rV) const override;
-    void greater(const SmartPointer& v2, SmartPointer& rV) const override;
-    void less(const SmartPointer& v2, SmartPointer& rV) const override;
-    void greaterEqual(const SmartPointer& v2, SmartPointer& rV) const override;
-    void lessEqual(const SmartPointer& v2, SmartPointer& rV) const override;
-    void land(const SmartPointer& v2, SmartPointer& rV) const override;
-    void lor(const SmartPointer& v2, SmartPointer& rV) const override;
-    void rShift(const SmartPointer& v2, SmartPointer& rV) const override;
-    void lShift(const SmartPointer& v2, SmartPointer& rV) const override;
+    void add(const SmartPointer& v2, SmartPointer& rV, const OpCode& op) const override;
+    void subtract(const SmartPointer& v2, SmartPointer& rV, const OpCode& op) const override;
+    void multiply(const SmartPointer& v2, SmartPointer& rV, const OpCode& op) const override;
+    void divide(const SmartPointer& v2, SmartPointer& rV, const OpCode& op) const override;
+    void mod(const SmartPointer& v2, SmartPointer& rV, const OpCode& op) const override;
+    void equal(const SmartPointer& v2, SmartPointer& rV, const OpCode& op) const override;
+    void notEqual(const SmartPointer& v2, SmartPointer& rV, const OpCode& op) const override;
+    void greater(const SmartPointer& v2, SmartPointer& rV, const OpCode& op) const override;
+    void less(const SmartPointer& v2, SmartPointer& rV, const OpCode& op) const override;
+    void greaterEqual(const SmartPointer& v2, SmartPointer& rV, const OpCode& op) const override;
+    void lessEqual(const SmartPointer& v2, SmartPointer& rV, const OpCode& op) const override;
+    void land(const SmartPointer& v2, SmartPointer& rV, const OpCode& op) const override;
+    void lor(const SmartPointer& v2, SmartPointer& rV, const OpCode& op) const override;
+    void rShift(const SmartPointer& v2, SmartPointer& rV, const OpCode& op) const override;
+    void lShift(const SmartPointer& v2, SmartPointer& rV, const OpCode& op) const override;
 
-    void lnot(SmartPointer& rV) const override;
+    void lnot(SmartPointer& rV, const OpCode& op) const override;
 };
 #define as_vInt(val)        ((vInt*)(val.get()))
 #define get_vInt(val)       (((vInt*)(val.get()))->v)
@@ -114,12 +114,12 @@ struct vBool : Value
 
     vBool(bool value) : Value(TYPE_BOOL), v(value) {}
 
-    void equal(const SmartPointer& v2, SmartPointer& rV) const override;
-    void notEqual(const SmartPointer& v2, SmartPointer& rV) const override;
-    void land(const SmartPointer& v2, SmartPointer& rV) const override;
-    void lor(const SmartPointer& v2, SmartPointer& rV) const override;
+    void equal(const SmartPointer& v2, SmartPointer& rV, const OpCode& op) const override;
+    void notEqual(const SmartPointer& v2, SmartPointer& rV, const OpCode& op) const override;
+    void land(const SmartPointer& v2, SmartPointer& rV, const OpCode& op) const override;
+    void lor(const SmartPointer& v2, SmartPointer& rV, const OpCode& op) const override;
 
-    void invert(SmartPointer& rV) const override;
+    void invert(SmartPointer& rV, const OpCode& op) const override;
 };
 #define as_vBool(val)       ((vBool*)(val.get()))
 #define get_vBool(val)      (((vBool*)(val.get()))->v)
@@ -130,12 +130,12 @@ struct vChar : Value
 
     vChar(char value) : Value(TYPE_CHAR), v(value) {}
 
-    void equal(const SmartPointer& v2, SmartPointer& rV) const override;
-    void notEqual(const SmartPointer& v2, SmartPointer& rV) const override;
-    void greater(const SmartPointer& v2, SmartPointer& rV) const override;
-    void less(const SmartPointer& v2, SmartPointer& rV) const override;
-    void greaterEqual(const SmartPointer& v2, SmartPointer& rV) const override;
-    void lessEqual(const SmartPointer& v2, SmartPointer& rV) const override;
+    void equal(const SmartPointer& v2, SmartPointer& rV, const OpCode& op) const override;
+    void notEqual(const SmartPointer& v2, SmartPointer& rV, const OpCode& op) const override;
+    void greater(const SmartPointer& v2, SmartPointer& rV, const OpCode& op) const override;
+    void less(const SmartPointer& v2, SmartPointer& rV, const OpCode& op) const override;
+    void greaterEqual(const SmartPointer& v2, SmartPointer& rV, const OpCode& op) const override;
+    void lessEqual(const SmartPointer& v2, SmartPointer& rV, const OpCode& op) const override;
 };
 #define as_vChar(val)       ((vChar*)(val.get()))
 #define get_vChar(val)      (((vChar*)(val.get()))->v)
@@ -146,9 +146,9 @@ struct vString : Value
     vString(char* value) : Value(TYPE_STRING), v(value) {}
     ~vString() { }
 
-    void add(const SmartPointer& v2, SmartPointer& rV) const override;
-    void equal(const SmartPointer& v2, SmartPointer& rV) const override;
-    void notEqual(const SmartPointer& v2, SmartPointer& rV) const override;
+    void add(const SmartPointer& v2, SmartPointer& rV, const OpCode& op) const override;
+    void equal(const SmartPointer& v2, SmartPointer& rV, const OpCode& op) const override;
+    void notEqual(const SmartPointer& v2, SmartPointer& rV, const OpCode& op) const override;
 };
 #define as_vString(val)    ((vString*)(val.get()))
 #define get_vString(val)   (((vString*)(val.get()))->v)
@@ -160,14 +160,14 @@ struct vMemPtr : Value
 
     vMemPtr(uint32_t value) : Value(TYPE_MEM_PTR), v(value) {}
 
-    void add(const SmartPointer& v2, SmartPointer& rV) const override;
-    void subtract(const SmartPointer& v2, SmartPointer& rV) const override;
-    void equal(const SmartPointer& v2, SmartPointer& rV) const override;
-    void notEqual(const SmartPointer& v2, SmartPointer& rV) const override;
-    void greater(const SmartPointer& v2, SmartPointer& rV) const override;
-    void less(const SmartPointer& v2, SmartPointer& rV) const override;
-    void greaterEqual(const SmartPointer& v2, SmartPointer& rV) const override;
-    void lessEqual(const SmartPointer& v2, SmartPointer& rV) const override;
+    void add(const SmartPointer& v2, SmartPointer& rV, const OpCode& op) const override;
+    void subtract(const SmartPointer& v2, SmartPointer& rV, const OpCode& op) const override;
+    void equal(const SmartPointer& v2, SmartPointer& rV, const OpCode& op) const override;
+    void notEqual(const SmartPointer& v2, SmartPointer& rV, const OpCode& op) const override;
+    void greater(const SmartPointer& v2, SmartPointer& rV, const OpCode& op) const override;
+    void less(const SmartPointer& v2, SmartPointer& rV, const OpCode& op) const override;
+    void greaterEqual(const SmartPointer& v2, SmartPointer& rV, const OpCode& op) const override;
+    void lessEqual(const SmartPointer& v2, SmartPointer& rV, const OpCode& op) const override;
 };
 #define as_vMemPtr(val)     ((vMemPtr*)(val.get()))
 #define get_vMemPtr(val)    (((vMemPtr*)(val.get()))->v)

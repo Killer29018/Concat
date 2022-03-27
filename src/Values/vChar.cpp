@@ -1,7 +1,7 @@
 #include "Value.hpp"
 #include "../SmartPointer.hpp"
 
-void vChar::equal(const SmartPointer& v2, SmartPointer& rV) const
+void vChar::equal(const SmartPointer& v2, SmartPointer& rV, const OpCode& op) const
 {
     switch (v2->type)
     {
@@ -10,7 +10,7 @@ void vChar::equal(const SmartPointer& v2, SmartPointer& rV) const
     }
 }
 
-void vChar::notEqual(const SmartPointer& v2, SmartPointer& rV) const
+void vChar::notEqual(const SmartPointer& v2, SmartPointer& rV, const OpCode& op) const
 {
     switch (v2->type)
     {
@@ -19,7 +19,7 @@ void vChar::notEqual(const SmartPointer& v2, SmartPointer& rV) const
     }
 }
 
-void vChar::greater(const SmartPointer& v2, SmartPointer& rV) const
+void vChar::greater(const SmartPointer& v2, SmartPointer& rV, const OpCode& op) const
 {
     switch (v2->type)
     {
@@ -28,7 +28,7 @@ void vChar::greater(const SmartPointer& v2, SmartPointer& rV) const
     }
 }
 
-void vChar::less(const SmartPointer& v2, SmartPointer& rV) const
+void vChar::less(const SmartPointer& v2, SmartPointer& rV, const OpCode& op) const
 {
     switch (v2->type)
     {
@@ -37,7 +37,7 @@ void vChar::less(const SmartPointer& v2, SmartPointer& rV) const
     }
 }
 
-void vChar::greaterEqual(const SmartPointer& v2, SmartPointer& rV) const
+void vChar::greaterEqual(const SmartPointer& v2, SmartPointer& rV, const OpCode& op) const
 {
     switch (v2->type)
     {
@@ -46,7 +46,7 @@ void vChar::greaterEqual(const SmartPointer& v2, SmartPointer& rV) const
     }
 }
 
-void vChar::lessEqual(const SmartPointer& v2, SmartPointer& rV) const
+void vChar::lessEqual(const SmartPointer& v2, SmartPointer& rV, const OpCode& op) const
 {
     switch (v2->type)
     {
