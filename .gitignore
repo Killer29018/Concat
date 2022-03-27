@@ -5,6 +5,6 @@ build/**
 compile_commands.json
 
 # File
-Concat
-Concat.exe
-**/**.CONCAT_BIN
+concat
+concat.exe
+**/**.concat_bin
