@@ -285,21 +285,8 @@ void VM::simulate()
 
                 const SmartPointer& a = pop();
 
-                switch (a->type)
-                {
-                    case TYPE_INT:
-                        printf("%d", get_vInt(a)); break;
-                    case TYPE_BOOL:
-                        printf("%d", get_vBool(a)); break;
-                    case TYPE_CHAR:
-                        printf("%c", get_vChar(a)); break;
-                    case TYPE_STRING:
-                        printf("%s", get_vString(a)); break;
-                    case TYPE_MEM_PTR:
-                        printf("%d", get_vMemPtr(a)); break;
-                    default:
-                        assert(false && "Not Reachable");
-                }
+                a->print(op);
+
                 ip++;
 
                 break;
@@ -311,20 +298,7 @@ void VM::simulate()
 
                 const SmartPointer& a = pop();
 
-                switch (a->type)
-                {
-                case TYPE_INT:
-                    printf("%c", get_vInt(a)); break;
-                case TYPE_BOOL:
-                    printf("%i", get_vBool(a)); break;
-                case TYPE_CHAR:
-                    printf("%i", get_vChar(a)); break;
-                case TYPE_STRING:
-                    printf("%c", get_vString(a)[0]); break;
-
-                default:
-                    Error::runtimeError(op, "Invalid Type");
-                }
+                a->dot(op);
 
                 ip++;
                 break;

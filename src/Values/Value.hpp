@@ -12,6 +12,7 @@
 #include <utility>
 #include <functional>
 
+
 class SmartPointer;
 
 struct OpCode;
@@ -56,24 +57,27 @@ public:
 
     virtual ~Value() {}
 
-    virtual void add(const SmartPointer& v2, SmartPointer& rV, const OpCode& op) const {}
-    virtual void subtract(const SmartPointer& v2, SmartPointer& rV, const OpCode& op) const {}
-    virtual void multiply(const SmartPointer& v2, SmartPointer& rV, const OpCode& op) const {}
-    virtual void divide(const SmartPointer& v2, SmartPointer& rV, const OpCode& op) const {}
-    virtual void mod(const SmartPointer& v2, SmartPointer& rV, const OpCode& op) const {}
-    virtual void equal(const SmartPointer& v2, SmartPointer& rV, const OpCode& op) const {}
-    virtual void notEqual(const SmartPointer& v2, SmartPointer& rV, const OpCode& op) const {}
-    virtual void greater(const SmartPointer& v2, SmartPointer& rV, const OpCode& op) const {}
-    virtual void less(const SmartPointer& v2, SmartPointer& rV, const OpCode& op) const {}
-    virtual void greaterEqual(const SmartPointer& v2, SmartPointer& rV, const OpCode& op) const {}
-    virtual void lessEqual(const SmartPointer& v2, SmartPointer& rV, const OpCode& op) const {}
-    virtual void land(const SmartPointer& v2, SmartPointer& rV, const OpCode& op) const {}
-    virtual void lor(const SmartPointer& v2, SmartPointer& rV, const OpCode& op) const {}
-    virtual void rShift(const SmartPointer& v2, SmartPointer& rV, const OpCode& op) const {}
-    virtual void lShift(const SmartPointer& v2, SmartPointer& rV, const OpCode& op) const {}
+    virtual void print(const OpCode& op) const;
+    virtual void dot(const OpCode& op) const;
 
-    virtual void invert(SmartPointer& rV, const OpCode& op) const {}
-    virtual void lnot(SmartPointer& rV, const OpCode& op) const {}
+    virtual void add(const SmartPointer& v2, SmartPointer& rV, const OpCode& op) const;
+    virtual void subtract(const SmartPointer& v2, SmartPointer& rV, const OpCode& op) const;
+    virtual void multiply(const SmartPointer& v2, SmartPointer& rV, const OpCode& op) const;
+    virtual void divide(const SmartPointer& v2, SmartPointer& rV, const OpCode& op) const;
+    virtual void mod(const SmartPointer& v2, SmartPointer& rV, const OpCode& op) const;
+    virtual void equal(const SmartPointer& v2, SmartPointer& rV, const OpCode& op) const;
+    virtual void notEqual(const SmartPointer& v2, SmartPointer& rV, const OpCode& op) const;
+    virtual void greater(const SmartPointer& v2, SmartPointer& rV, const OpCode& op) const;
+    virtual void less(const SmartPointer& v2, SmartPointer& rV, const OpCode& op) const;
+    virtual void greaterEqual(const SmartPointer& v2, SmartPointer& rV, const OpCode& op) const;
+    virtual void lessEqual(const SmartPointer& v2, SmartPointer& rV, const OpCode& op) const;
+    virtual void land(const SmartPointer& v2, SmartPointer& rV, const OpCode& op) const;
+    virtual void lor(const SmartPointer& v2, SmartPointer& rV, const OpCode& op) const;
+    virtual void rShift(const SmartPointer& v2, SmartPointer& rV, const OpCode& op) const;
+    virtual void lShift(const SmartPointer& v2, SmartPointer& rV, const OpCode& op) const;
+
+    virtual void invert(SmartPointer& rV, const OpCode& op) const;
+    virtual void lnot(SmartPointer& rV, const OpCode& op) const;
 };
 
 struct vNull : Value
@@ -86,6 +90,9 @@ struct vInt : Value
     int32_t v;
 
     vInt(int32_t value) : Value(TYPE_INT), v(value) {}
+
+    void print(const OpCode& op) const override;
+    void dot(const OpCode& op) const override;
 
     void add(const SmartPointer& v2, SmartPointer& rV, const OpCode& op) const override;
     void subtract(const SmartPointer& v2, SmartPointer& rV, const OpCode& op) const override;
@@ -114,6 +121,9 @@ struct vBool : Value
 
     vBool(bool value) : Value(TYPE_BOOL), v(value) {}
 
+    void print(const OpCode& op) const override;
+    void dot(const OpCode& op) const override;
+
     void equal(const SmartPointer& v2, SmartPointer& rV, const OpCode& op) const override;
     void notEqual(const SmartPointer& v2, SmartPointer& rV, const OpCode& op) const override;
     void land(const SmartPointer& v2, SmartPointer& rV, const OpCode& op) const override;
@@ -129,6 +139,9 @@ struct vChar : Value
     char v;
 
     vChar(char value) : Value(TYPE_CHAR), v(value) {}
+
+    void print(const OpCode& op) const override;
+    void dot(const OpCode& op) const override;
 
     void equal(const SmartPointer& v2, SmartPointer& rV, const OpCode& op) const override;
     void notEqual(const SmartPointer& v2, SmartPointer& rV, const OpCode& op) const override;
@@ -146,6 +159,9 @@ struct vString : Value
     vString(char* value) : Value(TYPE_STRING), v(value) {}
     ~vString() { }
 
+    void print(const OpCode& op) const override;
+    void dot(const OpCode& op) const override;
+
     void add(const SmartPointer& v2, SmartPointer& rV, const OpCode& op) const override;
     void equal(const SmartPointer& v2, SmartPointer& rV, const OpCode& op) const override;
     void notEqual(const SmartPointer& v2, SmartPointer& rV, const OpCode& op) const override;
@@ -159,6 +175,8 @@ struct vMemPtr : Value
     uint32_t v;
 
     vMemPtr(uint32_t value) : Value(TYPE_MEM_PTR), v(value) {}
+
+    void print(const OpCode& op) const override;
 
     void add(const SmartPointer& v2, SmartPointer& rV, const OpCode& op) const override;
     void subtract(const SmartPointer& v2, SmartPointer& rV, const OpCode& op) const override;

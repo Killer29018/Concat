@@ -14,6 +14,7 @@ public:
     static void compilerError(const Token& token, const char* fmt, ...) FMTARGS(2);
 
     static void operationError(const OpCode& op, const char* operation, ValueType t1, ValueType t2);
+    static void operationError(const OpCode& op, const char* operation, ValueType t1);
 
     static void stackTooSmallError(const OpCode& code, int expectedSize);
 private:

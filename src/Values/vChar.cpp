@@ -2,6 +2,16 @@
 #include "../SmartPointer.hpp"
 #include "../Error.hpp"
 
+void vChar::print(const OpCode& op) const
+{
+    printf("%c", v);
+}
+
+void vChar::dot(const OpCode& op) const
+{
+    printf("%d", v);
+}
+
 void vChar::equal(const SmartPointer& v2, SmartPointer& rV, const OpCode& op) const
 {
     switch (v2->type)

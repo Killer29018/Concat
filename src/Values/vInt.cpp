@@ -2,6 +2,16 @@
 #include "../SmartPointer.hpp"
 #include "../Error.hpp"
 
+void vInt::print(const OpCode& op) const
+{
+    printf("%d", v);
+}
+
+void vInt::dot(const OpCode& op) const
+{
+    printf("%c", v);
+}
+
 void vInt::add(const SmartPointer& v2, SmartPointer& rV, const OpCode& op) const
 {
     switch (v2->type)

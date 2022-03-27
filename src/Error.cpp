@@ -25,6 +25,11 @@ void Error::operationError(const OpCode& op, const char* operation, ValueType t1
     runtimeError(op, "Operation %s does not support %s and %s", operation, ValueTypeString[t1], ValueTypeString[t2]);
 }
 
+void Error::operationError(const OpCode& op, const char* operation, ValueType t1)
+{
+    runtimeError(op, "Operation %s not supported for %s", operation, ValueTypeString[t1]);
+}
+
 void Error::stackTooSmallError(const OpCode& code, int expectedSize)
 {
     printError("RUNTIME ERROR", "'N/A'", code.line, code.column, "Not enough items on the stack. Atleast %d item/s expected", expectedSize);

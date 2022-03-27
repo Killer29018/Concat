@@ -4,6 +4,16 @@
 
 #include <cstring>
 
+void vString::print(const OpCode& op) const
+{
+    printf("%s", v);
+}
+
+void vString::dot(const OpCode& op) const
+{
+    printf("%c", v[0]);
+}
+
 void vString::add(const SmartPointer& v2, SmartPointer& rV, const OpCode& op) const
 {
     switch (v2->type)
