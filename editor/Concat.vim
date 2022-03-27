@@ -51,4 +51,4 @@ highlight link SBIMCL_String String
 syntax match SBIMCL_Todo "\v(INFO|TODO|FIXME)" containedin=ALL
 highlight link SBIMCL_Todo Todo
 
-let b:current_syntax = "SBIMCL"
+let b:current_syntax = "Concat"

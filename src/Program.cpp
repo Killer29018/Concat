@@ -6,6 +6,8 @@
 
 #include "Builder.hpp"
 
+#include "Filetypes.hpp"
+
 bool Program::printDebugTokens =false;
 bool Program::printDebugOpcodes = false;
 bool Program::run = false;
@@ -21,7 +23,7 @@ void Program::createProgram(bool runmode, const char* filename)
 void Program::buildProgramFromFile(const char* filename)
 {
     std::filesystem::path path(filename);
-    if (path.extension() == ".CONCAT")
+    if (path.extension() == programExt)
     {
         createOpcodes(filename);
     }
@@ -34,18 +36,22 @@ void Program::buildProgramFromFile(const char* filename)
     VM::build(filename);
 
     if (run)
-        VM::simulate();
+    {
+        path.replace_extension(binExt);
+        printf("\nRunning %s: \n", path.generic_string().c_str());
+        runProgramFromFile(path.generic_string().c_str());
+    }
 }
 
 void Program::runProgramFromFile(const char* filename)
 {
     std::filesystem::path path(filename);
 
-    if (path.extension() == ".CONCAT")
+    if (path.extension() == programExt)
     {
         createOpcodes(filename);
     }
-    else if (path.extension() == ".CONCAT_BIN")
+    else if (path.extension() == binExt)
     {
         if (printDebugTokens)
         {
