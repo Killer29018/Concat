@@ -136,6 +136,11 @@ void Builder::readOpCode(char* buffer, OpCode& op, std::ifstream& file)
     op.line = line;
     op.column = column;
 
+    if (valueType >= static_cast<enumType>(TYPE_COUNT))
+    {
+        assert(false);
+    }
+
     size_t size;
     char* value = (char*)malloc(0);
     if (type == TYPE_STRING)

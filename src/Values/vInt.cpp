@@ -51,9 +51,9 @@ void vInt::equal(const SmartPointer &v2, SmartPointer &rV) const
     switch (v2->type)
     {
     case TYPE_INT:
-        rV = makeSmartPointer<vInt>(v == get_vInt(v2)); break;
+        rV = makeSmartPointer<vBool>(v == get_vInt(v2)); break;
     case TYPE_BOOL:
-        rV = makeSmartPointer<vInt>(v == get_vBool(v2)); break;
+        rV = makeSmartPointer<vBool>(v == get_vBool(v2)); break;
     }
 }
 
@@ -62,9 +62,9 @@ void vInt::notEqual(const SmartPointer &v2, SmartPointer &rV) const
     switch (v2->type)
     {
     case TYPE_INT:
-        rV = makeSmartPointer<vInt>(v != get_vInt(v2)); break;
+        rV = makeSmartPointer<vBool>(v != get_vInt(v2)); break;
     case TYPE_BOOL:
-        rV = makeSmartPointer<vInt>(v != get_vBool(v2)); break;
+        rV = makeSmartPointer<vBool>(v != get_vBool(v2)); break;
     }
 }
 
@@ -73,7 +73,7 @@ void vInt::greater(const SmartPointer &v2, SmartPointer &rV) const
     switch (v2->type)
     {
     case TYPE_INT:
-        rV = makeSmartPointer<vInt>(v > get_vInt(v2)); break;
+        rV = makeSmartPointer<vBool>(v > get_vInt(v2)); break;
     }
 }
 
@@ -82,7 +82,7 @@ void vInt::less(const SmartPointer &v2, SmartPointer &rV) const
     switch (v2->type)
     {
     case TYPE_INT:
-        rV = makeSmartPointer<vInt>(v < get_vInt(v2)); break;
+        rV = makeSmartPointer<vBool>(v < get_vInt(v2)); break;
     }
 }
 
@@ -91,7 +91,7 @@ void vInt::greaterEqual(const SmartPointer &v2, SmartPointer &rV) const
     switch (v2->type)
     {
     case TYPE_INT:
-        rV = makeSmartPointer<vInt>(v >= get_vInt(v2)); break;
+        rV = makeSmartPointer<vBool>(v >= get_vInt(v2)); break;
     }
 }
 
@@ -100,7 +100,7 @@ void vInt::lessEqual(const SmartPointer &v2, SmartPointer &rV) const
     switch (v2->type)
     {
     case TYPE_INT:
-        rV = makeSmartPointer<vInt>(v <= get_vInt(v2)); break;
+        rV = makeSmartPointer<vBool>(v <= get_vInt(v2)); break;
     }
 }
 

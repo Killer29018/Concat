@@ -113,6 +113,13 @@ struct vBool : Value
     bool v;
 
     vBool(bool value) : Value(TYPE_BOOL), v(value) {}
+
+    void equal(const SmartPointer& v2, SmartPointer& rV) const override;
+    void notEqual(const SmartPointer& v2, SmartPointer& rV) const override;
+    void land(const SmartPointer& v2, SmartPointer& rV) const override;
+    void lor(const SmartPointer& v2, SmartPointer& rV) const override;
+
+    void invert(SmartPointer& rV) const override;
 };
 #define as_vBool(val)       ((vBool*)(val.get()))
 #define get_vBool(val)      (((vBool*)(val.get()))->v)
@@ -122,6 +129,13 @@ struct vChar : Value
     char v;
 
     vChar(char value) : Value(TYPE_CHAR), v(value) {}
+
+    void equal(const SmartPointer& v2, SmartPointer& rV) const override;
+    void notEqual(const SmartPointer& v2, SmartPointer& rV) const override;
+    void greater(const SmartPointer& v2, SmartPointer& rV) const override;
+    void less(const SmartPointer& v2, SmartPointer& rV) const override;
+    void greaterEqual(const SmartPointer& v2, SmartPointer& rV) const override;
+    void lessEqual(const SmartPointer& v2, SmartPointer& rV) const override;
 };
 #define as_vChar(val)       ((vChar*)(val.get()))
 #define get_vChar(val)      (((vChar*)(val.get()))->v)
@@ -130,7 +144,11 @@ struct vString : Value
 {
     char* v;
     vString(char* value) : Value(TYPE_STRING), v(value) {}
-    ~vString() { free(v); }
+    ~vString() { }
+
+    void add(const SmartPointer& v2, SmartPointer& rV) const override;
+    void equal(const SmartPointer& v2, SmartPointer& rV) const override;
+    void notEqual(const SmartPointer& v2, SmartPointer& rV) const override;
 };
 #define as_vString(val)    ((vString*)(val.get()))
 #define get_vString(val)   (((vString*)(val.get()))->v)
@@ -141,6 +159,15 @@ struct vMemPtr : Value
     uint32_t v;
 
     vMemPtr(uint32_t value) : Value(TYPE_MEM_PTR), v(value) {}
+
+    void add(const SmartPointer& v2, SmartPointer& rV) const override;
+    void subtract(const SmartPointer& v2, SmartPointer& rV) const override;
+    void equal(const SmartPointer& v2, SmartPointer& rV) const override;
+    void notEqual(const SmartPointer& v2, SmartPointer& rV) const override;
+    void greater(const SmartPointer& v2, SmartPointer& rV) const override;
+    void less(const SmartPointer& v2, SmartPointer& rV) const override;
+    void greaterEqual(const SmartPointer& v2, SmartPointer& rV) const override;
+    void lessEqual(const SmartPointer& v2, SmartPointer& rV) const override;
 };
 #define as_vMemPtr(val)     ((vMemPtr*)(val.get()))
 #define get_vMemPtr(val)    (((vMemPtr*)(val.get()))->v)
