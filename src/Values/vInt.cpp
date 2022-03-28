@@ -12,6 +12,22 @@ void vInt::dot(const OpCode& op) const
     printf("%c", v);
 }
 
+
+void vInt::cast(SmartPointer& rV, const OpCode& op) const
+{
+    switch (op.value->type)
+    {
+    case TYPE_BOOL:
+        rV = makeSmartPointer<vBool>((bool)v); break;
+    case TYPE_CHAR:
+        rV = makeSmartPointer<vChar>((char)v); break;
+
+    default:
+        Error::castError(op, type);
+    }
+}
+
+
 void vInt::add(const SmartPointer& v2, SmartPointer& rV, const OpCode& op) const
 {
     switch (v2->type)

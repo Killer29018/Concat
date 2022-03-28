@@ -15,7 +15,7 @@ public:
 
     static void operationError(const OpCode& op, const char* operation, ValueType t1, ValueType t2);
     static void operationError(const OpCode& op, const char* operation, ValueType t1);
-    static void castError(const OpCode& op, ValueType t1);
+    static void castError(const OpCode& op, ValueType type);
 
     static void stackTooSmallError(const OpCode& code, int expectedSize);
 private:

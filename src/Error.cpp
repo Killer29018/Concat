@@ -30,9 +30,9 @@ void Error::operationError(const OpCode& op, const char* operation, ValueType t1
     runtimeError(op, "Operation %s not supported for %s", operation, ValueTypeString[t1]);
 }
 
-void Error::castError(const OpCode& op, ValueType t1)
+void Error::castError(const OpCode& op, ValueType type)
 {
-    runtimeError(op, "Unable to cast from %s to %s", ValueTypeString[t1], ValueTypeString[op.value->type]);
+    runtimeError(op, "Unable to cast from %s to %s", ValueTypeString[type], ValueTypeString[op.value->type]);
 }
 
 void Error::stackTooSmallError(const OpCode& code, int expectedSize)

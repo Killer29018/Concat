@@ -7,6 +7,13 @@
 
 enum TokenType
 {
+    TOKEN_INT,
+    TOKEN_BOOL,
+    TOKEN_CHAR,
+    TOKEN_STRING,
+
+    TOKEN_CAST,
+
     TOKEN_ADD,
     TOKEN_SUBTRACT,
     TOKEN_MULTIPLY,
@@ -44,13 +51,6 @@ enum TokenType
     TOKEN_MULTIPLY_WRITE_MEMORY_8,
     TOKEN_DIVIDE_WRITE_MEMORY_8,
 
-    TOKEN_INT,
-    TOKEN_CHAR,
-    TOKEN_STRING,
-    TOKEN_BOOL,
-
-    TOKEN_CAST,
-
     TOKEN_CR,
     TOKEN_PRINT,
     TOKEN_DOT,
@@ -79,6 +79,13 @@ enum TokenType
 
 const std::vector<const char*> TokenString
 {
+    "TOKEN_INT",
+    "TOKEN_BOOL",
+    "TOKEN_CHAR",
+    "TOKEN_STRING",
+
+    "TOKEN_CAST",
+
     "TOKEN_ADD",
     "TOKEN_SUBTRACT",
     "TOKEN_MULTIPLY",
@@ -115,13 +122,6 @@ const std::vector<const char*> TokenString
     "TOKEN_SUBTRACT_WRITE_MEMORY_8",
     "TOKEN_MULTIPLY_WRITE_MEMORY_8",
     "TOKEN_DIVIDE_WRITE_MEMORY_8",
-
-    "TOKEN_INT",
-    "TOKEN_CHAR",
-    "TOKEN_STRING",
-    "TOKEN_BOOL",
-
-    "TOKEN_CAST",
 
     "TOKEN_CR",
     "TOKEN_PRINT",

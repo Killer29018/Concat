@@ -53,6 +53,74 @@ void Compiler::startCompiler()
 
         switch (t.type)
         {
+            case TOKEN_INT:
+                {
+                    code.code = OP_INT;
+                    int32_t value = atoi(word);
+                    code.value = makeSmartPointer<vInt>(value);
+
+                    VM::addOpCode(code);
+                    ip++;
+                    break;
+                }
+            case TOKEN_CHAR:
+                {
+                    code.code = OP_CHAR;
+                    char c = *(word + 1);
+                    if (length == 4) c = parseEscapeCharacter(word);
+
+                    code.value = makeSmartPointer<vChar>(c);
+
+                    VM::addOpCode(code);
+                    ip++;
+                    break;
+                }
+            case TOKEN_STRING:
+                {
+                    code.code = OP_STRING;
+
+                    std::string parsed = parseEscapeSequence(word);
+                    char* c = (char*)malloc(sizeof(char) * (parsed.size()));
+                    memset(c, 0, parsed.size() - 1);
+                    strncpy(c, parsed.c_str(), parsed.size() - 1);
+                    c[parsed.size() - 1] = 0x00;
+
+                    code.value = makeSmartPointer<vString>(c);
+
+                    VM::addOpCode(code);
+                    ip++;
+                    break;
+                }
+            case TOKEN_BOOL:
+                {
+                    code.code = OP_BOOL;
+                    if (stringWord == "true")
+                        code.value = makeSmartPointer<vBool>(true);
+                    else
+                        code.value = makeSmartPointer<vBool>(false);
+
+                    VM::addOpCode(code);
+                    ip++;
+                    break;
+                }
+
+            case TOKEN_CAST:
+                {
+                    code.code = OP_CAST;
+                    if (stringWord == "cast(int)")
+                        code.value = makeSmartPointer<vInt>(0);
+                    else if (stringWord == "cast(bool)")
+                        code.value = makeSmartPointer<vBool>(0);
+                    else if (stringWord == "cast(char)")
+                        code.value = makeSmartPointer<vChar>(0);
+                    else if (stringWord == "cast(string)")
+                        code.value = makeSmartPointer<vString>(nullptr);
+
+                    VM::addOpCode(code);
+                    ip++;
+                    break;
+                }
+
             case TOKEN_ADD: 
                 addBasicOpcode(code, ip, OP_ADD); break;
             case TOKEN_SUBTRACT: 
@@ -204,68 +272,6 @@ void Compiler::startCompiler()
                 addBasicOpcode(code, ip, OP_MULTIPLY_WRITE_MEMORY_8); break;
             case TOKEN_DIVIDE_WRITE_MEMORY_8:
                 addBasicOpcode(code, ip, OP_DIVIDE_WRITE_MEMORY_8); break;
-
-            case TOKEN_INT:
-                {
-                    code.code = OP_INT;
-                    int32_t value = atoi(word);
-                    code.value = makeSmartPointer<vInt>(value);
-
-                    VM::addOpCode(code);
-                    ip++;
-                    break;
-                }
-            case TOKEN_CHAR:
-                {
-                    code.code = OP_CHAR;
-                    char c = *(word + 1);
-                    if (length == 4) c = parseEscapeCharacter(word);
-
-                    code.value = makeSmartPointer<vChar>(c);
-
-                    VM::addOpCode(code);
-                    ip++;
-                    break;
-                }
-            case TOKEN_STRING:
-                {
-                    code.code = OP_STRING;
-
-                    std::string parsed = parseEscapeSequence(word);
-                    char* c = (char*)malloc(sizeof(char) * (parsed.size()));
-                    memset(c, 0, parsed.size() - 1);
-                    strncpy(c, parsed.c_str(), parsed.size() - 1);
-                    c[parsed.size() - 1] = 0x00;
-
-                    code.value = makeSmartPointer<vString>(c);
-
-                    VM::addOpCode(code);
-                    ip++;
-                    break;
-                }
-            case TOKEN_BOOL:
-                {
-                    code.code = OP_BOOL;
-                    if (stringWord == "true")
-                        code.value = makeSmartPointer<vBool>(true);
-                    else
-                        code.value = makeSmartPointer<vBool>(false);
-
-                    VM::addOpCode(code);
-                    ip++;
-                    break;
-                }
-
-            case TOKEN_CAST:
-                {
-                    code.code = OP_CAST;
-                    if (stringWord == "cast(int)")
-                        code.value = makeSmartPointer<vInt>(0);
-
-                    VM::addOpCode(code);
-                    ip++;
-                    break;
-                }
 
             case TOKEN_CR: 
                 addBasicOpcode(code, ip, OP_CR); break;

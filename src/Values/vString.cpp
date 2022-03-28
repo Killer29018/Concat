@@ -14,6 +14,22 @@ void vString::dot(const OpCode& op) const
     printf("%c", v[0]);
 }
 
+
+void vString::cast(SmartPointer& rV, const OpCode& op) const
+{
+    switch (op.value->type)
+    {
+    case TYPE_INT:
+        rV = makeSmartPointer<vInt>((int)v[0]); break;
+    case TYPE_CHAR:
+        rV = makeSmartPointer<vChar>(v[0]); break;
+
+    default:
+        Error::castError(op, type);
+    }
+}
+
+
 void vString::add(const SmartPointer& v2, SmartPointer& rV, const OpCode& op) const
 {
     switch (v2->type)
@@ -28,6 +44,7 @@ void vString::add(const SmartPointer& v2, SmartPointer& rV, const OpCode& op) co
             newString[newLength - 1] = get_vChar(v2);
             newString[newLength] = 0;
             rV = makeSmartPointer<vString>(newString);
+
             break;
         }
     case TYPE_STRING:
@@ -38,6 +55,7 @@ void vString::add(const SmartPointer& v2, SmartPointer& rV, const OpCode& op) co
             strcpy(newString + strlen(v), get_vString(v2));
             newString[newLength] = 0;
             rV = makeSmartPointer<vString>(newString); 
+
             break;
         }
 

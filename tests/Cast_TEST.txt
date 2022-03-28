@@ -1,0 +1,22 @@
+--------------------------------------------------
+Cast.concat
+--stdout--
+97 97
+{ {
+1 is True
+10 is True
+0 is False
+
+--stderr--
+
+--build stdout--
+97 97
+{ {
+1 is True
+10 is True
+0 is False
+
+--build stderr--
+
+--------------------------------------------------
+

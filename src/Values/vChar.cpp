@@ -19,6 +19,8 @@ void vChar::cast(SmartPointer& rV, const OpCode& op) const
     {
     case TYPE_INT:
         rV = makeSmartPointer<vInt>((int)v); break;
+    case TYPE_STRING:
+        rV = makeSmartPointer<vString>(new char(v)); break;
 
     default:
         Error::castError(op, type);

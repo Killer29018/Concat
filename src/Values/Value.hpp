@@ -40,6 +40,7 @@ const std::vector<const char*> ValueTypeString
     "CHAR",
     "STRING",
     "MEM_PTR",
+
     "IP_OFFSET",
 };
 
@@ -96,6 +97,8 @@ struct vInt : Value
     void print(const OpCode& op) const override;
     void dot(const OpCode& op) const override;
 
+    void cast(SmartPointer& rV, const OpCode& op) const override;
+
     void add(const SmartPointer& v2, SmartPointer& rV, const OpCode& op) const override;
     void subtract(const SmartPointer& v2, SmartPointer& rV, const OpCode& op) const override;
     void multiply(const SmartPointer& v2, SmartPointer& rV, const OpCode& op) const override;
@@ -125,6 +128,8 @@ struct vBool : Value
 
     void print(const OpCode& op) const override;
     void dot(const OpCode& op) const override;
+
+    void cast(SmartPointer& rV, const OpCode& op) const override;
 
     void equal(const SmartPointer& v2, SmartPointer& rV, const OpCode& op) const override;
     void notEqual(const SmartPointer& v2, SmartPointer& rV, const OpCode& op) const override;
@@ -165,6 +170,8 @@ struct vString : Value
 
     void print(const OpCode& op) const override;
     void dot(const OpCode& op) const override;
+
+    void cast(SmartPointer& rV, const OpCode& op) const override;
 
     void add(const SmartPointer& v2, SmartPointer& rV, const OpCode& op) const override;
     void equal(const SmartPointer& v2, SmartPointer& rV, const OpCode& op) const override;
