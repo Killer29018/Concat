@@ -1,5 +1,5 @@
 --------------------------------------------------
-Character.CONCAT
+Character.concat
 --stdout--
 HELLO WORLD
 

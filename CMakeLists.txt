@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.18)
 
-project (Concat)
+project (concat)
 
 set (CMAKE_CXX_STANDARD 17)
 
@@ -23,7 +23,7 @@ else ()
     set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3")
 endif()
 
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -Wpedantic -Wno-unknown-pragmas")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -Wpedantic -Wno-unused-parameter -Wno-unknown-pragmas")
 
 add_subdirectory(vendor)
 

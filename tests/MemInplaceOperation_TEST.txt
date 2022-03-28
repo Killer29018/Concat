@@ -1,5 +1,5 @@
 --------------------------------------------------
-MemInplaceOperation.CONCAT
+MemInplaceOperation.concat
 --stdout--
 15
 5

@@ -1,5 +1,5 @@
 --------------------------------------------------
-MemLoadingAndOffsets.CONCAT
+MemLoadingAndOffsets.concat
 --stdout--
 10
 20

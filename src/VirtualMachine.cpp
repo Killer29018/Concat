@@ -31,7 +31,7 @@ void VM::addOpCode(const OpCode& code)
 void VM::pushInt(int32_t value)
 {
     OpCode op;
-    op.code = OP_PUSH_INT;
+    op.code = OP_INT;
     op.value = makeSmartPointer<vInt>(value);
     m_OpCodes.emplace_back(op);
 }
@@ -260,13 +260,25 @@ void VM::simulate()
         case OP_DIVIDE_WRITE_MEMORY_8:
             inplaceMemOperation(op); ip++; break;
 
-        case OP_PUSH_INT:
-        case OP_PUSH_CHAR:
-        case OP_PUSH_STRING:
-        case OP_TRUE:
-        case OP_FALSE:
+        case OP_INT:
+        case OP_CHAR:
+        case OP_STRING:
+        case OP_BOOL:
             {
                 m_Stack.push(op.value);
+
+                ip++;
+                break;
+            }
+
+        case OP_CAST:
+            {
+                const SmartPointer& a = pop();
+                SmartPointer rV;
+
+                a->cast(rV, op);
+
+                m_Stack.push(rV);
 
                 ip++;
                 break;
@@ -285,21 +297,8 @@ void VM::simulate()
 
                 const SmartPointer& a = pop();
 
-                switch (a->type)
-                {
-                    case TYPE_INT:
-                        printf("%d", get_vInt(a)); break;
-                    case TYPE_BOOL:
-                        printf("%d", get_vBool(a)); break;
-                    case TYPE_CHAR:
-                        printf("%c", get_vChar(a)); break;
-                    case TYPE_STRING:
-                        printf("%s", get_vString(a)); break;
-                    case TYPE_MEM_PTR:
-                        printf("%d", get_vMemPtr(a)); break;
-                    default:
-                        assert(false && "Not Reachable");
-                }
+                a->print(op);
+
                 ip++;
 
                 break;
@@ -311,20 +310,7 @@ void VM::simulate()
 
                 const SmartPointer& a = pop();
 
-                switch (a->type)
-                {
-                case TYPE_INT:
-                    printf("%c", get_vInt(a)); break;
-                case TYPE_BOOL:
-                    printf("%i", get_vBool(a)); break;
-                case TYPE_CHAR:
-                    printf("%i", get_vChar(a)); break;
-                case TYPE_STRING:
-                    printf("%c", get_vString(a)[0]); break;
-
-                default:
-                    Error::runtimeError(op, "Invalid Type");
-                }
+                a->dot(op);
 
                 ip++;
                 break;
@@ -665,7 +651,7 @@ void VM::operation(const OpCode& op, size_t& ip)
     {
         case OP_INVERT:
         case OP_LNOT:
-            runValueOperationSingle(b, v, op); 
+            runOperation(b, v, op); 
             break;
         
         default:
@@ -673,7 +659,7 @@ void VM::operation(const OpCode& op, size_t& ip)
                 Error::stackTooSmallError(op, 2);
 
             const SmartPointer& a = pop();
-            runValueOperationDouble(a, b, v, op); 
+            runOperation(a, b, v, op); 
             break;
     }
 
@@ -742,29 +728,29 @@ void VM::inplaceMemOperation(const OpCode& op)
     {
         case OP_ADD_WRITE_MEMORY_32:
             changeOp.code = OP_ADD;
-            runValueOperationDouble(rV, operand, rV, changeOp); break;
+            runOperation(rV, operand, rV, changeOp); break;
         case OP_SUBTRACT_WRITE_MEMORY_32:
             changeOp.code = OP_SUBTRACT;
-            runValueOperationDouble(rV, operand, rV, changeOp); break;
+            runOperation(rV, operand, rV, changeOp); break;
         case OP_MULTIPLY_WRITE_MEMORY_32:
             changeOp.code = OP_MULTIPLY;
-            runValueOperationDouble(rV, operand, rV, changeOp); break;
+            runOperation(rV, operand, rV, changeOp); break;
         case OP_DIVIDE_WRITE_MEMORY_32:
             changeOp.code = OP_DIVIDE;
-            runValueOperationDouble(rV, operand, rV, changeOp); break;
+            runOperation(rV, operand, rV, changeOp); break;
 
         case OP_ADD_WRITE_MEMORY_8:
             changeOp.code = OP_ADD;
-            runValueOperationDouble(rV, operand, rV, changeOp); break;
+            runOperation(rV, operand, rV, changeOp); break;
         case OP_SUBTRACT_WRITE_MEMORY_8:
             changeOp.code = OP_SUBTRACT;
-            runValueOperationDouble(rV, operand, rV, changeOp); break;
+            runOperation(rV, operand, rV, changeOp); break;
         case OP_MULTIPLY_WRITE_MEMORY_8:
             changeOp.code = OP_MULTIPLY;
-            runValueOperationDouble(rV, operand, rV, changeOp); break;
+            runOperation(rV, operand, rV, changeOp); break;
         case OP_DIVIDE_WRITE_MEMORY_8:
             changeOp.code = OP_DIVIDE;
-            runValueOperationDouble(rV, operand, rV, changeOp); break;
+            runOperation(rV, operand, rV, changeOp); break;
 
         default:
             assert(false && "Not reachable"); break;

@@ -2,20 +2,24 @@ import subprocess
 import os
 import sys
 
+programName = "./concat"
+programExt = ".concat"
+binExt = "_bin"
+
 def buildFile(file):
-    process = subprocess.Popen(['./Concat', 'build', file], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    process = subprocess.Popen([programName, 'build', file], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     stdout, stderr = process.communicate()
     return stdout, stderr
 
 def getFileOutput(file):
-    process = subprocess.Popen(['./Concat', 'run', file], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    process = subprocess.Popen([programName, 'run', file], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     stdout, stderr = process.communicate()
     return stdout, stderr
 
 def getOutput(file, stdout, stderr, bStdout, bStderr):
     output = ""
     output += ("-" * 50) + "\n"
-    output += file + ".CONCAT\n"
+    output += file + programExt + "\n"
 
     output += "--stdout--\n"
     output += stdout.decode("utf-8") + "\n"
@@ -37,14 +41,14 @@ def build(path):
         exit(-1)
 
     count = 0;
-    files = [os.path.splitext(f)[0] for f in os.listdir(path) if os.path.isfile(os.path.join(path, f)) and os.path.splitext(os.path.join(path, f))[1] == ".CONCAT"]
+    files = [os.path.splitext(f)[0] for f in os.listdir(path) if os.path.isfile(os.path.join(path, f)) and os.path.splitext(os.path.join(path, f))[1] == programExt]
     totalCount = len(files)
     for f in files:
         count += 1
         path = os.path.join(path, "")
         testFileName = path + f + "_TEST.txt"
-        programFileName = path + f + ".CONCAT"
-        builtFileName = programFileName + "_BIN"
+        programFileName = path + f + programExt
+        builtFileName = programFileName + binExt
 
         print(f"Checking {f}")
 
@@ -74,7 +78,7 @@ def run(path):
     files = [os.path.splitext(f)[0] 
              for f in os.listdir(path) 
              if os.path.isfile(os.path.join(path, f)) and 
-             os.path.splitext(os.path.join(path, f))[1] == ".CONCAT" and
+             os.path.splitext(os.path.join(path, f))[1] == programExt and
              os.path.exists(os.path.join(path, "") + os.path.splitext(f)[0] + "_TEST.txt")]
 
     failed = []
@@ -86,8 +90,8 @@ def run(path):
         count += 1
         path = os.path.join(path, "")
         testFileName = path + f + "_TEST.txt"
-        programFileName = path + f + ".CONCAT"
-        builtFileName = programFileName + "_BIN"
+        programFileName = path + f + programExt
+        builtFileName = programFileName + binExt
 
         buildFile(programFileName)
 

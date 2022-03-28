@@ -1,5 +1,5 @@
 --------------------------------------------------
-Conditionals.CONCAT
+Conditionals.concat
 --stdout--
 0 1 1 0 1 0 
 A

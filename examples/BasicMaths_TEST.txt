@@ -1,5 +1,5 @@
 --------------------------------------------------
-BasicMaths.SBIMCL
+BasicMaths.concat
 --stdout--
 21 + 2 = 23
 21 - 2 = 19

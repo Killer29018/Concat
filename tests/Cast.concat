@@ -1,0 +1,21 @@
+'a' dup . ' ' print cast(int) print cr // Char - Int
+
+123 dup . ' ' print cast(char) print cr // Int - Char
+
+if 1 cast(bool) then // Int - Bool
+    "1 is True" print cr
+else 
+    "1 is False" print cr
+endif
+
+if 10 cast(bool) then // Int - Bool
+    "10 is True" print cr
+else 
+    "10 is False" print cr
+endif
+
+if 0 cast(bool) then // Int - Bool
+    "0 is True" print cr
+else 
+    "0 is False" print cr
+endif

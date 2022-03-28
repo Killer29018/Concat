@@ -1,7 +1,7 @@
 #ifndef SMART_POINTER_HPP
 #define SMART_POINTER_HPP
 
-#include "Value.hpp"
+#include "Values/Value.hpp"
 
 class RefCount
 {

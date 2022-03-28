@@ -1,18 +1,18 @@
 --------------------------------------------------
-AddError.CONCAT
+AddError.concat
 --stdout--
 0
 1
 
 --stderr--
-[RUNTIME ERROR] 'N/A':7:12 Types MEM_PTR and MEM_PTR not supported for OP_ADD
+[RUNTIME ERROR] 'N/A':7:12 Operation Add does not support MEM_PTR and MEM_PTR
 
 --build stdout--
 0
 1
 
 --build stderr--
-[RUNTIME ERROR] 'N/A':7:12 Types MEM_PTR and MEM_PTR not supported for OP_ADD
+[RUNTIME ERROR] 'N/A':7:12 Operation Add does not support MEM_PTR and MEM_PTR
 
 --------------------------------------------------
 

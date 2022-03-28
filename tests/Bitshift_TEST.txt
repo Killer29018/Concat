@@ -1,5 +1,5 @@
 --------------------------------------------------
-Bitshift.CONCAT
+Bitshift.concat
 --stdout--
 2
 4
