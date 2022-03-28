@@ -59,6 +59,12 @@ void Value::dot(const OpCode& op) const
 {
     Error::operationError(op, "Dot", type);
 }
+
+
+void Value::cast(SmartPointer& rV, const OpCode& op) const
+{
+    Error::castError(op, type);
+}
  
 
 void Value::add(const SmartPointer& v2, SmartPointer& rV, const OpCode& op) const

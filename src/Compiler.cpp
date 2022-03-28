@@ -207,7 +207,7 @@ void Compiler::startCompiler()
 
             case TOKEN_INT:
                 {
-                    code.code = OP_PUSH_INT;
+                    code.code = OP_INT;
                     int32_t value = atoi(word);
                     code.value = makeSmartPointer<vInt>(value);
 
@@ -217,7 +217,7 @@ void Compiler::startCompiler()
                 }
             case TOKEN_CHAR:
                 {
-                    code.code = OP_PUSH_CHAR;
+                    code.code = OP_CHAR;
                     char c = *(word + 1);
                     if (length == 4) c = parseEscapeCharacter(word);
 
@@ -229,7 +229,7 @@ void Compiler::startCompiler()
                 }
             case TOKEN_STRING:
                 {
-                    code.code = OP_PUSH_STRING;
+                    code.code = OP_STRING;
 
                     std::string parsed = parseEscapeSequence(word);
                     char* c = (char*)malloc(sizeof(char) * (parsed.size()));
@@ -243,20 +243,24 @@ void Compiler::startCompiler()
                     ip++;
                     break;
                 }
-            case TOKEN_TRUE:
+            case TOKEN_BOOL:
                 {
-                    code.code = OP_TRUE;
-                    code.value = makeSmartPointer<vBool>(true);
+                    code.code = OP_BOOL;
+                    if (stringWord == "true")
+                        code.value = makeSmartPointer<vBool>(true);
+                    else
+                        code.value = makeSmartPointer<vBool>(false);
 
                     VM::addOpCode(code);
                     ip++;
                     break;
                 }
-            case TOKEN_FALSE:
+
+            case TOKEN_CAST:
                 {
-                    code.code = OP_FALSE;
-                    // code.value = { TYPE_BOOL, 0 };
-                    code.value = makeSmartPointer<vBool>(false);
+                    code.code = OP_CAST;
+                    if (stringWord == "cast(int)")
+                        code.value = makeSmartPointer<vInt>(0);
 
                     VM::addOpCode(code);
                     ip++;

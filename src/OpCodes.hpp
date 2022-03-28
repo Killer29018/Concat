@@ -46,11 +46,12 @@ enum OpCodeEnum : uint16_t
     OP_MULTIPLY_WRITE_MEMORY_8,
     OP_DIVIDE_WRITE_MEMORY_8,
 
-    OP_PUSH_INT,
-    OP_PUSH_CHAR,
-    OP_PUSH_STRING,
-    OP_TRUE,
-    OP_FALSE,
+    OP_INT,
+    OP_CHAR,
+    OP_STRING,
+    OP_BOOL,
+
+    OP_CAST,
 
     OP_CR,
     OP_PRINT,
@@ -115,11 +116,12 @@ const std::vector<const char*> OpCodeString
     "OP_MULTIPLY_WRITE_MEMORY_8",
     "OP_DIVIDE_WRITE_MEMORY_8",
 
-    "OP_PUSH_INT",
-    "OP_PUSH_CHAR",
-    "OP_PUSH_STRING",
-    "OP_TRUE",
-    "OP_FALSE",
+    "OP_INT",
+    "OP_CHAR",
+    "OP_STRING",
+    "OP_BOOL",
+
+    "OP_CAST",
 
     "OP_CR",
     "OP_PRINT",

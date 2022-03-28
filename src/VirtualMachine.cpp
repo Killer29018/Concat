@@ -31,7 +31,7 @@ void VM::addOpCode(const OpCode& code)
 void VM::pushInt(int32_t value)
 {
     OpCode op;
-    op.code = OP_PUSH_INT;
+    op.code = OP_INT;
     op.value = makeSmartPointer<vInt>(value);
     m_OpCodes.emplace_back(op);
 }
@@ -260,13 +260,25 @@ void VM::simulate()
         case OP_DIVIDE_WRITE_MEMORY_8:
             inplaceMemOperation(op); ip++; break;
 
-        case OP_PUSH_INT:
-        case OP_PUSH_CHAR:
-        case OP_PUSH_STRING:
-        case OP_TRUE:
-        case OP_FALSE:
+        case OP_INT:
+        case OP_CHAR:
+        case OP_STRING:
+        case OP_BOOL:
             {
                 m_Stack.push(op.value);
+
+                ip++;
+                break;
+            }
+
+        case OP_CAST:
+            {
+                const SmartPointer& a = pop();
+                SmartPointer rV;
+
+                a->cast(rV, op);
+
+                m_Stack.push(rV);
 
                 ip++;
                 break;

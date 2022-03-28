@@ -47,8 +47,9 @@ enum TokenType
     TOKEN_INT,
     TOKEN_CHAR,
     TOKEN_STRING,
-    TOKEN_TRUE,
-    TOKEN_FALSE,
+    TOKEN_BOOL,
+
+    TOKEN_CAST,
 
     TOKEN_CR,
     TOKEN_PRINT,
@@ -118,8 +119,9 @@ const std::vector<const char*> TokenString
     "TOKEN_INT",
     "TOKEN_CHAR",
     "TOKEN_STRING",
-    "TOKEN_TRUE",
-    "TOKEN_FALSE",
+    "TOKEN_BOOL",
+
+    "TOKEN_CAST",
 
     "TOKEN_CR",
     "TOKEN_PRINT",

@@ -60,6 +60,8 @@ public:
     virtual void print(const OpCode& op) const;
     virtual void dot(const OpCode& op) const;
 
+    virtual void cast(SmartPointer& rV, const OpCode& op) const;
+
     virtual void add(const SmartPointer& v2, SmartPointer& rV, const OpCode& op) const;
     virtual void subtract(const SmartPointer& v2, SmartPointer& rV, const OpCode& op) const;
     virtual void multiply(const SmartPointer& v2, SmartPointer& rV, const OpCode& op) const;
@@ -142,6 +144,8 @@ struct vChar : Value
 
     void print(const OpCode& op) const override;
     void dot(const OpCode& op) const override;
+
+    void cast(SmartPointer& rV, const OpCode& op) const override;
 
     void equal(const SmartPointer& v2, SmartPointer& rV, const OpCode& op) const override;
     void notEqual(const SmartPointer& v2, SmartPointer& rV, const OpCode& op) const override;

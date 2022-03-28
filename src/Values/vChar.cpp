@@ -12,6 +12,20 @@ void vChar::dot(const OpCode& op) const
     printf("%d", v);
 }
 
+
+void vChar::cast(SmartPointer& rV, const OpCode& op) const
+{
+    switch (op.value->type)
+    {
+    case TYPE_INT:
+        rV = makeSmartPointer<vInt>((int)v); break;
+
+    default:
+        Error::castError(op, type);
+    }
+}
+
+
 void vChar::equal(const SmartPointer& v2, SmartPointer& rV, const OpCode& op) const
 {
     switch (v2->type)
