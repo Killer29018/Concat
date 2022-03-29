@@ -5,6 +5,14 @@ IntTest.concat
 
 --stderr--
 
+--build run stdout--
+Created tests/IntTest.concat_bin
+
+Running tests/IntTest.concat_bin: 
+30
+
+--build run stderr--
+
 --build stdout--
 30
 

@@ -9,6 +9,18 @@ BasicMaths.concat
 
 --stderr--
 
+--build run stdout--
+Created examples/BasicMaths.concat_bin
+
+Running examples/BasicMaths.concat_bin: 
+21 + 2 = 23
+21 - 2 = 19
+21 * 2 = 42
+21 / 2 = 10
+21 % 2 = 1
+
+--build run stderr--
+
 --build stdout--
 21 + 2 = 23
 21 - 2 = 19

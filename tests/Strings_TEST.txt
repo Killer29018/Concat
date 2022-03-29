@@ -16,6 +16,25 @@ Hello World
 
 --stderr--
 
+--build run stdout--
+Created tests/Strings.concat_bin
+
+Running tests/Strings.concat_bin: 
+String Test
+S
+
+g Test
+g
+Escape code test
+
+
+3 New
+Lines
+Tab	Tab
+Hello World
+
+--build run stderr--
+
 --build stdout--
 String Test
 S

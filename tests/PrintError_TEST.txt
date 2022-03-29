@@ -5,6 +5,14 @@ PrintError.concat
 --stderr--
 [RUNTIME ERROR] 'N/A':1:19 Not enough items on the stack. Atleast 1 item/s expected
 
+--build run stdout--
+Created tests/PrintError.concat_bin
+
+Running tests/PrintError.concat_bin: 
+1010
+--build run stderr--
+[RUNTIME ERROR] 'N/A':1:19 Not enough items on the stack. Atleast 1 item/s expected
+
 --build stdout--
 1010
 --build stderr--

@@ -15,6 +15,24 @@ Bitshift.concat
 
 --stderr--
 
+--build run stdout--
+Created tests/Bitshift.concat_bin
+
+Running tests/Bitshift.concat_bin: 
+2
+4
+8
+16
+32
+
+16
+8
+4
+2
+1
+
+--build run stderr--
+
 --build stdout--
 2
 4

@@ -5,6 +5,14 @@ HELLO WORLD
 
 --stderr--
 
+--build run stdout--
+Created tests/Character.concat_bin
+
+Running tests/Character.concat_bin: 
+HELLO WORLD
+
+--build run stderr--
+
 --build stdout--
 HELLO WORLD
 

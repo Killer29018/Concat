@@ -11,12 +11,17 @@ def buildFile(file):
     stdout, stderr = process.communicate()
     return stdout, stderr
 
-def getFileOutput(file):
+def buildRunFile(file):
+    process = subprocess.Popen([programName, 'build', '-r', file], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    stdout, stderr = process.communicate()
+    return stdout, stderr
+
+def runFile(file):
     process = subprocess.Popen([programName, 'run', file], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     stdout, stderr = process.communicate()
     return stdout, stderr
 
-def getOutput(file, stdout, stderr, bStdout, bStderr):
+def getOutput(file, stdout, stderr, bStdout, bStderr, brStdout, brStderr):
     output = ""
     output += ("-" * 50) + "\n"
     output += file + programExt + "\n"
@@ -26,10 +31,16 @@ def getOutput(file, stdout, stderr, bStdout, bStderr):
     output += "--stderr--\n"
     output += stderr.decode("utf-8") + "\n"
 
+    output += "--build run stdout--\n"
+    output += brStdout.decode("utf-8") + "\n"
+    output += "--build run stderr--\n"
+    output += brStderr.decode("utf-8") + "\n"
+
     output += "--build stdout--\n"
     output += bStdout.decode("utf-8") + "\n"
     output += "--build stderr--\n"
     output += bStderr.decode("utf-8") + "\n"
+
 
     output += ("-" * 50) + "\n"
     output += "\n"
@@ -56,11 +67,13 @@ def build(path):
         buildFile(programFileName)
 
         print(f"    Running {programFileName}")
-        stdout, stderr = getFileOutput(programFileName)
-        print(f"    Running {builtFileName}")
-        bStdout, bStderr = getFileOutput(builtFileName)
+        stdout, stderr = runFile(programFileName)
+        print(f"    Running Compiled {builtFileName}")
+        bStdout, bStderr = runFile(builtFileName)
+        print(f"    Building + Running {programFileName}")
+        brStdout, brStderr = buildRunFile(programFileName)
 
-        output = getOutput(f, stdout, stderr, bStdout, bStderr)
+        output = getOutput(f, stdout, stderr, bStdout, bStderr, brStdout, brStderr)
 
         with open(testFileName, "w") as test:
             test.write(output)
@@ -95,10 +108,11 @@ def run(path):
 
         buildFile(programFileName)
 
-        stdout, stderr = getFileOutput(programFileName)
-        bStdout, bStderr = getFileOutput(builtFileName)
+        stdout, stderr = runFile(programFileName)
+        bStdout, bStderr = runFile(builtFileName)
+        brStdout, brStderr = buildRunFile(programFileName)
 
-        output = getOutput(f, stdout, stderr, bStdout, bStderr)
+        output = getOutput(f, stdout, stderr, bStdout, bStderr, brStdout, brStderr)
 
         fileoutput = ""
         with open(testFileName, "r") as test:

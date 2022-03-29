@@ -4,6 +4,13 @@ WhileLoops.concat
 420 69 420 69 420 69 420 69 420 69 420 
 --stderr--
 
+--build run stdout--
+Created tests/WhileLoops.concat_bin
+
+Running tests/WhileLoops.concat_bin: 
+420 69 420 69 420 69 420 69 420 69 420 
+--build run stderr--
+
 --build stdout--
 420 69 420 69 420 69 420 69 420 69 420 
 --build stderr--

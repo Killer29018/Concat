@@ -10,14 +10,19 @@
 
 bool Program::printDebugTokens =false;
 bool Program::printDebugOpcodes = false;
-bool Program::run = false;
+bool Program::runBuild = false;
 
-void Program::createProgram(bool runmode, const char* filename)
+void Program::createProgram(RunMode mode, const char* filename)
 {
-    if (runmode)
+    switch (mode)
+    {
+    case RunMode::RUN:
         runProgramFromFile(filename);
-    else
+        break;
+    case RunMode::BUILD:
         buildProgramFromFile(filename);
+        break;
+    }
 }
 
 void Program::buildProgramFromFile(const char* filename)
@@ -35,15 +40,15 @@ void Program::buildProgramFromFile(const char* filename)
 
     VM::build(filename);
 
-    if (run)
+    if (runBuild)
     {
         path.replace_extension(binExt);
         printf("\nRunning %s: \n", path.generic_string().c_str());
-        runProgramFromFile(path.generic_string().c_str());
+        runProgramFromFile(path.generic_string().c_str(), true);
     }
 }
 
-void Program::runProgramFromFile(const char* filename)
+void Program::runProgramFromFile(const char* filename, bool runningBuild)
 {
     std::filesystem::path path(filename);
 
@@ -59,7 +64,8 @@ void Program::runProgramFromFile(const char* filename)
             exit(0);
         }
 
-        Builder::loadCompiled(filename);
+        if (!runningBuild)
+            Builder::loadCompiled(filename);
     }
     else
     {

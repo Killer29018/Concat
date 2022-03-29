@@ -5,6 +5,14 @@ Macros.concat
 
 --stderr--
 
+--build run stdout--
+Created tests/Macros.concat_bin
+
+Running tests/Macros.concat_bin: 
+10 10
+
+--build run stderr--
+
 --build stdout--
 10 10
 

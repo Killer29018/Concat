@@ -9,6 +9,18 @@ Cast.concat
 
 --stderr--
 
+--build run stdout--
+Created tests/Cast.concat_bin
+
+Running tests/Cast.concat_bin: 
+97 97
+{ {
+1 is True
+10 is True
+0 is False
+
+--build run stderr--
+
 --build stdout--
 97 97
 { {

@@ -6,6 +6,15 @@ Basic.concat
 
 --stderr--
 
+--build run stdout--
+Created tests/Basic.concat_bin
+
+Running tests/Basic.concat_bin: 
+2 20
+40
+
+--build run stderr--
+
 --build stdout--
 2 20
 40

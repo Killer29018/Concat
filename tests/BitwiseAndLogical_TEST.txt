@@ -7,6 +7,16 @@ BitwiseAndLogical.concat
 
 --stderr--
 
+--build run stdout--
+Created tests/BitwiseAndLogical.concat_bin
+
+Running tests/BitwiseAndLogical.concat_bin: 
+420
+69
+1
+
+--build run stderr--
+
 --build stdout--
 420
 69

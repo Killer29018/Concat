@@ -6,6 +6,15 @@ SwapOverRot.concat
 
 --stderr--
 
+--build run stdout--
+Created tests/SwapOverRot.concat_bin
+
+Running tests/SwapOverRot.concat_bin: 
+10 20
+10 20 10 20 10
+
+--build run stderr--
+
 --build stdout--
 10 20
 10 20 10 20 10

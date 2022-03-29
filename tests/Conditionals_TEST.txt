@@ -10,6 +10,19 @@ C
 
 --stderr--
 
+--build run stdout--
+Created tests/Conditionals.concat_bin
+
+Running tests/Conditionals.concat_bin: 
+0 1 1 0 1 0 
+A
+B
+C
+23
+24
+
+--build run stderr--
+
 --build stdout--
 0 1 1 0 1 0 
 A
