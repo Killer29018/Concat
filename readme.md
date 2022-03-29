@@ -169,3 +169,14 @@ Divides the value at address by value
 When using string the pointer to the start of the string is placed at the top of the string
 This pointer can be treated like a memptr to access different parts of the string
 ```
+
+### Casting
+```
+"cast(int)"
+"cast(bool)"
+"cast(char)"
+"cast(string)"
+
+Using any of the casts will take the value at the top of the stack and try to cast it to
+the requested value
+```
