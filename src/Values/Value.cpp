@@ -1,7 +1,7 @@
 #include "Value.hpp"
 
 #include "../OpCodes.hpp"
-#include "../VirtualMachine.hpp"
+#include "../VM.hpp"
 
 #include "../Error.hpp"
 

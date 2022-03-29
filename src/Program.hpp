@@ -3,7 +3,7 @@
 
 #include "Lexer.hpp"
 #include "Compiler.hpp"
-#include "VirtualMachine.hpp"
+#include "VM.hpp"
 
 class Program
 {

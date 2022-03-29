@@ -3,7 +3,7 @@
 #include <cstring>
 #include <cstdlib>
 
-#include "VirtualMachine.hpp"
+#include "VM.hpp"
 #include "Error.hpp"
 
 std::vector<Token>* Compiler::m_Tokens;

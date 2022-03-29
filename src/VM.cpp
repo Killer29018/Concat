@@ -1,4 +1,4 @@
-#include "VirtualMachine.hpp"
+#include "VM.hpp"
 
 #include <cstdio>
 #include <cstdlib>

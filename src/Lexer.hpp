@@ -1,7 +1,7 @@
 #ifndef LEXER_HPP
 #define LEXER_HPP
 
-#include "VirtualMachine.hpp"
+#include "VM.hpp"
 
 #include "Tokens.hpp"
 

@@ -3,7 +3,7 @@
 #include <filesystem>
 #include <cstring>
 
-#include "VirtualMachine.hpp"
+#include "VM.hpp"
 
 #include "Filetypes.hpp"
 
