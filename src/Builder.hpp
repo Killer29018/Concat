@@ -76,6 +76,11 @@ private:
             value |= element;
         }
     }
+
+    static void readElement(char* output, bool& value, size_t size)
+    {
+        value = output[0] & 0xFF;
+    }
 };
 
 #endif

@@ -35,10 +35,6 @@ enum OpCodeEnum : uint16_t
     OP_RSHIFT,
     OP_LSHIFT,
 
-    OP_CREATE_MEM,
-    OP_LOAD_MEM,
-    OP_ENDMEM,
-
     OP_READ_MEMORY_32,
     OP_WRITE_MEMORY_32,
     OP_ADD_WRITE_MEMORY_32,
@@ -62,6 +58,10 @@ enum OpCodeEnum : uint16_t
     OP_SWAP,
     OP_OVER,
     OP_ROT,
+
+    OP_CREATE_MEM,
+    OP_LOAD_MEM,
+    OP_ENDMEM,
 
     OP_IF,
     OP_THEN,
@@ -105,10 +105,6 @@ const std::vector<const char*> OpCodeString
     "OP_LSHIFT",
     "OP_RSHIFT",
 
-    "OP_CREATE_VAR",
-    "OP_LOAD_VAR",
-    "OP_ENDVAR",
-
     "OP_READ_MEMORY_32",
     "OP_WRITE_MEMORY_32",
     "OP_ADD_WRITE_MEMORY_32",
@@ -132,6 +128,10 @@ const std::vector<const char*> OpCodeString
     "OP_SWAP",
     "OP_OVER",
     "OP_ROT",
+
+    "OP_CREATE_VAR",
+    "OP_LOAD_VAR",
+    "OP_ENDVAR",
 
     "OP_IF",
     "OP_THEN",

@@ -34,9 +34,6 @@ enum TokenType
     TOKEN_RSHIFT,
     TOKEN_LSHIFT,
 
-    TOKEN_MEM,
-    TOKEN_ENDMEM,
-
     TOKEN_READ_MEMORY_32,
     TOKEN_WRITE_MEMORY_32,
     TOKEN_ADD_WRITE_MEMORY_32,
@@ -60,6 +57,9 @@ enum TokenType
     TOKEN_SWAP,
     TOKEN_OVER,
     TOKEN_ROT,
+
+    TOKEN_MEM,
+    TOKEN_ENDMEM,
 
     TOKEN_MACRO,
     TOKEN_ENDMACRO,
@@ -106,8 +106,6 @@ const std::vector<const char*> TokenString
     "TOKEN_RSHIFT",
     "TOKEN_LSHIFT",
 
-    "TOKEN_VAR",
-    "TOKEN_ENDVAR",
 
     "TOKEN_READ_MEMORY_32",
     "TOKEN_WRITE_MEMORY_32",
@@ -132,6 +130,9 @@ const std::vector<const char*> TokenString
     "TOKEN_SWAP",
     "TOKEN_OVER",
     "TOKEN_ROT",
+
+    "TOKEN_MEM",
+    "TOKEN_ENDMEM",
 
     "TOKEN_MACRO",
     "TOKEN_ENDMACRO",

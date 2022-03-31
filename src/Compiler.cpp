@@ -158,6 +158,50 @@ void Compiler::startCompiler()
             case TOKEN_LSHIFT: 
                 addBasicOpcode(code, ip, OP_LSHIFT); break;
 
+            case TOKEN_READ_MEMORY_32:
+                addBasicOpcode(code, ip, OP_READ_MEMORY_32); break;
+            case TOKEN_WRITE_MEMORY_32:
+                addBasicOpcode(code, ip, OP_WRITE_MEMORY_32); break;
+            case TOKEN_ADD_WRITE_MEMORY_32:
+                addBasicOpcode(code, ip, OP_ADD_WRITE_MEMORY_32); break;
+            case TOKEN_SUBTRACT_WRITE_MEMORY_32:
+                addBasicOpcode(code, ip, OP_SUBTRACT_WRITE_MEMORY_32); break;
+            case TOKEN_MULTIPLY_WRITE_MEMORY_32:
+                addBasicOpcode(code, ip, OP_MULTIPLY_WRITE_MEMORY_32); break;
+            case TOKEN_DIVIDE_WRITE_MEMORY_32:
+                addBasicOpcode(code, ip, OP_DIVIDE_WRITE_MEMORY_32); break;
+
+            case TOKEN_READ_MEMORY_8:
+                addBasicOpcode(code, ip, OP_READ_MEMORY_8); break;
+            case TOKEN_WRITE_MEMORY_8:
+                addBasicOpcode(code, ip, OP_WRITE_MEMORY_8); break;
+            case TOKEN_ADD_WRITE_MEMORY_8:
+                addBasicOpcode(code, ip, OP_ADD_WRITE_MEMORY_8); break;
+            case TOKEN_SUBTRACT_WRITE_MEMORY_8:
+                addBasicOpcode(code, ip, OP_SUBTRACT_WRITE_MEMORY_8); break;
+            case TOKEN_MULTIPLY_WRITE_MEMORY_8:
+                addBasicOpcode(code, ip, OP_MULTIPLY_WRITE_MEMORY_8); break;
+            case TOKEN_DIVIDE_WRITE_MEMORY_8:
+                addBasicOpcode(code, ip, OP_DIVIDE_WRITE_MEMORY_8); break;
+
+            case TOKEN_CR: 
+                addBasicOpcode(code, ip, OP_CR); break;
+            case TOKEN_PRINT: 
+                addBasicOpcode(code, ip, OP_PRINT); break;
+            case TOKEN_DOT: 
+                addBasicOpcode(code, ip, OP_DOT); break;
+
+            case TOKEN_DUP: 
+                addBasicOpcode(code, ip, OP_DUP); break;
+            case TOKEN_DROP: 
+                addBasicOpcode(code, ip, OP_DROP); break;
+            case TOKEN_SWAP: 
+                addBasicOpcode(code, ip, OP_SWAP); break;
+            case TOKEN_OVER: 
+                addBasicOpcode(code, ip, OP_OVER); break;
+            case TOKEN_ROT: 
+                addBasicOpcode(code, ip, OP_ROT); break;
+
             case TOKEN_MEM:
                 {
                     if (m_Variables.find(word) != m_Variables.end())
@@ -246,50 +290,6 @@ void Compiler::startCompiler()
                     VM::addOpCode(code);
                     break;
                 }
-
-            case TOKEN_READ_MEMORY_32:
-                addBasicOpcode(code, ip, OP_READ_MEMORY_32); break;
-            case TOKEN_WRITE_MEMORY_32:
-                addBasicOpcode(code, ip, OP_WRITE_MEMORY_32); break;
-            case TOKEN_ADD_WRITE_MEMORY_32:
-                addBasicOpcode(code, ip, OP_ADD_WRITE_MEMORY_32); break;
-            case TOKEN_SUBTRACT_WRITE_MEMORY_32:
-                addBasicOpcode(code, ip, OP_SUBTRACT_WRITE_MEMORY_32); break;
-            case TOKEN_MULTIPLY_WRITE_MEMORY_32:
-                addBasicOpcode(code, ip, OP_MULTIPLY_WRITE_MEMORY_32); break;
-            case TOKEN_DIVIDE_WRITE_MEMORY_32:
-                addBasicOpcode(code, ip, OP_DIVIDE_WRITE_MEMORY_32); break;
-
-            case TOKEN_READ_MEMORY_8:
-                addBasicOpcode(code, ip, OP_READ_MEMORY_8); break;
-            case TOKEN_WRITE_MEMORY_8:
-                addBasicOpcode(code, ip, OP_WRITE_MEMORY_8); break;
-            case TOKEN_ADD_WRITE_MEMORY_8:
-                addBasicOpcode(code, ip, OP_ADD_WRITE_MEMORY_8); break;
-            case TOKEN_SUBTRACT_WRITE_MEMORY_8:
-                addBasicOpcode(code, ip, OP_SUBTRACT_WRITE_MEMORY_8); break;
-            case TOKEN_MULTIPLY_WRITE_MEMORY_8:
-                addBasicOpcode(code, ip, OP_MULTIPLY_WRITE_MEMORY_8); break;
-            case TOKEN_DIVIDE_WRITE_MEMORY_8:
-                addBasicOpcode(code, ip, OP_DIVIDE_WRITE_MEMORY_8); break;
-
-            case TOKEN_CR: 
-                addBasicOpcode(code, ip, OP_CR); break;
-            case TOKEN_PRINT: 
-                addBasicOpcode(code, ip, OP_PRINT); break;
-            case TOKEN_DOT: 
-                addBasicOpcode(code, ip, OP_DOT); break;
-
-            case TOKEN_DUP: 
-                addBasicOpcode(code, ip, OP_DUP); break;
-            case TOKEN_DROP: 
-                addBasicOpcode(code, ip, OP_DROP); break;
-            case TOKEN_SWAP: 
-                addBasicOpcode(code, ip, OP_SWAP); break;
-            case TOKEN_OVER: 
-                addBasicOpcode(code, ip, OP_OVER); break;
-            case TOKEN_ROT: 
-                addBasicOpcode(code, ip, OP_ROT); break;
 
             case TOKEN_MACRO:
                 {

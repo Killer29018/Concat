@@ -23,15 +23,9 @@ else ()
     set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3")
 endif()
 
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -Wpedantic -Wno-unused-parameter -Wno-unknown-pragmas")
-
-add_subdirectory(vendor)
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -Wpedantic -Wno-unused-parameter -Wno-unknown-pragmas -Wno-unused-variable")
 
 file (GLOB_RECURSE cppFiles CONFIGURE_DEPENDS "src/*.cpp")
 add_executable(${PROJECT_NAME} ${cppFiles})
-
-target_include_directories(${PROJECT_NAME} PUBLIC
-    vendor/cxxopts/include
-)
 
 target_link_libraries(${PROJECT_NAME} PRIVATE ${linker})
