@@ -191,6 +191,9 @@ void Compiler::startCompiler()
             case TOKEN_DOT: 
                 addBasicOpcode(code, ip, OP_DOT); break;
 
+            case TOKEN_INPUT: 
+                addBasicOpcode(code, ip, OP_INPUT); break;
+
             case TOKEN_DUP: 
                 addBasicOpcode(code, ip, OP_DUP); break;
             case TOKEN_DROP: 

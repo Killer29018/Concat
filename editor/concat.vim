@@ -12,11 +12,16 @@ highlight link concat_Identifier Identifier
 
 syntax keyword concat_Keyword dup drop swap over rot mod
 syntax keyword concat_Keyword print cr 
-syntax keyword concat_Keyword if then elseif else endif
-syntax keyword concat_Keyword while do endwhile
 syntax keyword concat_Keyword and or invert land lor lnot << >>
 syntax keyword concat_Keyword true false
+syntax keyword concat_Keyword cast(int) cast(bool) cast(char) cast(string)
 highlight link concat_Keyword Keyword 
+
+syntax keyword concat_Conditional if then elseif else endif
+highlight link concat_Conditional Conditional 
+
+syntax keyword concat_Repeat while do endwhile
+highlight link concat_Repeat Repeat 
 
 syntax region concat_Constants start=/^\d/ end=/\v(\ze\s|$)/
 syntax region concat_Constants start=/ \d/ end=/\v(\ze\s|$)/

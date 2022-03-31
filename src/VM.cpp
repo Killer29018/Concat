@@ -3,6 +3,9 @@
 #include <cstdio>
 #include <cstdlib>
 #include <cassert>
+#include <cstring>
+
+#include <iostream>
 
 #include "Error.hpp"
 
@@ -75,6 +78,30 @@ void VM::simulate()
         OpCode& op = m_OpCodes[ip];
         switch (op.code)
         {
+        case OP_INT:
+        case OP_CHAR:
+        case OP_STRING:
+        case OP_BOOL:
+            {
+                m_Stack.push(op.value);
+
+                ip++;
+                break;
+            }
+
+        case OP_CAST:
+            {
+                const SmartPointer& a = pop();
+                SmartPointer rV;
+
+                a->cast(rV, op);
+
+                m_Stack.push(rV);
+
+                ip++;
+                break;
+            }
+
         case OP_ADD:
         case OP_SUBTRACT: 
         case OP_MULTIPLY: 
@@ -97,45 +124,6 @@ void VM::simulate()
         case OP_RSHIFT:
         case OP_LSHIFT:
             operation(op, ip); break;
-
-        case OP_CREATE_MEM:
-            {
-                m_CurrentVarIndex = get_vMemPtr(op.value);
-                m_MemoryNames.insert({ m_CurrentVarIndex, 0 });
-                ip++;
-                break;
-            }
-        case OP_LOAD_MEM:
-            {
-                size_t index = m_MemoryNames.at(get_vMemPtr(op.value));
-                SmartPointer a = makeSmartPointer<vMemPtr>(index);
-                m_Stack.push(a);
-                ip++;
-                break;
-            }
-        case OP_ENDMEM:
-            {
-                if (m_Stack.size() < 1)
-                    Error::stackTooSmallError(op, 1);
-
-                const SmartPointer& a = pop();
-
-                if (m_CurrentVarIndex == -1)
-                    assert(false && "Unreachable. Should be dealt with in Compiler");
-
-                if (a->type != TYPE_INT)
-                {
-                    Error::runtimeError(op, "Invalid Type. %s was expected but found %s instead", ValueTypeString[TYPE_INT], ValueTypeString[a->type]);
-                }
-
-                uint32_t index = addMemory(get_vInt(a));
-
-                m_MemoryNames.at(m_CurrentVarIndex) = index;
-
-                m_CurrentVarIndex = -1;
-                ip++;
-                break;
-            }
 
         case OP_READ_MEMORY_32:
             {
@@ -260,30 +248,6 @@ void VM::simulate()
         case OP_DIVIDE_WRITE_MEMORY_8:
             inplaceMemOperation(op); ip++; break;
 
-        case OP_INT:
-        case OP_CHAR:
-        case OP_STRING:
-        case OP_BOOL:
-            {
-                m_Stack.push(op.value);
-
-                ip++;
-                break;
-            }
-
-        case OP_CAST:
-            {
-                const SmartPointer& a = pop();
-                SmartPointer rV;
-
-                a->cast(rV, op);
-
-                m_Stack.push(rV);
-
-                ip++;
-                break;
-            }
-
         case OP_CR:
             {
                 printf("\n");
@@ -312,6 +276,22 @@ void VM::simulate()
 
                 a->dot(op);
 
+                ip++;
+                break;
+            }
+
+        case OP_INPUT:
+            {
+                std::string input;
+                std::cin >> input;
+
+                char* cInput = new char[input.length() + 1];
+                strcpy(cInput, input.c_str());
+                cInput[input.length()] = 0;
+
+                SmartPointer a = makeSmartPointer<vString>(cInput);
+
+                m_Stack.push(a);
                 ip++;
                 break;
             }
@@ -377,6 +357,45 @@ void VM::simulate()
                 m_Stack.push(c);
                 ip++;
 
+                break;
+            }
+
+        case OP_CREATE_MEM:
+            {
+                m_CurrentVarIndex = get_vMemPtr(op.value);
+                m_MemoryNames.insert({ m_CurrentVarIndex, 0 });
+                ip++;
+                break;
+            }
+        case OP_LOAD_MEM:
+            {
+                size_t index = m_MemoryNames.at(get_vMemPtr(op.value));
+                SmartPointer a = makeSmartPointer<vMemPtr>(index);
+                m_Stack.push(a);
+                ip++;
+                break;
+            }
+        case OP_ENDMEM:
+            {
+                if (m_Stack.size() < 1)
+                    Error::stackTooSmallError(op, 1);
+
+                const SmartPointer& a = pop();
+
+                if (m_CurrentVarIndex == -1)
+                    assert(false && "Unreachable. Should be dealt with in Compiler");
+
+                if (a->type != TYPE_INT)
+                {
+                    Error::runtimeError(op, "Invalid Type. %s was expected but found %s instead", ValueTypeString[TYPE_INT], ValueTypeString[a->type]);
+                }
+
+                uint32_t index = addMemory(get_vInt(a));
+
+                m_MemoryNames.at(m_CurrentVarIndex) = index;
+
+                m_CurrentVarIndex = -1;
+                ip++;
                 break;
             }
 

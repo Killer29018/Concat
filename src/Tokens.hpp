@@ -52,6 +52,8 @@ enum TokenType
     TOKEN_PRINT,
     TOKEN_DOT,
 
+    TOKEN_INPUT,
+
     TOKEN_DUP,
     TOKEN_DROP,
     TOKEN_SWAP,
@@ -106,7 +108,6 @@ const std::vector<const char*> TokenString
     "TOKEN_RSHIFT",
     "TOKEN_LSHIFT",
 
-
     "TOKEN_READ_MEMORY_32",
     "TOKEN_WRITE_MEMORY_32",
     "TOKEN_ADD_WRITE_MEMORY_32",
@@ -124,6 +125,8 @@ const std::vector<const char*> TokenString
     "TOKEN_CR",
     "TOKEN_PRINT",
     "TOKEN_DOT",
+
+    "TOKEN_INPUT",
 
     "TOKEN_DUP",
     "TOKEN_DROP",

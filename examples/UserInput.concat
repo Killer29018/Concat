@@ -1,0 +1,5 @@
+"What is your name: " print input
+"Hello, " print print cr
+
+"How are you doing today: " print input
+"Its good to hear you are doing " print print cr

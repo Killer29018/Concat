@@ -53,6 +53,8 @@ enum OpCodeEnum : uint16_t
     OP_PRINT,
     OP_DOT,
 
+    OP_INPUT,
+
     OP_DUP,
     OP_DROP,
     OP_SWAP,
@@ -122,6 +124,8 @@ const std::vector<const char*> OpCodeString
     "OP_CR",
     "OP_PRINT",
     "OP_DOT",
+    
+    "OP_INPUT",
 
     "OP_DUP",
     "OP_DROP",
