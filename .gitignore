@@ -3,6 +3,7 @@ build/**
 **.sh
 **.bat
 compile_commands.json
+output.txt
 
 # File
 concat

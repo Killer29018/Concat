@@ -1,0 +1,25 @@
+--------------------------------------------------
+UserInput.concat
+--stdout--
+What is your name: Hello, person
+How are you doing today: Its good to hear you are doing well
+
+--stderr--
+
+--build run stdout--
+Created tests/UserInput.concat_bin
+
+Running tests/UserInput.concat_bin: 
+What is your name: Hello, person
+How are you doing today: Its good to hear you are doing well
+
+--build run stderr--
+
+--build stdout--
+What is your name: Hello, person
+How are you doing today: Its good to hear you are doing well
+
+--build stderr--
+
+--------------------------------------------------
+

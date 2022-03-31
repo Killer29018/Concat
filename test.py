@@ -5,20 +5,32 @@ import sys
 programName = "./concat"
 programExt = ".concat"
 binExt = "_bin"
+inputExt = "_INPUT.txt"
+testExt = "_TEST.txt"
+
+def checkForInput(file, process):
+    inputs = ""
+    if os.path.exists(file):
+        with open(file, "r") as test:
+            for line in test:
+                inputs += line
+    return inputs
 
 def buildFile(file):
     process = subprocess.Popen([programName, 'build', file], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     stdout, stderr = process.communicate()
     return stdout, stderr
 
-def buildRunFile(file):
-    process = subprocess.Popen([programName, 'build', '-r', file], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-    stdout, stderr = process.communicate()
+def buildRunFile(file, inputFile):
+    process = subprocess.Popen([programName, 'build', '-r', file], stdout=subprocess.PIPE, stderr=subprocess.PIPE, stdin=subprocess.PIPE)
+    inputs = checkForInput(inputFile, process)
+    stdout, stderr = process.communicate(input=inputs.encode())
     return stdout, stderr
 
-def runFile(file):
-    process = subprocess.Popen([programName, 'run', file], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-    stdout, stderr = process.communicate()
+def runFile(file, inputFile):
+    process = subprocess.Popen([programName, 'run', file], stdout=subprocess.PIPE, stderr=subprocess.PIPE, stdin=subprocess.PIPE)
+    inputs = checkForInput(inputFile, process)
+    stdout, stderr = process.communicate(input=inputs.encode())
     return stdout, stderr
 
 def getOutput(file, stdout, stderr, bStdout, bStderr, brStdout, brStderr):
@@ -57,7 +69,8 @@ def build(path):
     for f in files:
         count += 1
         path = os.path.join(path, "")
-        testFileName = path + f + "_TEST.txt"
+        testFileName = path + f + testExt
+        inputFileName = path + f + inputExt
         programFileName = path + f + programExt
         builtFileName = programFileName + binExt
 
@@ -67,11 +80,11 @@ def build(path):
         buildFile(programFileName)
 
         print(f"    Running {programFileName}")
-        stdout, stderr = runFile(programFileName)
+        stdout, stderr = runFile(programFileName, inputFileName)
         print(f"    Running Compiled {builtFileName}")
-        bStdout, bStderr = runFile(builtFileName)
+        bStdout, bStderr = runFile(builtFileName, inputFileName)
         print(f"    Building + Running {programFileName}")
-        brStdout, brStderr = buildRunFile(programFileName)
+        brStdout, brStderr = buildRunFile(programFileName, inputFileName)
 
         output = getOutput(f, stdout, stderr, bStdout, bStderr, brStdout, brStderr)
 
@@ -92,7 +105,7 @@ def run(path):
              for f in os.listdir(path) 
              if os.path.isfile(os.path.join(path, f)) and 
              os.path.splitext(os.path.join(path, f))[1] == programExt and
-             os.path.exists(os.path.join(path, "") + os.path.splitext(f)[0] + "_TEST.txt")]
+             os.path.exists(os.path.join(path, "") + os.path.splitext(f)[0] + testExt)]
 
     failed = []
     totalCount = len(files)
@@ -102,15 +115,16 @@ def run(path):
     for f in files:
         count += 1
         path = os.path.join(path, "")
-        testFileName = path + f + "_TEST.txt"
+        testFileName = path + f + testExt
+        inputFileName = path + f + inputExt
         programFileName = path + f + programExt
         builtFileName = programFileName + binExt
 
         buildFile(programFileName)
 
-        stdout, stderr = runFile(programFileName)
-        bStdout, bStderr = runFile(builtFileName)
-        brStdout, brStderr = buildRunFile(programFileName)
+        stdout, stderr = runFile(programFileName, inputFileName)
+        bStdout, bStderr = runFile(builtFileName, inputFileName)
+        brStdout, brStderr = buildRunFile(programFileName, inputFileName)
 
         output = getOutput(f, stdout, stderr, bStdout, bStderr, brStdout, brStderr)
 
