@@ -1,0 +1,12 @@
+"../std.concat" include
+
+"Hello" StringSize print cr
+"Hello World" StringSize print cr
+
+
+"Hello2" "Hello2" over over CompareString print cr
+if CompareString then
+    "Same" print cr
+else
+    "Different" print cr
+endif

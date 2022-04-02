@@ -13,6 +13,7 @@
 
 std::unordered_set<std::string> Lexer::m_Macros;
 std::unordered_set<std::string> Lexer::m_Var;
+std::unordered_set<std::string> Lexer::m_IncludedFiles;
 std::string Lexer::m_InputString = "";
 std::filesystem::path Lexer::m_CurrentPath;
 size_t Lexer::m_StringOffset = 0;
@@ -217,16 +218,21 @@ bool Lexer::parseWord(Token& token, const char* word)
         std::filesystem::path parent = m_CurrentPath.parent_path().relative_path();
         std::filesystem::path newFile = parent.append(includeWord);
 
-        std::filesystem::path currentPath = m_CurrentPath;
         if (!std::filesystem::exists(newFile))
         {
             Error::compilerError(token, "Failed to include \"%s\"\n", newFile.filename().generic_string().c_str());
             exit(-1);
         }
 
-        m_StringOffset = token.endIndex - m_InputString.c_str() + 1;
-        Lexer::addFile(newFile.generic_string().c_str());
-        m_CurrentPath = currentPath;
+        if (m_IncludedFiles.find(newFile) == m_IncludedFiles.end())
+        {
+            std::filesystem::path currentPath = m_CurrentPath;
+            m_StringOffset = token.endIndex - m_InputString.c_str() + 1;
+            Lexer::addFile(newFile.generic_string().c_str());
+            m_CurrentPath = currentPath;
+
+            m_IncludedFiles.emplace(newFile.generic_string());
+        }
 
         Compiler::popBackToken();
     }

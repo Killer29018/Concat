@@ -1,0 +1,31 @@
+--------------------------------------------------
+StdTest.concat
+--stdout--
+5
+11
+1
+Same
+
+--stderr--
+
+--build run stdout--
+Created tests/StdTest.concat_bin
+
+Running tests/StdTest.concat_bin: 
+5
+11
+1
+Same
+
+--build run stderr--
+
+--build stdout--
+5
+11
+1
+Same
+
+--build stderr--
+
+--------------------------------------------------
+

@@ -17,6 +17,7 @@ std::vector<uint8_t> VM::m_Memory;
 std::unordered_map<uint32_t, size_t> VM::m_MemoryNames;
 int32_t VM::m_CurrentVarIndex = -1;
 
+constexpr int STRINGPADDING = 20;
 
 void VM::addOpCode(OpCodeEnum code)
 {
@@ -54,14 +55,14 @@ void VM::printOpCodes()
     {
         if (!m_OpCodes[i].value)
         {
-            printf("%.4lu | %.30s\n", i, OpCodeString[m_OpCodes[i].code]);
+            printf("%.4lu | %-*s |\n", i, STRINGPADDING, OpCodeString[m_OpCodes[i].code]);
             continue;
         }
 
         switch (m_OpCodes[i].value->type)
         {
         case TYPE_NULL:
-            printf("%.4lu | %.30s\n", i, OpCodeString[m_OpCodes[i].code]);
+            printf("%.4lu | %-*s |\n", i, STRINGPADDING, OpCodeString[m_OpCodes[i].code]);
             break;
         default:
             printValueDebug(i); break;
@@ -640,19 +641,22 @@ void VM::printValueDebug(size_t index)
     switch (code.value->type)
     {
     case TYPE_INT:
-        printf("%.4lu | %.30s | %d\n", index, OpCodeString[code.code], get_vInt(code.value));
+        printf("%.4lu | %-*s | %d\n", index, STRINGPADDING, OpCodeString[code.code], get_vInt(code.value));
         break;
     case TYPE_BOOL:
-        printf("%.4lu | %.30s | %d\n", index, OpCodeString[code.code], get_vBool(code.value));
+        printf("%.4lu | %-*s | %d\n", index, STRINGPADDING, OpCodeString[code.code], get_vBool(code.value));
         break;
     case TYPE_CHAR:
-        printf("%.4lu | %.30s | %c\n", index, OpCodeString[code.code], get_vChar(code.value));
+        printf("%.4lu | %-*s | %c\n", index, STRINGPADDING, OpCodeString[code.code], get_vChar(code.value));
         break;
     case TYPE_STRING:
-        printf("%.4lu | %.30s | %s\n", index, OpCodeString[code.code], get_vString(code.value));
+        printf("%.4lu | %-*s | %s\n", index, STRINGPADDING, OpCodeString[code.code], get_vString(code.value));
         break;
     case TYPE_MEM_PTR:
-        printf("%.4lu | %.30s | %d\n", index, OpCodeString[code.code], get_vMemPtr(code.value));
+        printf("%.4lu | %-*s | %d\n", index, STRINGPADDING, OpCodeString[code.code], get_vMemPtr(code.value));
+        break;
+    case TYPE_IP_OFFSET:
+        printf("%.4lu | %-*s | %d\n", index, STRINGPADDING, OpCodeString[code.code], get_vIpOffset(code.value));
         break;
     break;
     default:

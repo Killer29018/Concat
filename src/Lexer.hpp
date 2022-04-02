@@ -14,6 +14,7 @@ class Lexer
 private:
     static std::unordered_set<std::string> m_Macros;
     static std::unordered_set<std::string> m_Var;
+    static std::unordered_set<std::string> m_IncludedFiles;
     static std::string m_InputString;
     static std::filesystem::path m_CurrentPath;
     static size_t m_StringOffset;

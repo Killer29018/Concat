@@ -371,8 +371,7 @@ void Compiler::startCompiler()
                     {
                         ipOffset++;
 
-                        if (m_Tokens.at(ip - ipOffset).type == TOKEN_THEN || 
-                            m_Tokens.at(ip - ipOffset).type == TOKEN_ENDIF)
+                        if (m_Tokens.at(ip - ipOffset).type == TOKEN_ENDIF)
                         {
                             ifCount++;
                         }
