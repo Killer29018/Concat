@@ -8,6 +8,18 @@ binExt = "_bin"
 inputExt = "_INPUT.txt"
 testExt = "_TEST.txt"
 
+ignoreFile = "TestIgnore.txt"
+
+excludedFiles = []
+
+def addExcludedFiles(path):
+    file = path + ignoreFile
+
+    if (os.path.exists(file)):
+        with open(file, "r") as test:
+            for line in test:
+                excludedFiles.append(line[:-1])
+
 def checkForInput(file, process):
     inputs = ""
     if os.path.exists(file):
@@ -64,7 +76,11 @@ def build(path):
         exit(-1)
 
     count = 0;
-    files = [os.path.splitext(f)[0] for f in os.listdir(path) if os.path.isfile(os.path.join(path, f)) and os.path.splitext(os.path.join(path, f))[1] == programExt]
+    files = [os.path.splitext(f)[0] for f in os.listdir(path) 
+             if os.path.isfile(os.path.join(path, f)) and 
+             os.path.splitext(os.path.join(path, f))[1] == programExt and
+             not os.path.splitext(f)[0] in excludedFiles]
+
     totalCount = len(files)
     for f in files:
         count += 1
@@ -106,6 +122,8 @@ def run(path):
              if os.path.isfile(os.path.join(path, f)) and 
              os.path.splitext(os.path.join(path, f))[1] == programExt and
              os.path.exists(os.path.join(path, "") + os.path.splitext(f)[0] + testExt)]
+
+    print(files)
 
     failed = []
     totalCount = len(files)
@@ -169,6 +187,9 @@ if __name__ == "__main__":
 
     mode = sys.argv[1]
     folderpath = sys.argv[2]
+
+    addExcludedFiles(os.path.join(folderpath, ""))
+
     if mode == "h" or mode == "help":
         printUsage()
     elif mode == "run":
