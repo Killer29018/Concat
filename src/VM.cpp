@@ -11,6 +11,8 @@
 
 #include "Builder.hpp"
 
+#include "Lexer.hpp"
+
 std::vector<OpCode> VM::m_OpCodes;
 std::stack<SmartPointer> VM::m_Stack;
 std::vector<uint8_t> VM::m_Memory;

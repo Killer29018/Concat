@@ -3,14 +3,14 @@ IntError.concat
 --stdout--
 
 --stderr--
-[COMPILER ERROR] 'N/A':2:1 Failed to pass integer constant 1a
-[COMPILER ERROR] 'N/A':3:1 Failed to pass integer constant 1b
+[COMPILER ERROR] 'tests/IntError.concat':2:1 Failed to pass integer constant 1a
+[COMPILER ERROR] 'tests/IntError.concat':3:1 Failed to pass integer constant 1b
 
 --build run stdout--
 
 --build run stderr--
-[COMPILER ERROR] 'N/A':2:1 Failed to pass integer constant 1a
-[COMPILER ERROR] 'N/A':3:1 Failed to pass integer constant 1b
+[COMPILER ERROR] 'tests/IntError.concat':2:1 Failed to pass integer constant 1a
+[COMPILER ERROR] 'tests/IntError.concat':3:1 Failed to pass integer constant 1b
 
 --build stdout--
 File not recognised

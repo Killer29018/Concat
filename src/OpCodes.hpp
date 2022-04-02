@@ -152,6 +152,7 @@ struct OpCode
 {
     OpCodeEnum code;    // 2
 
+    size_t sourceIndex;
     size_t line;        // 4
     size_t column;      // 4
 

@@ -4,10 +4,11 @@
 #include <cstring>
 
 #include "VM.hpp"
+#include "Lexer.hpp"
 
 #include "Filetypes.hpp"
 
-size_t Builder::s_HeaderSize = (size_tSize * 2); // Doesnt include filename
+size_t Builder::s_HeaderSize = size_tSize; // Doesnt include filename
 
 void Builder::buildCompiled(const char* filename, std::vector<OpCode>* OpCodes)
 {
@@ -15,33 +16,40 @@ void Builder::buildCompiled(const char* filename, std::vector<OpCode>* OpCodes)
 
     path.replace_extension(binExt);
 
-    std::string filenameOnly = path.stem().generic_string();
-
     std::ofstream file;
     file.open(path.generic_string().c_str(), std::ios::out | std::ios::binary);
 
-    size_t headerSize = s_HeaderSize + filenameOnly.size();
+    size_t filenamesSize = 0;
+    for (size_t i = 0; i < Lexer::filenames.size(); i++)
+    {
+        filenamesSize += Lexer::filenames[i].size();
+    }
+
+    size_t headerSize = s_HeaderSize + size_tSize + (size_tSize * Lexer::filenames.size()) + filenamesSize;
+    char* buffer = (char*)malloc((sizeof(char) * headerSize));
 
     size_t index = 0;
 
-    size_t length = filenameOnly.size();
-    char* buffer = (char*)malloc((sizeof(char) * headerSize) + (sizeof(char) * length));
+    addElement(buffer, index, Lexer::filenames.size(), size_tSize);
 
-    addElement(buffer, index, length, size_tSize);
-    strncpy(buffer + index, filenameOnly.c_str(), length);
-    index += length;
+    for (size_t i = 0; i < Lexer::filenames.size(); i++)
+    {
+        addElement(buffer, index, Lexer::filenames[i].size(), size_tSize);
+        strncpy(buffer + index, Lexer::filenames[i].c_str(), Lexer::filenames[i].size());
+        index += Lexer::filenames[i].size();
+    }
+
     addElement(buffer, index, OpCodes->size(), size_tSize);
 
     file.write(buffer, headerSize);
 
-
+    constexpr size_t opSize = enumSize + size_tSize + size_tSize + size_tSize; // Operation Source Line Column
     for (size_t i = 0; i < OpCodes->size(); i++)
     {
         index = 0;
         OpCode& op = OpCodes->at(i);
 
         size_t vSize = getValueSize(op.value); // Type Value
-        size_t opSize = enumSize + size_tSize + size_tSize; // Operation Line Column
         size_t totalSize = sizeof(char) * (vSize + opSize); // Operation Type Line Column Value
         buffer = (char*)realloc(buffer, totalSize);
 
@@ -69,13 +77,26 @@ void Builder::loadCompiled(const char* sourcePath)
 
     char* buffer = (char*)malloc(sizeof(char) * size_tSize);
     file.read(buffer, size_tSize);
-    size_t filenameLength;
-    readElement(buffer, filenameLength, size_tSize);
 
-    char* filename = (char*)malloc(sizeof(char) * filenameLength);
-    buffer = (char*)realloc(buffer, sizeof(char) * filenameLength);
-    file.read(buffer, filenameLength);
-    strncpy(filename, buffer, filenameLength);
+    size_t filenamesLength;
+    readElement(buffer, filenamesLength, size_tSize);
+
+    for (size_t i = 0; i < filenamesLength; i++)
+    {
+        buffer = (char*)realloc(buffer, sizeof(char) * size_tSize);
+        file.read(buffer, size_tSize);
+        size_t length;
+        readElement(buffer, length, size_tSize);
+
+        char* filename = (char*)malloc(sizeof(char) * length);
+        buffer = (char*)realloc(buffer, sizeof(char) * length);
+        file.read(buffer, length);
+        strncpy(filename, buffer, length);
+
+        Lexer::filenames.emplace_back(filename);
+
+        delete[] filename;
+    }
 
     file.read(buffer, size_tSize);
     size_t opcodesLength;
@@ -84,7 +105,7 @@ void Builder::loadCompiled(const char* sourcePath)
     // buffer = (char*)realloc(buffer, sizeof(char) * s_BodySize);
     for (size_t i = 0; i < opcodesLength; i++)
     {
-        size_t size = sizeof(char) * (enumSize + enumSize + size_tSize + size_tSize);
+        size_t size = sizeof(char) * (enumSize + enumSize + size_tSize + size_tSize + size_tSize);
         buffer = (char*)realloc(buffer, size);
         file.read(buffer, size);
         OpCode op;
@@ -110,11 +131,14 @@ void Builder::writeOpCode(char* buffer, const OpCode& op, size_t& index)
         valueType = static_cast<enumType>(TYPE_NULL);
     else
         valueType = static_cast<enumType>(op.value->type);
+
+    size_t sourceIndex = op.sourceIndex;
     size_t line = op.line;
     size_t column = op.column;
 
     addElement(buffer, index, opType, enumSize); 
     addElement(buffer, index, valueType, enumSize); 
+    addElement(buffer, index, sourceIndex, size_tSize);
     addElement(buffer, index, line, size_tSize);
     addElement(buffer, index, column, size_tSize);
 
@@ -124,17 +148,19 @@ void Builder::writeOpCode(char* buffer, const OpCode& op, size_t& index)
 void Builder::readOpCode(char* buffer, OpCode& op, std::ifstream& file)
 {
     enumType opType, valueType;
-    size_t line, column;
+    size_t sourceIndex, line, column;
 
     size_t index = 0;
 
     readElement(buffer, index, opType, enumSize);
     readElement(buffer, index, valueType, enumSize);
+    readElement(buffer, index, sourceIndex, size_tSize);
     readElement(buffer, index, line, size_tSize);
     readElement(buffer, index, column, size_tSize);
 
     op.code = static_cast<OpCodeEnum>(opType);
     ValueType type = static_cast<ValueType>(valueType);
+    op.sourceIndex = sourceIndex;
     op.line = line;
     op.column = column;
 

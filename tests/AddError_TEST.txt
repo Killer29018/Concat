@@ -5,7 +5,7 @@ AddError.concat
 1
 
 --stderr--
-[RUNTIME ERROR] 'N/A':7:12 Operation Add does not support MEM_PTR and MEM_PTR
+[RUNTIME ERROR] 'tests/AddError.concat':7:12 Operation Add does not support MEM_PTR and MEM_PTR
 
 --build run stdout--
 Created tests/AddError.concat_bin
@@ -15,14 +15,14 @@ Running tests/AddError.concat_bin:
 1
 
 --build run stderr--
-[RUNTIME ERROR] 'N/A':7:12 Operation Add does not support MEM_PTR and MEM_PTR
+[RUNTIME ERROR] 'tests/AddError.concat':7:12 Operation Add does not support MEM_PTR and MEM_PTR
 
 --build stdout--
 0
 1
 
 --build stderr--
-[RUNTIME ERROR] 'N/A':7:12 Operation Add does not support MEM_PTR and MEM_PTR
+[RUNTIME ERROR] 'tests/AddError.concat':7:12 Operation Add does not support MEM_PTR and MEM_PTR
 
 --------------------------------------------------
 

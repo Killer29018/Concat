@@ -11,24 +11,24 @@
 #include "Compiler.hpp"
 #include "Keywords.hpp"
 
+std::vector<std::string> Lexer::filenames;
+
 std::unordered_set<std::string> Lexer::m_Macros;
 std::unordered_set<std::string> Lexer::m_Var;
 std::unordered_set<std::string> Lexer::m_IncludedFiles;
-std::string Lexer::m_InputString = "";
-std::filesystem::path Lexer::m_CurrentPath;
-size_t Lexer::m_StringOffset = 0;
 bool Lexer::m_Error = false;
+
+size_t Lexer::m_InputStringLocation;
+std::vector<std::string> Lexer::m_Sources;
+std::string* Lexer::m_InputString;
+
+std::filesystem::path Lexer::m_CurrentPath;
+size_t Lexer::m_CurrentLine = 0;
+size_t Lexer::m_CurrentColumn;
 
 void Lexer::lexFile(const char* filePath)
 {
     addFile(filePath);
-    parseString();
-}
-
-void Lexer::lexString(const char* inputString)
-{
-
-    m_InputString = inputString;
     parseString();
 }
 
@@ -44,7 +44,11 @@ void Lexer::addFile(const char* filePath)
 
     std::stringstream ss;
     ss << file.rdbuf();
-    m_InputString.insert(m_StringOffset, ss.str());
+
+    filenames.emplace_back(filePath);
+    m_Sources.emplace_back(ss.str());
+    m_InputStringLocation = m_Sources.size() - 1;
+    m_InputString = &m_Sources.at(m_Sources.size() - 1);
 
     file.close();
 }
@@ -52,9 +56,10 @@ void Lexer::addFile(const char* filePath)
 void Lexer::parseString()
 {
     Token t;
-    int currentLine = 1;
-    int currentColumn = 1;
-    t.startIndex = &m_InputString[0];
+    t.startIndex = &(*m_InputString)[0];
+
+    m_CurrentLine = 1;
+    m_CurrentColumn = 1;
 
     bool start = false;
     bool comments = false;
@@ -65,25 +70,27 @@ void Lexer::parseString()
     bool parseString = false;
     size_t cp = 0;
 
-    while (cp != m_InputString.size())
+    t.sourceIndex = m_InputStringLocation;
+
+    while (cp != m_InputString->size())
     {
         bool skip = checkComments(&start, &end, &comments, &multiLineComment, cp);
 
-        if (m_InputString[cp] == '\'')
+        if ((*m_InputString)[cp] == '\'')
             parseCharacter = !parseCharacter;
-        else if (m_InputString[cp] == '"')
+        else if ((*m_InputString)[cp] == '"')
             parseString = !parseString;
 
-        if ((!isDelimiter(m_InputString[cp]) || parseCharacter || parseString) && !start && !comments && !skip)
+        if ((!isDelimiter((*m_InputString)[cp]) || parseCharacter || parseString) && !start && !comments && !skip)
         {
-            t.startIndex = &m_InputString[0] + cp;
-            t.column = currentColumn;
+            t.startIndex = &(*m_InputString)[0] + cp;
+            t.column = m_CurrentColumn;
             start = true;
         }
-        else if (!parseCharacter && !parseString && ((start && isDelimiter(m_InputString[cp])) || end))
+        else if (!parseCharacter && !parseString && ((start && isDelimiter((*m_InputString)[cp])) || end))
         {
-            t.endIndex = (&m_InputString[0] + cp);
-            t.line = currentLine;
+            t.endIndex = (&(*m_InputString)[0] + cp);
+            t.line = m_CurrentLine;
             bool add = getTokenType(t);
 
             start = false;
@@ -96,18 +103,18 @@ void Lexer::parseString()
                 Compiler::addToken(t);
         }
 
-        if (m_InputString[cp] == '\n' && !parseCharacter && !parseString)
+        if ((*m_InputString)[cp] == '\n' && !parseCharacter && !parseString)
         {
-            currentLine++;
-            currentColumn = 0;
+            m_CurrentLine++;
+            m_CurrentColumn = 0;
         }
 
-        currentColumn++;
+        m_CurrentColumn++;
 
         if (skip)
         {
             cp++;
-            currentColumn++;
+            m_CurrentColumn++;
         }
 
         cp++;
@@ -115,8 +122,8 @@ void Lexer::parseString()
 
     if (start)
     {
-        t.endIndex = &m_InputString[0] + m_InputString.length();
-        t.line = currentLine;
+        t.endIndex = &(*m_InputString)[0] + m_InputString->length();
+        t.line = m_CurrentLine;
         getTokenType(t);
         Compiler::addToken(t);
     }
@@ -227,14 +234,30 @@ bool Lexer::parseWord(Token& token, const char* word)
         if (m_IncludedFiles.find(newFile) == m_IncludedFiles.end())
         {
             std::filesystem::path currentPath = m_CurrentPath;
-            m_StringOffset = token.endIndex - m_InputString.c_str() + 1;
-            Lexer::addFile(newFile.generic_string().c_str());
+            size_t line = m_CurrentLine;
+            size_t column = m_CurrentColumn;
+            size_t currentString = m_InputStringLocation;
+
+            Compiler::popBackToken();
+            Lexer::lexFile(newFile.generic_string().c_str());
+
             m_CurrentPath = currentPath;
+            m_CurrentLine = line;
+            m_CurrentColumn = column;
+
+            m_InputStringLocation = currentString;
+            m_InputString = &m_Sources[m_InputStringLocation];
 
             m_IncludedFiles.emplace(newFile.generic_string());
         }
+        else
+        {
+            Compiler::popBackToken();
+        }
 
-        Compiler::popBackToken();
+
+        delete[] includeWord;
+
     }
     else // Var, Macro
     {
@@ -283,9 +306,9 @@ bool Lexer::isDelimiter(char c)
 bool Lexer::checkComments(bool* start, bool* end, bool* comments, bool* multiLineComment, size_t index)
 {
     bool skip = false;
-    if (m_InputString[index] == '/' && index < m_InputString.size())
+    if ((*m_InputString)[index] == '/' && index < m_InputString->size())
     {
-        if (m_InputString[index + 1] == '/')
+        if ((*m_InputString)[index + 1] == '/')
         {
             (*comments) = true;
             if (*start)
@@ -293,7 +316,7 @@ bool Lexer::checkComments(bool* start, bool* end, bool* comments, bool* multiLin
 
             skip = true;
         }
-        else if (m_InputString[index + 1] == '*')
+        else if ((*m_InputString)[index + 1] == '*')
         {
             (*comments) = true;
             (*multiLineComment) = true;
@@ -304,9 +327,9 @@ bool Lexer::checkComments(bool* start, bool* end, bool* comments, bool* multiLin
             skip = true;
         }
     }
-    else if (m_InputString[index] == '*' && index < m_InputString.size() && (*multiLineComment))
+    else if ((*m_InputString)[index] == '*' && index < m_InputString->size() && (*multiLineComment))
     {
-        if (m_InputString[index + 1] == '/')
+        if ((*m_InputString)[index + 1] == '/')
         {
             (*comments) = false;
             (*multiLineComment) = false;
@@ -314,7 +337,7 @@ bool Lexer::checkComments(bool* start, bool* end, bool* comments, bool* multiLin
         }
     }
 
-    if (m_InputString[index] == '\n')
+    if ((*m_InputString)[index] == '\n')
     {
         if (!(*multiLineComment))
             *(comments) = false;

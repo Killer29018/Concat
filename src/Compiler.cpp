@@ -6,6 +6,8 @@
 #include "VM.hpp"
 #include "Error.hpp"
 
+#include "Lexer.hpp"
+
 std::vector<Token> Compiler::m_Tokens;
 std::unordered_map<std::string, std::vector<Token>> Compiler::m_Macros {};
 std::set<std::string> Compiler::m_Variables;
@@ -38,7 +40,7 @@ void Compiler::printTokens()
         Token& t = m_Tokens[i];
 
         int length = t.endIndex - t.startIndex;
-        printf("%.4lu | %.4lu:%.4lu | %-20s | %.*s\n", i, t.line, t.column, TokenString[t.type], length, t.startIndex);
+        printf("%.4lu | '%-10s':%.4lu:%.4lu | %-20s | %.*s\n", i, Lexer::filenames[t.sourceIndex].c_str(), t.line, t.column, TokenString[t.type], length, t.startIndex);
     }
 }
 
@@ -64,6 +66,7 @@ void Compiler::startCompiler()
         code.value = nullptr;
         code.line = t.line;
         code.column = t.column;
+        code.sourceIndex = t.sourceIndex;
 
         switch (t.type)
         {

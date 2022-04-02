@@ -7,21 +7,28 @@
 
 #include <vector>
 #include <unordered_set>
+#include <unordered_map>
 #include <filesystem>
 
 class Lexer
 {
+public:
+    static std::vector<std::string> filenames;
 private:
     static std::unordered_set<std::string> m_Macros;
     static std::unordered_set<std::string> m_Var;
     static std::unordered_set<std::string> m_IncludedFiles;
-    static std::string m_InputString;
-    static std::filesystem::path m_CurrentPath;
-    static size_t m_StringOffset;
     static bool m_Error;
+
+    static size_t m_InputStringLocation;
+    static std::vector<std::string> m_Sources;
+    static std::string* m_InputString;
+
+    static std::filesystem::path m_CurrentPath;
+    static size_t m_CurrentLine;
+    static size_t m_CurrentColumn;
 public:
     static void lexFile(const char* filePath);
-    static void lexString(const char* inputString);
 
     static void deallocate();
 private:

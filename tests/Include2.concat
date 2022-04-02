@@ -1,3 +1,4 @@
 "Include1.concat" include
+"../std.concat" include
 
 1 print space "World" print space "Hello" print cr

@@ -3,11 +3,13 @@
 #include <cstdio>
 #include <cstdarg>
 
+#include "Lexer.hpp"
+
 void Error::runtimeError(const OpCode& code, const char* fmt, ...)
 {
     va_list args;
     va_start(args, fmt);
-    printError("RUNTIME ERROR", "'N/A'", code.line, code.column, fmt, args);
+    printError("RUNTIME ERROR", Lexer::filenames[code.sourceIndex].c_str(), code.line, code.column, fmt, args);
     va_end(args);
     exit(-1);
 }
@@ -16,7 +18,7 @@ void Error::compilerError(const Token& token, const char* fmt, ...)
 {
     va_list args;
     va_start(args, fmt);
-    printError("COMPILER ERROR", "'N/A'", token.line, token.column, fmt, args);
+    printError("COMPILER ERROR", Lexer::filenames[token.sourceIndex].c_str(), token.line, token.column, fmt, args);
     va_end(args);
 }
 
@@ -37,7 +39,7 @@ void Error::castError(const OpCode& op, ValueType type)
 
 void Error::stackTooSmallError(const OpCode& code, int expectedSize)
 {
-    printError("RUNTIME ERROR", "'N/A'", code.line, code.column, "Not enough items on the stack. Atleast %d item/s expected", expectedSize);
+    printError("RUNTIME ERROR", Lexer::filenames[code.sourceIndex].c_str(), code.line, code.column, "Not enough items on the stack. Atleast %d item/s expected", expectedSize);
     exit(-1);
 }
 
@@ -51,7 +53,7 @@ void Error::printError(const char* errorname, const char* filename, size_t line,
 
 void Error::printError(const char* errorname, const char* filename, size_t line, size_t column, const char* fmt, va_list args)
 {
-    const char* fmtTemplate = "[%s] %s:%ld:%ld %s\n";
+    const char* fmtTemplate = "[%s] '%-10s':%ld:%ld %s\n";
 
     size_t length = snprintf(NULL, 0, fmtTemplate, errorname, filename, line, column, fmt);
     char* newFmt = (char*)malloc(length + 1);

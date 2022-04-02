@@ -158,6 +158,7 @@ const std::vector<const char*> TokenString
 struct Token
 {
     TokenType type;
+    size_t sourceIndex;
     size_t line;
     size_t column;
     char* startIndex;
