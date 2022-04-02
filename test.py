@@ -123,8 +123,6 @@ def run(path):
              os.path.splitext(os.path.join(path, f))[1] == programExt and
              os.path.exists(os.path.join(path, "") + os.path.splitext(f)[0] + testExt)]
 
-    print(files)
-
     failed = []
     totalCount = len(files)
     count = 0

@@ -94,7 +94,7 @@ void Program::createOpcodes(const char* filename)
     Lexer::lexFile(filename);
 
     if (printDebugTokens)
-        Lexer::printTokens();
+        Compiler::printTokens();
 
     Compiler::startCompiler();
 

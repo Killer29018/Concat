@@ -76,6 +76,8 @@ enum TokenType
     TOKEN_DO,
     TOKEN_ENDWHILE,
 
+    TOKEN_INCLUDE,
+
     TOKEN_COUNT
 };
 
@@ -149,6 +151,8 @@ const std::vector<const char*> TokenString
     "TOKEN_WHILE",
     "TOKEN_DO",
     "TOKEN_ENDWHILE",
+
+    "TOKEN_INCLUDE",
 };
 
 struct Token

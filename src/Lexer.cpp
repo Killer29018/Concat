@@ -11,47 +11,41 @@
 #include "Compiler.hpp"
 #include "Keywords.hpp"
 
-std::vector<Token> Lexer::m_Tokens;
 std::unordered_set<std::string> Lexer::m_Macros;
 std::unordered_set<std::string> Lexer::m_Var;
 std::string Lexer::m_InputString = "";
+std::filesystem::path Lexer::m_CurrentPath;
+size_t Lexer::m_StringOffset = 0;
 bool Lexer::m_Error = false;
 
 void Lexer::lexFile(const char* filePath)
 {
-    std::ifstream file;
-    file.open(filePath, std::ios::out);
-
-    std::stringstream ss;
-    ss << file.rdbuf();
-    m_InputString = ss.str();
-
-
-    file.close();
-
+    addFile(filePath);
     parseString();
 }
 
 void Lexer::lexString(const char* inputString)
 {
+
     m_InputString = inputString;
     parseString();
 }
 
-void Lexer::printTokens()
-{
-    printf("--- TOKENS ---\n");
-    for (size_t i = 0; i < m_Tokens.size(); i++)
-    {
-        Token& t = m_Tokens[i];
-
-        int length = t.endIndex - t.startIndex;
-        printf("%.4lu | %.4lu:%.4lu | %-20s | %.*s\n", i, t.line, t.column, TokenString[t.type], length, t.startIndex);
-    }
-}
-
 void Lexer::deallocate()
 {
+}
+
+void Lexer::addFile(const char* filePath)
+{
+    m_CurrentPath = std::filesystem::path(filePath);
+    std::ifstream file;
+    file.open(filePath, std::ios::out);
+
+    std::stringstream ss;
+    ss << file.rdbuf();
+    m_InputString.insert(m_StringOffset, ss.str());
+
+    file.close();
 }
 
 void Lexer::parseString()
@@ -68,36 +62,40 @@ void Lexer::parseString()
 
     bool parseCharacter = false;
     bool parseString = false;
+    size_t cp = 0;
 
-    for (size_t i = 0; i < m_InputString.size();)
+    while (cp != m_InputString.size())
     {
-        bool skip = checkComments(&start, &end, &comments, &multiLineComment, i);
+        bool skip = checkComments(&start, &end, &comments, &multiLineComment, cp);
 
-        if (m_InputString[i] == '\'')
+        if (m_InputString[cp] == '\'')
             parseCharacter = !parseCharacter;
-        else if (m_InputString[i] == '"')
+        else if (m_InputString[cp] == '"')
             parseString = !parseString;
 
-        if ((!isDelimiter(m_InputString[i]) || parseCharacter || parseString) && !start && !comments && !skip)
+        if ((!isDelimiter(m_InputString[cp]) || parseCharacter || parseString) && !start && !comments && !skip)
         {
-            t.startIndex = &m_InputString[0] + i;
+            t.startIndex = &m_InputString[0] + cp;
             t.column = currentColumn;
             start = true;
         }
-        else if (!parseCharacter && !parseString && ((start && isDelimiter(m_InputString[i])) || end))
+        else if (!parseCharacter && !parseString && ((start && isDelimiter(m_InputString[cp])) || end))
         {
-            t.endIndex = (&m_InputString[0] + i);
+            t.endIndex = (&m_InputString[0] + cp);
             t.line = currentLine;
+            bool add = getTokenType(t);
+
             start = false;
             end = false;
-            getTokenType(t);
 
             parseCharacter = false;
             parseString = false;
-            m_Tokens.push_back(t);
+
+            if (add)
+                Compiler::addToken(t);
         }
 
-        if (m_InputString[i] == '\n' && !parseCharacter && !parseString)
+        if (m_InputString[cp] == '\n' && !parseCharacter && !parseString)
         {
             currentLine++;
             currentColumn = 0;
@@ -107,11 +105,11 @@ void Lexer::parseString()
 
         if (skip)
         {
-            i++;
+            cp++;
             currentColumn++;
         }
 
-        i++;
+        cp++;
     }
 
     if (start)
@@ -119,17 +117,16 @@ void Lexer::parseString()
         t.endIndex = &m_InputString[0] + m_InputString.length();
         t.line = currentLine;
         getTokenType(t);
-        m_Tokens.push_back(t);
+        Compiler::addToken(t);
     }
 
-    if (!m_Error)
-        Compiler::addTokens(m_Tokens);
-    else
+    if (m_Error)
         exit(-1);
 }
 
-void Lexer::getTokenType(Token& token)
+bool Lexer::getTokenType(Token& token)
 {
+    bool add = true;
     int length = token.endIndex - token.startIndex;
     char* word = new char[length + 1];
     strncpy(word, token.startIndex, length);
@@ -149,14 +146,17 @@ void Lexer::getTokenType(Token& token)
     }
     else
     {
-        parseWord(token, word);
+        add = parseWord(token, word);
     }
 
     delete[] word;
+
+    return add;
 }
 
-void Lexer::parseWord(Token& token, const char* word)
+bool Lexer::parseWord(Token& token, const char* word)
 {
+    bool add = true;
     int length = token.endIndex - token.startIndex;
     if (*token.startIndex >= '0' && *token.startIndex <= '9') // Int
     {
@@ -174,7 +174,6 @@ void Lexer::parseWord(Token& token, const char* word)
     }
     else if (*token.startIndex == '\'') // Char
     {
-        // TODO: Allow for escape codes.
         if (length < 3 || length > 4)
         {
             Error::compilerError(token, "Illformed character literal %.*s", length, token.startIndex);
@@ -199,20 +198,52 @@ void Lexer::parseWord(Token& token, const char* word)
             token.type = TOKEN_STRING;
         }
     }
+    else if (!strcmp(word, "include")) // Include a file
+    {
+        add = false;
+        Token* t = Compiler::getTopToken();
+
+        if (t->type != TOKEN_STRING)
+        {
+            Error::compilerError(*t, "Expected a string for include");
+        }
+
+        int length = t->endIndex - t->startIndex - 2;
+
+        char* includeWord = (char*)malloc(sizeof(char) * (length + 1));
+        includeWord[length] = 0;
+        strncpy(includeWord, t->startIndex + 1, length);
+
+        std::filesystem::path parent = m_CurrentPath.parent_path().relative_path();
+        std::filesystem::path newFile = parent.append(includeWord);
+
+        std::filesystem::path currentPath = m_CurrentPath;
+        if (!std::filesystem::exists(newFile))
+        {
+            Error::compilerError(token, "Failed to include \"%s\"\n", newFile.filename().generic_string().c_str());
+            exit(-1);
+        }
+
+        m_StringOffset = token.endIndex - m_InputString.c_str() + 1;
+        Lexer::addFile(newFile.generic_string().c_str());
+        m_CurrentPath = currentPath;
+
+        Compiler::popBackToken();
+    }
     else // Var, Macro
     {
-        Token* top = &m_Tokens.at(m_Tokens.size() - 1);
+        Token* top = Compiler::getTopToken();
         if (top->type == TOKEN_MACRO)
         {
             token.type = TOKEN_MACRO;
             m_Macros.emplace(word);
-            m_Tokens.pop_back();
+            Compiler::popBackToken();
         }
         else if (top->type == TOKEN_MEM)
         {
             token.type = TOKEN_MEM;
             m_Var.emplace(word);
-            m_Tokens.pop_back();
+            Compiler::popBackToken();
         }
         else
         {
@@ -227,6 +258,8 @@ void Lexer::parseWord(Token& token, const char* word)
             }
         }
     }
+
+    return add;
 }
 
 bool Lexer::isDelimiter(char c)

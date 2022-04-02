@@ -648,6 +648,9 @@ void VM::printValueDebug(size_t index)
     case TYPE_CHAR:
         printf("%.4lu | %.30s | %c\n", index, OpCodeString[code.code], get_vChar(code.value));
         break;
+    case TYPE_STRING:
+        printf("%.4lu | %.30s | %s\n", index, OpCodeString[code.code], get_vString(code.value));
+        break;
     case TYPE_MEM_PTR:
         printf("%.4lu | %.30s | %d\n", index, OpCodeString[code.code], get_vMemPtr(code.value));
         break;

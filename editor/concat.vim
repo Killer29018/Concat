@@ -15,6 +15,7 @@ syntax keyword concat_Keyword print cr
 syntax keyword concat_Keyword and or invert land lor lnot << >>
 syntax keyword concat_Keyword true false
 syntax keyword concat_Keyword cast(int) cast(bool) cast(char) cast(string)
+syntax keyword concat_Keyword include
 highlight link concat_Keyword Keyword 
 
 syntax keyword concat_Conditional if then elseif else endif

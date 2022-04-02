@@ -1,0 +1,22 @@
+--------------------------------------------------
+Include2.concat
+--stdout--
+1 World Hello
+
+--stderr--
+
+--build run stdout--
+Created tests/Include2.concat_bin
+
+Running tests/Include2.concat_bin: 
+1 World Hello
+
+--build run stderr--
+
+--build stdout--
+1 World Hello
+
+--build stderr--
+
+--------------------------------------------------
+

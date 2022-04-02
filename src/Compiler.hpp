@@ -12,15 +12,21 @@
 class Compiler
 {
 private:
-    static std::vector<Token>* m_Tokens;
+    static std::vector<Token> m_Tokens;
     static std::unordered_map<std::string, std::vector<Token>> m_Macros;
     static std::set<std::string> m_Variables;
     static bool m_Error;
+    static size_t m_Ip;
 
     static std::vector<std::pair<std::string, std::string>> m_Patterns;
 public:
-    static void addTokens(std::vector<Token>& tokens);
+    static void addToken(Token& token);
+    static void printTokens();
     static void startCompiler();
+
+    static Token* getTopToken() { return &m_Tokens.at(m_Tokens.size() - 1); }
+    static void popBackToken() { m_Tokens.pop_back(); m_Ip--; }
+
 private:
     Compiler() {}
     ~Compiler() {}
