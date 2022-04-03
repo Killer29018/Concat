@@ -14,10 +14,12 @@ private:
     static std::vector<OpCode> m_OpCodes;
     static std::stack<SmartPointer> m_Stack;
     static std::stack<size_t> m_ReturnStack;
+    static std::stack<vFunc*> m_ReturnFuncStack;
 
     static std::vector<uint8_t> m_Memory;
     static std::unordered_map<uint32_t, size_t> m_MemoryNames;
     static std::vector<size_t> m_Functions;
+    static std::unordered_map<size_t, SmartPointer> m_FunctionDefinitions;
 
     static int32_t m_CurrentVarIndex;
 public:

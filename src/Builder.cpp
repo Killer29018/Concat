@@ -426,6 +426,6 @@ void Builder::readFunc(char* buffer, OpCode& code, size_t bufferSize)
         func->outputs.push_back((ValueType)type);
     }
 
-    if (funcIndex != VM::addFunction())
+    if (code.code == OP_FUNC && funcIndex != VM::addFunction())
         assert(false && "Something has gone wrong");
 }

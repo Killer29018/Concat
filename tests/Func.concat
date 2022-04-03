@@ -10,7 +10,12 @@ func printSquares --> define
     drop cr
 endfunc
 
-10 10 
-Add2Int
+func Add3Int int int int --> int int define
+    + + dup
+endfunc
+
 printSquares
+
+10 10 10
+Add3Int
 print cr

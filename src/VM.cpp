@@ -16,10 +16,12 @@
 std::vector<OpCode> VM::m_OpCodes;
 std::stack<SmartPointer> VM::m_Stack;
 std::stack<size_t> VM::m_ReturnStack;
+std::stack<vFunc*> VM::m_ReturnFuncStack;
 
 std::vector<uint8_t> VM::m_Memory;
 std::unordered_map<uint32_t, size_t> VM::m_MemoryNames;
 std::vector<size_t> VM::m_Functions;
+std::unordered_map<size_t, SmartPointer> VM::m_FunctionDefinitions;
 
 int32_t VM::m_CurrentVarIndex = -1;
 
@@ -640,6 +642,7 @@ void VM::simulate()
         case OP_FUNC:
             {
                 m_Functions[as_vFunc(op.value)->funcIndex] = ip + 1;
+                m_FunctionDefinitions[as_vFunc(op.value)->funcIndex] = op.value;
 
                 while (m_OpCodes[ip].code != OP_ENDFUNC) { ip++; }
 
@@ -648,7 +651,34 @@ void VM::simulate()
             }
         case OP_CALLFUNC:
             {
+                vFunc* func = as_vFunc(m_FunctionDefinitions[as_vFunc(op.value)->funcIndex]);
+
                 m_ReturnStack.push(ip);
+                m_ReturnStack.push(m_Stack.size() - func->inputs.size());
+
+                if (m_Stack.size() < func->inputs.size())
+                    Error::stackTooSmallError(op, func->inputs.size());
+
+                std::vector<SmartPointer> values;
+                
+                size_t inputSize = func->inputs.size();
+                for (size_t i = 0; i < inputSize; i++)
+                {
+                    values.push_back(m_Stack.top());
+
+                    if (m_Stack.top()->type != func->inputs[inputSize - i - 1])
+                        Error::runtimeError(op, "Expected %s for element %zu but found %s instead", ValueTypeString[func->inputs[inputSize - i - 1]], i, ValueTypeString[m_Stack.top()->type]);
+
+                    m_Stack.pop();
+                }
+
+                for (size_t i = values.size(); i != 0; i--)
+                {
+                    m_Stack.push(values[i - 1]);
+                }
+
+
+                m_ReturnFuncStack.push(func);
 
                 ip = m_Functions[as_vFunc(op.value)->funcIndex];
 
@@ -656,8 +686,12 @@ void VM::simulate()
             }
         case OP_ENDFUNC:
             {
-                ip = m_ReturnStack.top();
-                m_ReturnStack.pop();
+                size_t count = m_ReturnStack.top(); m_ReturnStack.pop();
+                ip = m_ReturnStack.top(); m_ReturnStack.pop();
+                vFunc* func = m_ReturnFuncStack.top(); m_ReturnFuncStack.pop();
+
+                if (count + func->outputs.size() != m_Stack.size())
+                    Error::runtimeError(op, "Unexpected data on the stack. Expected %zu elements but found %zu instead", count + func->outputs.size(), m_Stack.size());
 
                 ip++;
                 break;

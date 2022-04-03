@@ -16,13 +16,18 @@ syntax keyword concat_Keyword and or invert land lor lnot << >>
 syntax keyword concat_Keyword true false
 syntax keyword concat_Keyword cast(int) cast(bool) cast(char) cast(string)
 syntax keyword concat_Keyword include
-highlight link concat_Keyword Keyword 
+syntax keyword concat_Keyword int bool char string memptr
+syntax match concat_Keyword "\v--\>"    " -->
+highlight link concat_Keyword Keyword
+
+syntax keyword concat_Function func define endfunc
+highlight link concat_Function Function
 
 syntax keyword concat_Conditional if then elseif else endif
-highlight link concat_Conditional Conditional 
+highlight link concat_Conditional Conditional
 
 syntax keyword concat_Repeat while do endwhile
-highlight link concat_Repeat Repeat 
+highlight link concat_Repeat Repeat
 
 syntax region concat_Constants start=/^\d/ end=/\v(\ze\s|$)/
 syntax region concat_Constants start=/ \d/ end=/\v(\ze\s|$)/
