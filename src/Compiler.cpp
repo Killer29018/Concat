@@ -10,7 +10,7 @@
 
 std::vector<Token> Compiler::m_Tokens;
 std::unordered_map<std::string, std::vector<Token>> Compiler::m_Macros {};
-std::unordered_set<std::string> Compiler::m_Variables;
+std::set<std::string> Compiler::m_Variables;
 std::unordered_map<std::string, uint32_t> Compiler::m_Functions;
 bool Compiler::m_Error = false;
 size_t Compiler::m_Ip = 0;

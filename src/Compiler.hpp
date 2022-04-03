@@ -7,14 +7,14 @@
 #include <string>
 #include <vector>
 #include <unordered_map>
-#include <unordered_set>
+#include <set>
 
 class Compiler
 {
 private:
     static std::vector<Token> m_Tokens;
     static std::unordered_map<std::string, std::vector<Token>> m_Macros;
-    static std::unordered_set<std::string> m_Variables;
+    static std::set<std::string> m_Variables;
     static std::unordered_map<std::string, uint32_t> m_Functions;
     static bool m_Error;
     static size_t m_Ip;
