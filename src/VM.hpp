@@ -13,15 +13,20 @@ class VM
 private:
     static std::vector<OpCode> m_OpCodes;
     static std::stack<SmartPointer> m_Stack;
+    static std::stack<size_t> m_ReturnStack;
 
     static std::vector<uint8_t> m_Memory;
     static std::unordered_map<uint32_t, size_t> m_MemoryNames;
+    static std::vector<size_t> m_Functions;
+
     static int32_t m_CurrentVarIndex;
 public:
     static void addOpCode(OpCodeEnum code);
     static void addOpCode(const OpCode& code);
     static void pushInt(int32_t value);
     static uint32_t addMemory(uint32_t bytes);
+    static uint32_t addFunction();
+
     static size_t getMemorySize() { return m_Memory.size(); }
 
     static void printOpCodes();

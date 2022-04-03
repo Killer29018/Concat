@@ -1,0 +1,16 @@
+func Add2Int int int --> int define
+    +
+endfunc
+
+func printSquares --> define
+    1 while dup 20 <= do
+        dup dup * print ' ' print
+        1 +
+    endwhile
+    drop cr
+endfunc
+
+10 10 
+Add2Int
+printSquares
+print cr

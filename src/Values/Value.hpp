@@ -18,9 +18,10 @@ class SmartPointer;
 struct OpCode;
 enum OpCodeEnum : uint16_t;
 
-enum ValueType
+enum ValueType : uint16_t
 {
     TYPE_NULL,
+
     TYPE_INT,
     TYPE_BOOL,
     TYPE_CHAR,
@@ -28,6 +29,7 @@ enum ValueType
     TYPE_MEM_PTR,
 
     TYPE_IP_OFFSET,
+    TYPE_FUNC,
 
     TYPE_COUNT
 };
@@ -42,6 +44,7 @@ const std::vector<const char*> ValueTypeString
     "MEM_PTR",
 
     "IP_OFFSET",
+    "FUNC",
 };
 
 struct Value
@@ -210,6 +213,19 @@ struct vIpOffset : Value
 #define as_vIpOffset(val)   ((vIpOffset*)(val.get()))
 #define get_vIpOffset(val)  (((vIpOffset*)(val.get()))->v)
 
+struct vFunc : Value
+{
+    std::vector<ValueType> inputs;
+    std::vector<ValueType> outputs;
+    uint32_t funcIndex;
+
+    vFunc(std::vector<ValueType> inputs, std::vector<ValueType> outputs, uint32_t index)
+        : Value(TYPE_FUNC), inputs(inputs), outputs(outputs), funcIndex(index) {}
+
+    vFunc(uint32_t index)
+        : Value(TYPE_FUNC), funcIndex(index) {}
+};
+#define as_vFunc(val)   ((vFunc*)(val.get()))
 
 void runOperation(const SmartPointer& a, SmartPointer& rV, const OpCode& op);
 void runOperation(const SmartPointer& a, const SmartPointer& b, SmartPointer& rV, const OpCode& op);

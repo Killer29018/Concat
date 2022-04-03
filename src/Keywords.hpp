@@ -3,10 +3,16 @@
 
 #include "Tokens.hpp"
 
-const int KeywordCount = 58;
+const int KeywordCount = 67;
 const std::unordered_map<std::string, TokenType> Keywords({
     { "true",       TOKEN_BOOL },
     { "false",      TOKEN_BOOL },
+
+    { "int",        TOKEN_TYPE_INT, },
+    { "bool",       TOKEN_TYPE_BOOL, },
+    { "char",       TOKEN_TYPE_CHAR, },
+    { "string",     TOKEN_TYPE_STRING, },
+    { "MEMPTR",     TOKEN_TYPE_MEMPTR, },
 
     { "cast(int)",  TOKEN_CAST },
     { "cast(bool)", TOKEN_CAST },
@@ -77,6 +83,11 @@ const std::unordered_map<std::string, TokenType> Keywords({
     { "while",      TOKEN_WHILE },
     { "do",         TOKEN_DO },
     { "endwhile",   TOKEN_ENDWHILE },
+
+    { "func",       TOKEN_FUNC },
+    { "define",     TOKEN_DEFINE },
+    { "-->",        TOKEN_FUNC_SEPERATOR },
+    { "endfunc",    TOKEN_ENDFUNC },
 });
 
 #endif

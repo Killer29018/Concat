@@ -17,6 +17,7 @@ public:
 private:
     static std::unordered_set<std::string> m_Macros;
     static std::unordered_set<std::string> m_Var;
+    static std::unordered_set<std::string> m_Func;
     static std::unordered_set<std::string> m_IncludedFiles;
     static bool m_Error;
 

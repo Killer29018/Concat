@@ -75,6 +75,10 @@ enum OpCodeEnum : uint16_t
     OP_DO,
     OP_ENDWHILE,
 
+    OP_FUNC,
+    OP_CALLFUNC,
+    OP_ENDFUNC,
+
     OP_COUNT
 };
 
@@ -146,6 +150,10 @@ const std::vector<const char*> OpCodeString
     "OP_WHILE",
     "OP_DO",
     "OP_ENDWHILE",
+
+    "OP_FUNC",
+    "OP_CALLFUNC",
+    "OP_ENDFUNC",
 };
 
 struct OpCode

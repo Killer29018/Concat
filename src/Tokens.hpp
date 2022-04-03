@@ -12,6 +12,12 @@ enum TokenType
     TOKEN_CHAR,
     TOKEN_STRING,
 
+    TOKEN_TYPE_INT,
+    TOKEN_TYPE_BOOL,
+    TOKEN_TYPE_CHAR,
+    TOKEN_TYPE_STRING,
+    TOKEN_TYPE_MEMPTR,
+
     TOKEN_CAST,
 
     TOKEN_ADD,
@@ -76,6 +82,12 @@ enum TokenType
     TOKEN_DO,
     TOKEN_ENDWHILE,
 
+    TOKEN_FUNC,
+    TOKEN_CALLFUNC,
+    TOKEN_DEFINE,
+    TOKEN_FUNC_SEPERATOR,
+    TOKEN_ENDFUNC,
+
     TOKEN_INCLUDE,
 
     TOKEN_COUNT
@@ -87,6 +99,12 @@ const std::vector<const char*> TokenString
     "TOKEN_BOOL",
     "TOKEN_CHAR",
     "TOKEN_STRING",
+
+    "TOKEN_TYPE_INT",
+    "TOKEN_TYPE_BOOL",
+    "TOKEN_TYPE_CHAR",
+    "TOKEN_TYPE_STRING",
+    "TOKEN_TYPE_MEMPTR",
 
     "TOKEN_CAST",
 
@@ -151,6 +169,12 @@ const std::vector<const char*> TokenString
     "TOKEN_WHILE",
     "TOKEN_DO",
     "TOKEN_ENDWHILE",
+
+    "TOKEN_FUNC",
+    "TOKEN_CALLFUNC",
+    "TOKEN_DEFINE",
+    "TOKEN_FUNC_SEPERATOR",
+    "TOKEN_ENDFUNC",
 
     "TOKEN_INCLUDE",
 };

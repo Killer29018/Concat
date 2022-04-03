@@ -15,6 +15,7 @@ std::vector<std::string> Lexer::filenames;
 
 std::unordered_set<std::string> Lexer::m_Macros;
 std::unordered_set<std::string> Lexer::m_Var;
+std::unordered_set<std::string> Lexer::m_Func;
 std::unordered_set<std::string> Lexer::m_IncludedFiles;
 bool Lexer::m_Error = false;
 
@@ -152,6 +153,10 @@ bool Lexer::getTokenType(Token& token)
     {
         token.type = TOKEN_MEM;
     }
+    else if (m_Func.find(word) != m_Func.end())
+    {
+        token.type = TOKEN_CALLFUNC;
+    }
     else
     {
         add = parseWord(token, word);
@@ -255,11 +260,9 @@ bool Lexer::parseWord(Token& token, const char* word)
             Compiler::popBackToken();
         }
 
-
         delete[] includeWord;
-
     }
-    else // Var, Macro
+    else // Var, Macro, Func
     {
         Token* top = Compiler::getTopToken();
         if (top->type == TOKEN_MACRO)
@@ -274,17 +277,16 @@ bool Lexer::parseWord(Token& token, const char* word)
             m_Var.emplace(word);
             Compiler::popBackToken();
         }
+        else if (top->type == TOKEN_FUNC)
+        {
+            token.type = TOKEN_FUNC;
+            m_Func.emplace(word);
+            Compiler::popBackToken();
+        }
         else
         {
-            if (m_Var.find(word) != m_Var.end())
-            {
-                token.type = TOKEN_MEM;
-            }
-            else
-            {
-                Error::compilerError(token, "Unknown word %.*s", length, token.startIndex);
-                m_Error = true;
-            }
+            Error::compilerError(token, "Unknown word %.*s", length, token.startIndex);
+            m_Error = true;
         }
     }
 

@@ -10,7 +10,8 @@
 
 std::vector<Token> Compiler::m_Tokens;
 std::unordered_map<std::string, std::vector<Token>> Compiler::m_Macros {};
-std::set<std::string> Compiler::m_Variables;
+std::unordered_set<std::string> Compiler::m_Variables;
+std::unordered_map<std::string, uint32_t> Compiler::m_Functions;
 bool Compiler::m_Error = false;
 size_t Compiler::m_Ip = 0;
 
@@ -367,7 +368,7 @@ void Compiler::startCompiler()
             case TOKEN_THEN:
                 {
                     size_t ipOffset = 0;
-                    size_t ifCount = 0;
+                    uint32_t ifCount = 0;
 
                     // INFO: Check for correspoding if or elseif
                     while ((ip - ipOffset) > 0)
@@ -438,7 +439,7 @@ void Compiler::startCompiler()
             case TOKEN_ELSEIF: 
                {
                     size_t ipOffset = 0;
-                    size_t ifCount = 0;
+                    uint32_t ifCount = 0;
 
                     // INFO: Check for correspoding if
                     while ((ip - ipOffset) > 0)
@@ -511,7 +512,7 @@ void Compiler::startCompiler()
             case TOKEN_ELSE:
                {
                    size_t ipOffset = 0;
-                   size_t ifCount = 0;
+                   uint32_t ifCount = 0;
 
                    // INFO: Check for correspoding if
                    while ((ip - ipOffset) > 0)
@@ -555,7 +556,7 @@ void Compiler::startCompiler()
             case TOKEN_DO:
                 {
                     size_t ipOffset = 0;
-                    size_t whileCount = 0;
+                    uint32_t whileCount = 0;
 
                     while ((ip - ipOffset) > 0)
                     {
@@ -624,8 +625,8 @@ void Compiler::startCompiler()
                 }
             case TOKEN_ENDWHILE:;
                 {
-                    int32_t ipOffset = 0;
-                    size_t endwhileCount = 0;
+                    size_t ipOffset = 0;
+                    uint32_t endwhileCount = 0;
 
                     while (true)
                     {
@@ -661,6 +662,93 @@ void Compiler::startCompiler()
                     ip++;
                     break;
                 }
+
+            case TOKEN_FUNC:
+                {
+                    int32_t ipOffset = 0;
+                    bool inputs = true;
+                    std::vector<ValueType> inputTypes;
+                    std::vector<ValueType> outputTypes;
+
+                    bool run = true;
+
+                    while (run)
+                    {
+                        ipOffset++;
+
+                        Token& token = m_Tokens.at(ip + ipOffset);
+
+                        switch (token.type)
+                        {
+                        case TOKEN_DEFINE:
+                            run = false;
+                            break;
+
+                        case (TOKEN_ENDFUNC):
+                            Error::compilerError(t, "Unexpected endfunc, Expected define before");
+                            exit(-1);
+                        case TOKEN_FUNC:
+                            Error::compilerError(t, "Func can not be defined within another func");
+                            exit(-1);
+
+                        case TOKEN_TYPE_INT:
+                        case TOKEN_TYPE_BOOL:
+                        case TOKEN_TYPE_CHAR:
+                        case TOKEN_TYPE_STRING:
+                        case TOKEN_TYPE_MEMPTR:
+                            {
+                                uint16_t tokenType = TYPE_INT + (token.type - TOKEN_TYPE_INT);
+
+                                if (inputs)
+                                    inputTypes.emplace_back((ValueType)tokenType);
+                                else
+                                    outputTypes.emplace_back((ValueType)tokenType);
+
+                                break;
+                            }
+
+                        case TOKEN_FUNC_SEPERATOR:
+                            {
+                                inputs = false;
+                                break;
+                            }
+
+                        default:
+                            Error::compilerError(t, "Unexpected token when defining func");
+                            exit(-1);
+                        }
+
+                    }
+
+                    code.code = OP_FUNC;
+                    uint32_t offset = VM::addFunction();
+                    code.value = makeSmartPointer<vFunc>(inputTypes, outputTypes, offset);
+                    VM::addOpCode(code);
+
+                    m_Functions[stringWord] = offset;
+
+                    ip += ipOffset + 1;
+                    break;
+                }
+
+            case TOKEN_ENDFUNC:
+                {
+                    code.code = OP_ENDFUNC;
+                    VM::addOpCode(code);
+
+                    ip++;
+                    break;
+                }
+            case TOKEN_CALLFUNC:
+                {
+                    code.code = OP_CALLFUNC;
+                    code.value = makeSmartPointer<vFunc>(m_Functions[stringWord]);
+                    VM::addOpCode(code);
+
+                    ip++;
+                    break;
+                }
+
             case TOKEN_INCLUDE:
                 {
                     ip++;

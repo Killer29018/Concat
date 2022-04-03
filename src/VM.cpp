@@ -15,8 +15,12 @@
 
 std::vector<OpCode> VM::m_OpCodes;
 std::stack<SmartPointer> VM::m_Stack;
+std::stack<size_t> VM::m_ReturnStack;
+
 std::vector<uint8_t> VM::m_Memory;
 std::unordered_map<uint32_t, size_t> VM::m_MemoryNames;
+std::vector<size_t> VM::m_Functions;
+
 int32_t VM::m_CurrentVarIndex = -1;
 
 constexpr int STRINGPADDING = 20;
@@ -48,6 +52,14 @@ uint32_t VM::addMemory(uint32_t bytes)
     for (uint32_t i = 0; i < bytes; i++)
         m_Memory.push_back(0);
     return p;
+}
+
+uint32_t VM::addFunction()
+{
+    uint32_t index = (uint32_t)m_Functions.size();
+    m_Functions.push_back(0);
+
+    return index;
 }
 
 void VM::printOpCodes()
@@ -625,6 +637,32 @@ void VM::simulate()
                 break;
             }
 
+        case OP_FUNC:
+            {
+                m_Functions[as_vFunc(op.value)->funcIndex] = ip + 1;
+
+                while (m_OpCodes[ip].code != OP_ENDFUNC) { ip++; }
+
+                ip++;
+                break;
+            }
+        case OP_CALLFUNC:
+            {
+                m_ReturnStack.push(ip);
+
+                ip = m_Functions[as_vFunc(op.value)->funcIndex];
+
+                break;
+            }
+        case OP_ENDFUNC:
+            {
+                ip = m_ReturnStack.top();
+                m_ReturnStack.pop();
+
+                ip++;
+                break;
+            }
+
         default:
             Error::runtimeError(op, "Opcode not supported %s", OpCodeString[op.code]);
             assert(false && "Unreachable"); // UNREACHABLE
@@ -657,9 +695,21 @@ void VM::printValueDebug(size_t index)
     case TYPE_MEM_PTR:
         printf("%.4lu | %-*s | %d\n", index, STRINGPADDING, OpCodeString[code.code], get_vMemPtr(code.value));
         break;
+
     case TYPE_IP_OFFSET:
         printf("%.4lu | %-*s | %d\n", index, STRINGPADDING, OpCodeString[code.code], get_vIpOffset(code.value));
         break;
+    case TYPE_FUNC:
+        {
+            vFunc* f = as_vFunc(code.value);
+            printf("%.4lu | %-*s | %d\n", index, STRINGPADDING, OpCodeString[code.code], f->funcIndex);
+            printf("%*s | Inputs: ",  7 + STRINGPADDING, " ");
+            for (size_t i = 0; i < f->inputs.size(); i++) printf("%s ", ValueTypeString[f->inputs[i]]);
+            printf("\n%*s | Outputs: ", 7 + STRINGPADDING, " ");
+            for (size_t i = 0; i < f->outputs.size(); i++) printf("%s ", ValueTypeString[f->outputs[i]]);
+            printf("\n");
+            break;
+        }
     break;
     default:
         assert(false && "Unreachable"); // UNREACHABLE
