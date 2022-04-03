@@ -39,6 +39,9 @@ private:
     static void addString(char* buffer, size_t& index, const SmartPointer& value);
     static void readString(char* buffer, char** value, size_t bufferSize);
 
+    static void addFunc(char* buffer, size_t& index, const SmartPointer& value);
+    static void readFunc(char* buffer, OpCode& code, size_t bufferSize);
+
     template<typename T>
     static void addElement(char* output, size_t& index, T value, size_t size)
     {

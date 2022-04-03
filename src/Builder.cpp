@@ -180,6 +180,18 @@ void Builder::readOpCode(char* buffer, OpCode& op, std::ifstream& file)
 
         size = length;
     }
+    else if (type == TYPE_FUNC)
+    {
+        value = (char*)realloc(value, size_tSize * sizeof(char));
+        file.read(value, size_tSize);
+
+        size_t totalLength;
+        readElement(value, totalLength, size_tSize);
+        totalLength = (totalLength * enumSize);
+        totalLength += (size_tSize * 3);
+
+        size = totalLength;
+    }
     else
     {
         size = sizeof(char) * getValueSize(type);
@@ -212,6 +224,13 @@ size_t Builder::getValueSize(const SmartPointer& value)
             size += sizeof(uint32_t); break;
         case TYPE_IP_OFFSET:
             size += sizeof(int32_t); break;
+        case TYPE_FUNC:
+            {
+                vFunc* func = as_vFunc(value);
+                size += sizeof(uint32_t) + (size_tSize * 3) + (func->inputs.size() * enumSize)
+                        + (func->outputs.size() * enumSize);
+                break;
+            }
 
         default:
             assert(false && "Unreachable");
@@ -274,6 +293,9 @@ void Builder::addValue(char* buffer, const SmartPointer& value, size_t& index)
     case TYPE_IP_OFFSET:
         addElement(buffer, index, get_vIpOffset(value), sizeof(get_vIpOffset(value)));
         break;
+    case TYPE_FUNC:
+        addFunc(buffer, index, value);
+        break;
 
     default:
         assert(false && "Unreachable");
@@ -328,6 +350,11 @@ void Builder::readValue(char* buffer, ValueType type, OpCode& op, size_t bufferS
             op.value = makeSmartPointer<vIpOffset>(value);
             break;
         }
+    case TYPE_FUNC:
+        {
+            readFunc(buffer, op, bufferSize);
+            break;
+        }
 
     default:
         assert(false && "Unreachable");
@@ -351,6 +378,54 @@ void Builder::readString(char* buffer, char** value, size_t bufferSize)
 
     strncpy(*value, buffer, bufferSize);
     (*(value))[bufferSize] = 0x00;
-
 }
 
+void Builder::addFunc(char* buffer, size_t& index, const SmartPointer& value)
+{
+    vFunc* func = as_vFunc(value);
+
+    size_t inputsSize = func->inputs.size();
+    size_t outputsSize = func->outputs.size();
+    size_t totalSize = inputsSize + outputsSize;
+
+    addElement(buffer, index, totalSize, size_tSize);
+
+    addElement(buffer, index, func->funcIndex, size_tSize);
+
+    addElement(buffer, index, inputsSize, size_tSize);
+    for (size_t i = 0; i < inputsSize; i++) { addElement(buffer, index, (int)func->inputs[i], enumSize); }
+
+    addElement(buffer, index, outputsSize, size_tSize);
+    for (size_t i = 0; i < outputsSize; i++) { addElement(buffer, index, (int)func->outputs[i], enumSize); }
+}
+
+void Builder::readFunc(char* buffer, OpCode& code, size_t bufferSize)
+{
+    size_t funcIndex, inputsSize, outputsSize;
+    enumType type;
+    size_t index = 0;
+
+    readElement(buffer, index, funcIndex, size_tSize);
+
+    readElement(buffer, index, inputsSize, size_tSize);
+
+    code.value = makeSmartPointer<vFunc>(funcIndex);
+
+    vFunc* func = as_vFunc(code.value);
+
+    for (size_t i = 0; i < inputsSize; i++)
+    {
+        readElement(buffer, index, type, enumSize);
+        func->inputs.push_back((ValueType)type);
+    }
+
+    readElement(buffer, index, outputsSize, size_tSize);
+    for (size_t i = 0; i < outputsSize; i++)
+    {
+        readElement(buffer, index, type, enumSize);
+        func->outputs.push_back((ValueType)type);
+    }
+
+    if (funcIndex != VM::addFunction())
+        assert(false && "Something has gone wrong");
+}
