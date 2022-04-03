@@ -693,6 +693,24 @@ void VM::simulate()
                 if (count + func->outputs.size() != m_Stack.size())
                     Error::runtimeError(op, "Unexpected data on the stack. Expected %zu elements but found %zu instead", count + func->outputs.size(), m_Stack.size());
 
+                std::vector<SmartPointer> values;
+                
+                size_t outputsSize = func->outputs.size();
+                for (size_t i = 0; i < outputsSize; i++)
+                {
+                    values.push_back(m_Stack.top());
+
+                    if (m_Stack.top()->type != func->outputs[outputsSize - i - 1])
+                        Error::runtimeError(op, "Expected %s for element %zu but found %s instead", ValueTypeString[func->outputs[outputsSize - i - 1]], i, ValueTypeString[m_Stack.top()->type]);
+
+                    m_Stack.pop();
+                }
+
+                for (size_t i = values.size(); i != 0; i--)
+                {
+                    m_Stack.push(values[i - 1]);
+                }
+
                 ip++;
                 break;
             }

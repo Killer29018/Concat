@@ -4,13 +4,13 @@ n1 1 !
 
 macro times 46 endmacro
 
-macro printValue // index value -- index
+func printValue int int --> int define // index value -- index
     // 'index : value'
     over 1 +
     print
     " : " print
     print cr
-endmacro
+endfunc
 
 times
 0 while over over swap < do

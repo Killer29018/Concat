@@ -4,7 +4,7 @@ macro KEY 110 endmacro
 mem board SIZE endmem
 mem left 1 endmem
 
-macro printArray // -> 
+func printArray --> define
     0 while dup SIZE < do
         dup board swap + @8
         if 0 == then
@@ -16,13 +16,14 @@ macro printArray // ->
     endwhile
     drop
     "\n" print
-endmacro
+endfunc
 
-macro getValue // InitialPtr -> value
+func getValue memptr --> int define // InitialPtr -> value
+    // (((([memptr] & 1) << 1) | (([left] & 1) << 2)) | (([memptr] & 1) << 0))
     left @8 1 land 2 <<
     swap dup @8 1 land 1 << rot lor
     swap 1 + @8 1 land 0 << lor
-endmacro 
+endfunc
 
 board SIZE 2 - + 1 !8 // Setup board
 

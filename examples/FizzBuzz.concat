@@ -3,20 +3,20 @@
 */
 macro space ' ' print endmacro
 
-macro fizz 
+func fizz int --> bool define
     if 3 mod 0 == dup then
         "FIZZ" print
     endif
-endmacro
+endfunc
 
-macro buzz
+func buzz int --> bool define
     if 5 mod 0 == dup then
         "BUZZ" print
     endif
-endmacro
+endfunc
 
 
-macro fizzbuzz
+func fizzbuzz --> define
     1 while dup 200 < do
         dup
         dup fizz
@@ -24,12 +24,14 @@ macro fizzbuzz
 
         if 0 == swap 0 == and then
             print
+        else
+            drop
         endif
 
         cr
 
         1 +
-    endwhile
-endmacro
+    endwhile drop
+endfunc
 
 fizzbuzz

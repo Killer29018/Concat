@@ -12,7 +12,7 @@ const std::unordered_map<std::string, TokenType> Keywords({
     { "bool",       TOKEN_TYPE_BOOL, },
     { "char",       TOKEN_TYPE_CHAR, },
     { "string",     TOKEN_TYPE_STRING, },
-    { "MEMPTR",     TOKEN_TYPE_MEMPTR, },
+    { "memptr",     TOKEN_TYPE_MEMPTR, },
 
     { "cast(int)",  TOKEN_CAST },
     { "cast(bool)", TOKEN_CAST },
