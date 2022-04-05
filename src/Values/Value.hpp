@@ -30,6 +30,7 @@ enum ValueType : uint16_t
 
     TYPE_IP_OFFSET,
     TYPE_FUNC,
+    TYPE_VAR,
 
     TYPE_COUNT
 };
@@ -45,6 +46,7 @@ const std::vector<const char*> ValueTypeString
 
     "IP_OFFSET",
     "FUNC",
+    "VAR",
 };
 
 struct Value
@@ -95,6 +97,7 @@ struct vInt : Value
 {
     int32_t v;
 
+    vInt() : Value(TYPE_INT), v(0) {}
     vInt(int32_t value) : Value(TYPE_INT), v(value) {}
 
     void print(const OpCode& op) const override;
@@ -127,6 +130,7 @@ struct vBool : Value
 {
     bool v;
 
+    vBool() : Value(TYPE_BOOL), v(false) {}
     vBool(bool value) : Value(TYPE_BOOL), v(value) {}
 
     void print(const OpCode& op) const override;
@@ -148,6 +152,7 @@ struct vChar : Value
 {
     char v;
 
+    vChar() : Value(TYPE_CHAR), v(0) {}
     vChar(char value) : Value(TYPE_CHAR), v(value) {}
 
     void print(const OpCode& op) const override;
@@ -168,6 +173,8 @@ struct vChar : Value
 struct vString : Value
 {
     char* v;
+
+    vString() : Value(TYPE_STRING), v(nullptr) {}
     vString(char* value) : Value(TYPE_STRING), v(value) {}
     ~vString() { }
 
@@ -188,6 +195,7 @@ struct vMemPtr : Value
 {
     uint32_t v;
 
+    vMemPtr() : Value(TYPE_MEM_PTR), v(0) {}
     vMemPtr(uint32_t value) : Value(TYPE_MEM_PTR), v(value) {}
 
     void print(const OpCode& op) const override;
@@ -227,7 +235,18 @@ struct vFunc : Value
 };
 #define as_vFunc(val)   ((vFunc*)(val.get()))
 
+struct vVar : Value
+{
+    uint32_t varIndex;
+
+    vVar(uint32_t varIndex) : Value(TYPE_VAR), varIndex(varIndex) {}
+};
+#define as_vVar(val)   ((vVar*)(val.get()))
+
+
 void runOperation(const SmartPointer& a, SmartPointer& rV, const OpCode& op);
 void runOperation(const SmartPointer& a, const SmartPointer& b, SmartPointer& rV, const OpCode& op);
+
+Value* createValue(ValueType type);
 
 #endif

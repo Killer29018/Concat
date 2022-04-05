@@ -20,6 +20,7 @@ std::stack<vFunc*> VM::m_ReturnFuncStack;
 
 std::vector<uint8_t> VM::m_Memory;
 std::unordered_map<uint32_t, size_t> VM::m_MemoryNames;
+std::vector<SmartPointer> VM::m_Variables;
 std::vector<size_t> VM::m_Functions;
 std::unordered_map<size_t, SmartPointer> VM::m_FunctionDefinitions;
 
@@ -60,6 +61,15 @@ uint32_t VM::addFunction()
 {
     uint32_t index = (uint32_t)m_Functions.size();
     m_Functions.push_back(0);
+
+    return index;
+}
+
+uint32_t VM::addVariable(SmartPointer value)
+{
+    uint32_t index = (uint32_t)m_Variables.size();
+
+    m_Variables.push_back(value);
 
     return index;
 }
@@ -416,6 +426,17 @@ void VM::simulate()
                 break;
             }
 
+        case OP_VAR:
+            {
+                vVar* var = as_vVar(op.value);
+                const SmartPointer& a = m_Variables[var->varIndex];
+
+                m_Stack.push(a);
+
+                ip++;
+                break;
+            }
+
         case OP_IF:
             ip++;
             break;
@@ -762,7 +783,10 @@ void VM::printValueDebug(size_t index)
             printf("\n");
             break;
         }
-    break;
+    case TYPE_VAR:
+        printf("%.4lu | %-*s | %d\n", index, STRINGPADDING, OpCodeString[code.code], as_vVar(code.value)->varIndex);
+        break;
+
     default:
         assert(false && "Unreachable"); // UNREACHABLE
     }

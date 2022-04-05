@@ -50,6 +50,26 @@ void runOperation(const SmartPointer& a, const SmartPointer& b, SmartPointer& rV
     }
 }
 
+Value* createValue(ValueType type)
+{
+    switch (type)
+    {
+    case TYPE_INT:
+        return new vInt();
+    case TYPE_BOOL:
+        return new vBool();
+    case TYPE_CHAR:
+        return new vChar();
+    case TYPE_STRING:
+        return new vString();
+    case TYPE_MEM_PTR:
+        return new vMemPtr();
+
+    default:
+        assert(false && "Not reachable");
+    }
+}
+
 void Value::print(const OpCode& op) const
 {
     Error::operationError(op, "Print", type);

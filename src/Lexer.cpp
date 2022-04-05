@@ -14,6 +14,7 @@
 std::vector<std::string> Lexer::filenames;
 
 std::unordered_set<std::string> Lexer::m_Macros;
+std::unordered_set<std::string> Lexer::m_Mem;
 std::unordered_set<std::string> Lexer::m_Var;
 std::unordered_set<std::string> Lexer::m_Func;
 std::unordered_set<std::string> Lexer::m_IncludedFiles;
@@ -149,9 +150,13 @@ bool Lexer::getTokenType(Token& token)
     {
         token.type = TOKEN_MACRO;
     }
-    else if (m_Var.find(word) != m_Var.end())
+    else if (m_Mem.find(word) != m_Mem.end())
     {
         token.type = TOKEN_MEM;
+    }
+    else if (m_Var.find(word) != m_Var.end())
+    {
+        token.type = TOKEN_VAR;
     }
     else if (m_Func.find(word) != m_Func.end())
     {
@@ -262,7 +267,7 @@ bool Lexer::parseWord(Token& token, const char* word)
 
         delete[] includeWord;
     }
-    else // Var, Macro, Func
+    else // Mem, Var, Macro, Func
     {
         Token* top = Compiler::getTopToken();
         if (top->type == TOKEN_MACRO)
@@ -274,6 +279,12 @@ bool Lexer::parseWord(Token& token, const char* word)
         else if (top->type == TOKEN_MEM)
         {
             token.type = TOKEN_MEM;
+            m_Mem.emplace(word);
+            Compiler::popBackToken();
+        }
+        else if (top->type == TOKEN_CREATE_VAR)
+        {
+            token.type = TOKEN_CREATE_VAR;
             m_Var.emplace(word);
             Compiler::popBackToken();
         }

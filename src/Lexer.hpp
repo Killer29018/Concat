@@ -16,6 +16,7 @@ public:
     static std::vector<std::string> filenames;
 private:
     static std::unordered_set<std::string> m_Macros;
+    static std::unordered_set<std::string> m_Mem;
     static std::unordered_set<std::string> m_Var;
     static std::unordered_set<std::string> m_Func;
     static std::unordered_set<std::string> m_IncludedFiles;

@@ -18,6 +18,7 @@ private:
 
     static std::vector<uint8_t> m_Memory;
     static std::unordered_map<uint32_t, size_t> m_MemoryNames;
+    static std::vector<SmartPointer> m_Variables;
     static std::vector<size_t> m_Functions;
     static std::unordered_map<size_t, SmartPointer> m_FunctionDefinitions;
 
@@ -28,6 +29,7 @@ public:
     static void pushInt(int32_t value);
     static uint32_t addMemory(uint32_t bytes);
     static uint32_t addFunction();
+    static uint32_t addVariable(SmartPointer value);
 
     static size_t getMemorySize() { return m_Memory.size(); }
 

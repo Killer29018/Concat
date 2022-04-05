@@ -13,7 +13,6 @@ highlight link concat_Identifier Identifier
 syntax keyword concat_Keyword dup drop swap over rot mod
 syntax keyword concat_Keyword print cr 
 syntax keyword concat_Keyword and or invert land lor lnot << >>
-syntax keyword concat_Keyword true false
 syntax keyword concat_Keyword cast(int) cast(bool) cast(char) cast(string)
 syntax keyword concat_Keyword include
 syntax keyword concat_Keyword int bool char string memptr
@@ -23,6 +22,9 @@ highlight link concat_Keyword Keyword
 syntax keyword concat_Function func define endfunc
 highlight link concat_Function Function
 
+syntax keyword concat_Indentifier var endvar
+highlight link concat_Identifier Identifier
+
 syntax keyword concat_Conditional if then elseif else endif
 highlight link concat_Conditional Conditional
 
@@ -31,6 +33,7 @@ highlight link concat_Repeat Repeat
 
 syntax region concat_Constants start=/^\d/ end=/\v(\ze\s|$)/
 syntax region concat_Constants start=/ \d/ end=/\v(\ze\s|$)/
+syntax keyword concat_Constants true false
 highlight link concat_Constants Constant
 
 syntax match concat_Operator "\v\*"     " *

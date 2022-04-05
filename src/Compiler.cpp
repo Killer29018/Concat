@@ -10,7 +10,8 @@
 
 std::vector<Token> Compiler::m_Tokens;
 std::unordered_map<std::string, std::vector<Token>> Compiler::m_Macros {};
-std::set<std::string> Compiler::m_Variables;
+std::set<std::string> Compiler::m_Memory;
+std::unordered_map<std::string, uint32_t> Compiler::m_Variables;
 std::unordered_map<std::string, uint32_t> Compiler::m_Functions;
 bool Compiler::m_Error = false;
 size_t Compiler::m_Ip = 0;
@@ -225,9 +226,9 @@ void Compiler::startCompiler()
 
             case TOKEN_MEM:
                 {
-                    if (m_Variables.find(word) != m_Variables.end())
+                    if (m_Memory.find(word) != m_Memory.end())
                     {
-                        size_t index = std::distance(m_Variables.begin(), m_Variables.find(word));
+                        size_t index = std::distance(m_Memory.begin(), m_Memory.find(word));
                         // addBasicOpCode(code, ip, OP_LOAD_VAR);
                         code.code = OP_LOAD_MEM;
                         code.value = makeSmartPointer<vMemPtr>(index);
@@ -258,8 +259,8 @@ void Compiler::startCompiler()
 
                             if (m_Tokens.at(ip + ipOffset).type == TOKEN_ENDMEM)
                             {
-                                m_Variables.emplace(word);
-                                size_t index = std::distance(m_Variables.begin(), m_Variables.find(word));
+                                m_Memory.emplace(word);
+                                size_t index = std::distance(m_Memory.begin(), m_Memory.find(word));
                                 // addBasicOpCode(code, ip, OP_LOAD_VAR);
                                 code.code = OP_CREATE_MEM;
                                 code.value = makeSmartPointer<vMemPtr>(index);
@@ -309,6 +310,55 @@ void Compiler::startCompiler()
                     ip++;
                     code.code = OP_ENDMEM;
                     VM::addOpCode(code);
+                    break;
+                }
+
+            case TOKEN_CREATE_VAR:
+                {
+                    if (ip == m_Tokens.size() - 1)
+                    {
+                        Error::compilerError(t, "Expected type but found EOF instead");
+                        m_Error = true;
+                    }
+
+                    Token* nextToken = &m_Tokens.at(ip + 1);
+
+                    if (!isTokenType(nextToken->type))
+                    {
+                        Error::compilerError(t, "Unexpected token, Expected TYPE but found %s instead", TokenString[nextToken->type]);
+                        m_Error = true;
+
+                        ip++;
+                        break;
+                    }
+
+                    ValueType type = convertTokenToValue(nextToken->type);
+
+                    Value* v = createValue(type);
+                    uint32_t position = VM::addVariable(SmartPointer(v));
+
+                    m_Variables[stringWord] = position;
+
+                    ip += 2;
+                    break;
+                }
+            case TOKEN_VAR:
+                {
+                    auto position = m_Variables.find(stringWord);
+                    if (position == m_Variables.end())
+                    {
+                        Error::compilerError(t, "Could not find variable %s", word);
+                        m_Error = true;
+
+                        ip++;
+                        break;
+                    }
+
+                    code.code = OP_VAR;
+                    code.value = makeSmartPointer<vVar>(position->second);
+                    VM::addOpCode(code);
+
+                    ip++;
                     break;
                 }
 
@@ -691,22 +741,6 @@ void Compiler::startCompiler()
                             Error::compilerError(t, "Func can not be defined within another func");
                             exit(-1);
 
-                        case TOKEN_TYPE_INT:
-                        case TOKEN_TYPE_BOOL:
-                        case TOKEN_TYPE_CHAR:
-                        case TOKEN_TYPE_STRING:
-                        case TOKEN_TYPE_MEMPTR:
-                            {
-                                uint16_t tokenType = TYPE_INT + (token.type - TOKEN_TYPE_INT);
-
-                                if (inputs)
-                                    inputTypes.emplace_back((ValueType)tokenType);
-                                else
-                                    outputTypes.emplace_back((ValueType)tokenType);
-
-                                break;
-                            }
-
                         case TOKEN_FUNC_SEPERATOR:
                             {
                                 inputs = false;
@@ -714,8 +748,21 @@ void Compiler::startCompiler()
                             }
 
                         default:
-                            Error::compilerError(t, "Unexpected token when defining func");
-                            exit(-1);
+                            {
+                                if (isTokenType(token.type))
+                                {
+                                    ValueType type = convertTokenToValue(token.type);
+
+                                    if (inputs)
+                                        inputTypes.emplace_back(type);
+                                    else
+                                        outputTypes.emplace_back(type);
+
+                                    break;
+                                }
+                                Error::compilerError(t, "Unexpected token when defining func");
+                                exit(-1);
+                            }
                         }
 
                     }
@@ -756,7 +803,17 @@ void Compiler::startCompiler()
                 }
 
             default:
-                assert(false && "Unreachable"); // UNREACHABLE
+                {
+                    if (isTokenType(t.type))
+                    {
+                        Error::compilerError(t, "Unexpected type");
+                        exit(-1);
+                    }
+                    else
+                    {
+                        assert(false && "Unreachable"); // UNREACHABLE
+                    }
+                }
         }
 
         delete[] word;
@@ -807,4 +864,26 @@ char Compiler::parseEscapeCharacter(const char* word)
     }
 
     return result[0];
+}
+
+ValueType Compiler::convertTokenToValue(TokenType type)
+{
+    // INFO: Only works if sequences are the same within both Tokens and Opcodes
+    return (ValueType)(TYPE_INT + (type - TOKEN_TYPE_INT));
+}
+
+bool Compiler::isTokenType(TokenType type)
+{
+    switch (type)
+    {
+    case TOKEN_TYPE_INT:
+    case TOKEN_TYPE_BOOL:
+    case TOKEN_TYPE_CHAR:
+    case TOKEN_TYPE_STRING:
+    case TOKEN_TYPE_MEMPTR:
+        return true;
+
+    default:
+        return false;
+    }
 }

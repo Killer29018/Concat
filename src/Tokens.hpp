@@ -69,6 +69,9 @@ enum TokenType
     TOKEN_MEM,
     TOKEN_ENDMEM,
 
+    TOKEN_CREATE_VAR,
+    TOKEN_VAR,
+
     TOKEN_MACRO,
     TOKEN_ENDMACRO,
 
@@ -156,6 +159,9 @@ const std::vector<const char*> TokenString
 
     "TOKEN_MEM",
     "TOKEN_ENDMEM",
+
+    "TOKEN_CREATE_VAR",
+    "TOKEN_VAR",
 
     "TOKEN_MACRO",
     "TOKEN_ENDMACRO",
