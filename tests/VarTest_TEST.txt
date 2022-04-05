@@ -1,0 +1,19 @@
+--------------------------------------------------
+VarTest.concat
+--stdout--
+10
+Hello World
+
+--stderr--
+
+--build run stdout--
+
+--build run stderr--
+concat: /home/aaron/Files/Projects/Concat/src/Builder.cpp:236: static size_t Builder::getValueSize(const SmartPointer&): Assertion `false && "Unreachable"' failed.
+
+--build stdout--
+
+--build stderr--
+
+--------------------------------------------------
+

@@ -176,19 +176,27 @@ void VM::simulate()
                     Error::stackTooSmallError(op, 2);
 
                 const SmartPointer& value = pop();
-                const SmartPointer& address = pop();
+                const SmartPointer& address = popDirect();
 
-                if (address->type != TYPE_MEM_PTR)
+                if (address->type == TYPE_VAR)
                 {
-                    Error::runtimeError(op, "Invalid Type. %s was expected but found %s instead", ValueTypeString[TYPE_MEM_PTR], ValueTypeString[address->type]);
+                    writeMemoryVar(address, value, op);
+                }
+                else
+                {
+                    if (address->type != TYPE_MEM_PTR)
+                    {
+                        Error::runtimeError(op, "Invalid Type. %s was expected but found %s instead", ValueTypeString[TYPE_MEM_PTR], ValueTypeString[address->type]);
+                    }
+
+                    if (value->type != TYPE_INT)
+                    {
+                        Error::runtimeError(op, "Invalid Type. %s was expected but found %s instead", ValueTypeString[TYPE_INT], ValueTypeString[value->type]);
+                    }
+
+                    writeMemory(address, value, 4);
                 }
 
-                if (value->type != TYPE_INT)
-                {
-                    Error::runtimeError(op, "Invalid Type. %s was expected but found %s instead", ValueTypeString[TYPE_INT], ValueTypeString[value->type]);
-                }
-
-                writeMemory(address, value, 4);
                 ip++;
                 break;
             }
@@ -428,10 +436,7 @@ void VM::simulate()
 
         case OP_VAR:
             {
-                vVar* var = as_vVar(op.value);
-                const SmartPointer& a = m_Variables[var->varIndex];
-
-                m_Stack.push(a);
+                m_Stack.push(op.value);
 
                 ip++;
                 break;
@@ -844,6 +849,32 @@ void VM::writeMemory(const SmartPointer& address, const SmartPointer& value, siz
     }
 }
 
+void VM::writeMemoryVar(const SmartPointer& address, const SmartPointer& value, const OpCode& op)
+{
+    vVar* var = as_vVar(address);
+    SmartPointer& variable = m_Variables[var->varIndex];
+
+    OpCode tempOp = op;
+    tempOp.value = variable;
+
+    if (variable->type != value->type)
+    {
+        SmartPointer rV;
+        if (value->tryCast(rV, tempOp))
+        {
+            m_Variables[var->varIndex] = rV;
+        }
+        else
+        {
+            Error::runtimeError(op, "Unable to write %s into variable", ValueTypeString[value->type]);
+        }
+    }
+    else
+    {
+        m_Variables[var->varIndex] = value;
+    }
+}
+
 void VM::inplaceMemOperation(const OpCode& op)
 {
     if (m_Stack.size() < 2)
@@ -912,3 +943,25 @@ void VM::inplaceMemOperation(const OpCode& op)
 
     writeMemory(address, rV, size);
 }
+
+const SmartPointer VM::pop() 
+{ 
+    SmartPointer v = m_Stack.top(); 
+    m_Stack.pop(); 
+
+    if (v->type == TYPE_VAR)
+    {
+        v = m_Variables[as_vVar(v)->varIndex];
+    }
+
+    return v; 
+}
+
+const SmartPointer VM::popDirect() 
+{ 
+    const SmartPointer v = m_Stack.top(); 
+    m_Stack.pop(); 
+
+    return v; 
+}
+

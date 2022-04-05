@@ -67,6 +67,7 @@ public:
     virtual void dot(const OpCode& op) const;
 
     virtual void cast(SmartPointer& rV, const OpCode& op) const;
+    virtual bool tryCast(SmartPointer& rV, const OpCode& op) const;
 
     virtual void add(const SmartPointer& v2, SmartPointer& rV, const OpCode& op) const;
     virtual void subtract(const SmartPointer& v2, SmartPointer& rV, const OpCode& op) const;

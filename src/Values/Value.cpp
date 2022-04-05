@@ -85,6 +85,19 @@ void Value::cast(SmartPointer& rV, const OpCode& op) const
 {
     Error::castError(op, type);
 }
+
+bool Value::tryCast(SmartPointer& rV, const OpCode& op) const
+{
+    try
+    {
+        cast(rV, op);
+        return true;
+    }
+    catch (std::exception& e)
+    {
+        return false;
+    }
+}
  
 
 void Value::add(const SmartPointer& v2, SmartPointer& rV, const OpCode& op) const

@@ -49,9 +49,12 @@ private:
     static const SmartPointer loadMemory(const SmartPointer& address, size_t bytes);
     static void writeMemory(const SmartPointer& address, const SmartPointer& value, size_t bytes);
 
+    static void writeMemoryVar(const SmartPointer& address, const SmartPointer& value, const OpCode& op);
+
     static void inplaceMemOperation(const OpCode& op);
 
-    static const SmartPointer pop() { const SmartPointer v = m_Stack.top(); m_Stack.pop(); return v; }
+    static const SmartPointer pop();
+    static const SmartPointer popDirect();
 };
 
 #endif

@@ -1,8 +1,8 @@
 var var1 string
 var var2 int
 
-// "Hello World" var1 !
-// 10 var2 !
+var1 "Hello World" !
+var2 10 !
 
 var2 print cr
 var1 print cr
