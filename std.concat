@@ -5,10 +5,10 @@ endmacro
 macro StringSize // string -- size
     // (string + 1) (count + 1)
     0
-    over cast(int) while 0 != do
+    over @8 cast(int) while 0 != do
         swap 1 +
         swap 1 +
-        over cast(int)
+        over @8 cast(int)
     endwhile
     swap drop
 endmacro
@@ -23,7 +23,7 @@ macro CompareString // string string -- bool
     else
         // string1 string2 char1 char2 ((char1 + char2) == 0)
         while 
-            over cast(int) over cast(int) over over + 0 != 
+            over @8 cast(int) over @8 cast(int) over over + 0 != 
             // string1 string2 ((char1 + char2) == 0) char2 char1
             rot2 == ==
             do
@@ -34,6 +34,6 @@ macro CompareString // string string -- bool
         endwhile
         // over over print print cr
 
-        over cast(int) over cast(int) == rot2 drop drop
+        over @8 cast(int) over @8 cast(int) == rot2 drop drop
     endif
 endmacro

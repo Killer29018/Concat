@@ -175,7 +175,7 @@ void VM::simulate()
                 if (m_Stack.size() < 2)
                     Error::stackTooSmallError(op, 2);
 
-                const SmartPointer& value = pop();
+                const SmartPointer& value = popDirect();
                 const SmartPointer& address = popDirect();
 
                 if (address->type == TYPE_VAR)
@@ -336,7 +336,7 @@ void VM::simulate()
                 if (m_Stack.empty())
                     Error::stackTooSmallError(op, 1);
 
-                const SmartPointer& a = pop();
+                const SmartPointer& a = popDirect();
                 m_Stack.push(a);
                 m_Stack.push(a);
                 ip++;
@@ -356,8 +356,8 @@ void VM::simulate()
                 if (m_Stack.size() < 2)
                     Error::stackTooSmallError(op, 2);
 
-                const SmartPointer& a = pop();
-                const SmartPointer& b = pop();
+                const SmartPointer& a = popDirect();
+                const SmartPointer& b = popDirect();
                 m_Stack.push(a);
                 m_Stack.push(b);
                 ip++;
@@ -369,8 +369,8 @@ void VM::simulate()
                 if (m_Stack.size() < 2)
                     Error::stackTooSmallError(op, 2);
 
-                const SmartPointer& a = pop();
-                const SmartPointer& b = pop();
+                const SmartPointer& a = popDirect();
+                const SmartPointer& b = popDirect();
                 m_Stack.push(b);
                 m_Stack.push(a);
                 m_Stack.push(b);
@@ -383,9 +383,9 @@ void VM::simulate()
                 if (m_Stack.size() < 3)
                     Error::stackTooSmallError(op, 3);
 
-                const SmartPointer& a = pop();
-                const SmartPointer& b = pop();
-                const SmartPointer& c = pop();
+                const SmartPointer& a = popDirect();
+                const SmartPointer& b = popDirect();
+                const SmartPointer& c = popDirect();
 
                 m_Stack.push(b);
                 m_Stack.push(a);

@@ -20,7 +20,16 @@ void vString::cast(SmartPointer& rV, const OpCode& op) const
     switch (op.value->type)
     {
     case TYPE_INT:
-        rV = makeSmartPointer<vInt>((int)v[0]); break;
+        {
+            char* end;
+            strtol(v, &end, 10);
+
+            if (end != v + strlen(v))
+                Error::runtimeError(op, "Failed to cast %s to int", v);
+            
+            rV = makeSmartPointer<vInt>(atoi(v));
+            break;
+        }
     case TYPE_CHAR:
         rV = makeSmartPointer<vChar>(v[0]); break;
 

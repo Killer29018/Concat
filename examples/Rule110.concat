@@ -19,7 +19,7 @@ func printArray --> define
 endfunc
 
 func getValue memptr --> int define // InitialPtr -> value
-    // (((([memptr] & 1) << 1) | (([left] & 1) << 2)) | (([memptr] & 1) << 0))
+    // (((([memptr] & 1) << 1) | (([memptr] & 1) << 2)) | (([memptr] & 1) << 0))
     left @8 1 land 2 <<
     swap dup @8 1 land 1 << rot lor
     swap 1 + @8 1 land 0 << lor

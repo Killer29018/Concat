@@ -1,0 +1,71 @@
+macro KEY 110 endmacro
+
+var Size int
+var LeftIndex int
+
+"Size: " print
+input cast(int) Size swap !
+
+mem board Size endmem
+
+
+func GetIndex int --> memptr define
+    board swap +
+endfunc
+
+func GetValueAtIndex int --> int define
+    GetIndex @8
+endfunc
+
+func GetValue int --> int define
+    LeftIndex 1 land 2 <<
+    swap dup 0 + GetValueAtIndex 1 land 1 << rot lor
+    swap 1 + GetValueAtIndex 1 land 0 << lor
+endfunc
+
+func PrintBoard --> define
+    0 while dup Size < do
+        dup GetValueAtIndex
+
+        if 0 == then
+            " " print
+        else
+            "*" print
+        endif
+        1 +
+    endwhile drop
+    '\n' print
+endfunc
+
+func UpdateBoard --> define
+    1 while dup Size 1 - < do
+        dup GetIndex // i index
+        over GetValue // i index value
+
+        over 1 - @8 // i index value [index - 1]
+        LeftIndex swap ! // i index value
+
+        KEY swap >> // i index (KEY >> value)
+        1 land // i index ((KEY >> value) & 1)
+        !8 // i
+        
+        1 +
+    endwhile drop
+endfunc
+
+func RunRule110 --> define
+    0 while dup Size < do
+        UpdateBoard
+        PrintBoard
+
+        LeftIndex board @8 !
+
+        1 + 
+    endwhile drop
+endfunc
+
+board Size 2 - + 1 !8 // board[(size - 2)] = 1
+LeftIndex 0 !
+
+PrintBoard
+RunRule110
