@@ -1,5 +1,5 @@
-macro SIZE 100 endmacro
-macro KEY 110 endmacro
+const SIZE 100
+const KEY 110
 
 mem board SIZE endmem
 mem left 1 endmem
