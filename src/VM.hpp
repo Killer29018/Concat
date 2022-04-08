@@ -21,6 +21,7 @@ private:
     static std::vector<SmartPointer> m_Variables;
     static std::vector<size_t> m_Functions;
     static std::unordered_map<size_t, SmartPointer> m_FunctionDefinitions;
+    static std::vector<SmartPointer> m_Constants;
 
     static int32_t m_CurrentVarIndex;
 public:
@@ -30,6 +31,7 @@ public:
     static uint32_t addMemory(uint32_t bytes);
     static uint32_t addFunction();
     static uint32_t addVariable(SmartPointer value);
+    static uint32_t addConstant();
 
     static size_t getMemorySize() { return m_Memory.size(); }
 

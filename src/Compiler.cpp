@@ -13,6 +13,7 @@ std::unordered_map<std::string, std::vector<Token>> Compiler::m_Macros {};
 std::set<std::string> Compiler::m_Memory;
 std::unordered_map<std::string, uint32_t> Compiler::m_Variables;
 std::unordered_map<std::string, uint32_t> Compiler::m_Functions;
+std::unordered_map<std::string, uint32_t> Compiler::m_Constants;
 bool Compiler::m_Error = false;
 size_t Compiler::m_Ip = 0;
 
@@ -320,6 +321,52 @@ void Compiler::startCompiler()
                     break;
                 }
 
+            case TOKEN_CONST:
+                {
+                    if (m_InFunction)
+                    {
+                        Error::compilerError(t, "Cannot define constants in Func");
+                    }
+
+                    if (ip == m_Tokens.size() - 1)
+                    {
+                        Error::compilerError(t, "Expected Type but found EOF instead");
+                        m_Error = true;
+                    }
+
+                    Token* token = &m_Tokens.at(ip + 1);
+
+                    if (!isValue(token->type))
+                    {
+                        Error::compilerError(t, "Expected type but found %s instead", word);
+                        exit(-1);
+                    }
+                    else
+                    {
+                        int index = VM::addConstant();
+                        m_Constants[stringWord] = index;
+                        code.code = OP_CREATE_CONST;
+                        code.value = makeSmartPointer<vConst>(index);
+                        VM::addOpCode(code);
+                    }
+
+                    ip++;
+                    break;
+                }
+            case TOKEN_CALL_CONST:
+                {
+                    if (m_Constants.find(stringWord) != m_Constants.end())
+                    {
+                        uint32_t index = m_Constants[stringWord];
+                        code.code = OP_CONST;
+                        code.value = makeSmartPointer<vConst>(index);
+                        VM::addOpCode(code);
+                    }
+
+                    ip++;
+                    break;
+                }
+
             case TOKEN_CREATE_VAR:
                 {
                     if (m_InFunction)
@@ -335,7 +382,7 @@ void Compiler::startCompiler()
 
                     Token* nextToken = &m_Tokens.at(ip + 1);
 
-                    if (!isTokenType(nextToken->type))
+                    if (!isValueType(nextToken->type))
                     {
                         Error::compilerError(t, "Unexpected token, Expected TYPE but found %s instead", TokenString[nextToken->type]);
                         m_Error = true;
@@ -768,7 +815,7 @@ void Compiler::startCompiler()
 
                         default:
                             {
-                                if (isTokenType(token.type))
+                                if (isValueType(token.type))
                                 {
                                     ValueType type = convertTokenToValue(token.type);
 
@@ -832,7 +879,7 @@ void Compiler::startCompiler()
 
             default:
                 {
-                    if (isTokenType(t.type))
+                    if (isValueType(t.type))
                     {
                         Error::compilerError(t, "Unexpected type");
                         exit(-1);
@@ -900,7 +947,7 @@ ValueType Compiler::convertTokenToValue(TokenType type)
     return (ValueType)(TYPE_INT + (type - TOKEN_TYPE_INT));
 }
 
-bool Compiler::isTokenType(TokenType type)
+bool Compiler::isValueType(TokenType type)
 {
     switch (type)
     {
@@ -909,6 +956,21 @@ bool Compiler::isTokenType(TokenType type)
     case TOKEN_TYPE_CHAR:
     case TOKEN_TYPE_STRING:
     case TOKEN_TYPE_MEMPTR:
+        return true;
+
+    default:
+        return false;
+    }
+}
+
+bool Compiler::isValue(TokenType type)
+{
+    switch (type)
+    {
+    case TOKEN_INT:
+    case TOKEN_BOOL:
+    case TOKEN_CHAR:
+    case TOKEN_STRING:
         return true;
 
     default:

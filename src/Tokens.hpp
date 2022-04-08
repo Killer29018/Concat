@@ -69,6 +69,9 @@ enum TokenType
     TOKEN_MEM,
     TOKEN_ENDMEM,
 
+    TOKEN_CONST,
+    TOKEN_CALL_CONST,
+
     TOKEN_CREATE_VAR,
     TOKEN_VAR,
 
@@ -159,6 +162,9 @@ const std::vector<const char*> TokenString
 
     "TOKEN_MEM",
     "TOKEN_ENDMEM",
+
+    "TOKEN_CONST",
+    "TOKEN_CALL_CONST",
 
     "TOKEN_CREATE_VAR",
     "TOKEN_VAR",

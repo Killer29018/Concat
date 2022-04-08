@@ -65,6 +65,9 @@ enum OpCodeEnum : uint16_t
     OP_LOAD_MEM,
     OP_ENDMEM,
 
+    OP_CREATE_CONST,
+    OP_CONST,
+
     OP_VAR,
 
     OP_IF,
@@ -142,6 +145,9 @@ const std::vector<const char*> OpCodeString
     "OP_CREATE_MEM",
     "OP_LOAD_MEM",
     "OP_ENDMEM",
+
+    "OP_CREATE_CONST",
+    "OP_CONST",
 
     "OP_VAR",
 

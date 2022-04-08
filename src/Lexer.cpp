@@ -18,6 +18,7 @@ std::unordered_set<std::string> Lexer::m_Mem;
 std::unordered_set<std::string> Lexer::m_Var;
 std::unordered_set<std::string> Lexer::m_Func;
 std::unordered_set<std::string> Lexer::m_IncludedFiles;
+std::unordered_set<std::string> Lexer::m_Constants;
 bool Lexer::m_Error = false;
 
 size_t Lexer::m_InputStringLocation;
@@ -162,6 +163,10 @@ bool Lexer::getTokenType(Token& token)
     {
         token.type = TOKEN_CALLFUNC;
     }
+    else if (m_Constants.find(word) != m_Constants.end())
+    {
+        token.type = TOKEN_CALL_CONST;
+    }
     else
     {
         add = parseWord(token, word);
@@ -267,7 +272,7 @@ bool Lexer::parseWord(Token& token, const char* word)
 
         delete[] includeWord;
     }
-    else // Mem, Var, Macro, Func
+    else // Mem, Var, Macro, Func, Const
     {
         Token* top = Compiler::getTopToken();
         if (top->type == TOKEN_MACRO)
@@ -292,6 +297,12 @@ bool Lexer::parseWord(Token& token, const char* word)
         {
             token.type = TOKEN_FUNC;
             m_Func.emplace(word);
+            Compiler::popBackToken();
+        }
+        else if (top->type == TOKEN_CONST)
+        {
+            token.type = TOKEN_CONST;
+            m_Constants.emplace(word);
             Compiler::popBackToken();
         }
         else

@@ -1,0 +1,5 @@
+const C1 10
+const C2 "Hello World"
+
+C1 print cr
+C2 print cr

@@ -3,7 +3,7 @@
 
 #include "Tokens.hpp"
 
-const int KeywordCount = 68;
+const int KeywordCount = 69;
 const std::unordered_map<std::string, TokenType> Keywords({
     { "true",       TOKEN_BOOL },
     { "false",      TOKEN_BOOL },
@@ -44,6 +44,8 @@ const std::unordered_map<std::string, TokenType> Keywords({
 
     { "mem",        TOKEN_MEM },
     { "endmem",     TOKEN_ENDMEM },
+
+    { "const",      TOKEN_CONST },
 
     { "var",        TOKEN_CREATE_VAR },
 

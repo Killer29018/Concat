@@ -31,6 +31,7 @@ enum ValueType : uint16_t
     TYPE_IP_OFFSET,
     TYPE_FUNC,
     TYPE_VAR,
+    TYPE_CONST,
 
     TYPE_COUNT
 };
@@ -47,6 +48,7 @@ const std::vector<const char*> ValueTypeString
     "IP_OFFSET",
     "FUNC",
     "VAR",
+    "CONST",
 };
 
 struct Value
@@ -243,6 +245,14 @@ struct vVar : Value
     vVar(uint32_t varIndex) : Value(TYPE_VAR), varIndex(varIndex) {}
 };
 #define as_vVar(val)   ((vVar*)(val.get()))
+
+struct vConst : Value
+{
+    uint32_t constIndex;
+
+    vConst(uint32_t constIndex) : Value(TYPE_CONST), constIndex(constIndex) {}
+};
+#define as_vConst(val)   ((vConst*)(val.get()))
 
 
 void runOperation(const SmartPointer& a, SmartPointer& rV, const OpCode& op);

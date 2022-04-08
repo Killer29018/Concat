@@ -17,6 +17,7 @@ private:
     static std::set<std::string> m_Memory;
     static std::unordered_map<std::string, uint32_t> m_Variables;
     static std::unordered_map<std::string, uint32_t> m_Functions;
+    static std::unordered_map<std::string, uint32_t> m_Constants;
     static bool m_Error;
     static size_t m_Ip;
     static bool m_InFunction;
@@ -40,7 +41,8 @@ private:
     static std::string parseEscapeSequence(const char* word);
 
     static ValueType convertTokenToValue(TokenType type);
-    static bool isTokenType(TokenType type);
+    static bool isValueType(TokenType type);
+    static bool isValue(TokenType type);
 };
 
 #endif

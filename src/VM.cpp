@@ -23,6 +23,7 @@ std::unordered_map<uint32_t, size_t> VM::m_MemoryNames;
 std::vector<SmartPointer> VM::m_Variables;
 std::vector<size_t> VM::m_Functions;
 std::unordered_map<size_t, SmartPointer> VM::m_FunctionDefinitions;
+std::vector<SmartPointer> VM::m_Constants;
 
 int32_t VM::m_CurrentVarIndex = -1;
 
@@ -70,6 +71,14 @@ uint32_t VM::addVariable(SmartPointer value)
     uint32_t index = (uint32_t)m_Variables.size();
 
     m_Variables.push_back(value);
+
+    return index;
+}
+
+uint32_t VM::addConstant()
+{
+    uint32_t index = (uint32_t)m_Constants.size();
+    m_Constants.emplace_back();
 
     return index;
 }
@@ -434,6 +443,25 @@ void VM::simulate()
                 break;
             }
 
+        case OP_CREATE_CONST:
+            {
+                OpCode* value = &m_OpCodes.at(ip + 1);
+                vConst* constValue = as_vConst(op.value);
+
+                m_Constants[constValue->constIndex] = value->value;
+
+                ip += 2;
+                break;
+            }
+        case OP_CONST:
+            {
+                vConst* constValue = as_vConst(op.value);
+
+                m_Stack.push(m_Constants[constValue->constIndex]);
+                ip++;
+                break;
+            }
+
         case OP_VAR:
             {
                 m_Stack.push(op.value);
@@ -790,6 +818,9 @@ void VM::printValueDebug(size_t index)
         }
     case TYPE_VAR:
         printf("%.4lu | %-*s | %d\n", index, STRINGPADDING, OpCodeString[code.code], as_vVar(code.value)->varIndex);
+        break;
+    case TYPE_CONST:
+        printf("%.4lu | %-*s | %d\n", index, STRINGPADDING, OpCodeString[code.code], as_vConst(code.value)->constIndex);
         break;
 
     default:
