@@ -7,7 +7,7 @@ syntax match concat_PreProc "\(^macro\s\)\@<=\S\+"
 highlight link concat_PreProc PreProc
 
 syntax keyword concat_Identifier mem endmem
-syntax match concat_Identifier "\(^mem\s\)\@<=\S\+"
+syntax keyword concat_Identifier var endvar
 highlight link concat_Identifier Identifier
 
 syntax keyword concat_Keyword dup drop swap over rot mod
@@ -21,9 +21,6 @@ highlight link concat_Keyword Keyword
 
 syntax keyword concat_Function func define endfunc
 highlight link concat_Function Function
-
-syntax keyword concat_Indentifier var endvar
-highlight link concat_Identifier Identifier
 
 syntax keyword concat_Conditional if then elseif else endif
 highlight link concat_Conditional Conditional

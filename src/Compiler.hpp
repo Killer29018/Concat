@@ -19,6 +19,7 @@ private:
     static std::unordered_map<std::string, uint32_t> m_Functions;
     static bool m_Error;
     static size_t m_Ip;
+    static bool m_InFunction;
 
     static std::vector<std::pair<std::string, std::string>> m_Patterns;
 public:

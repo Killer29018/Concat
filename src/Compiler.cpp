@@ -16,6 +16,8 @@ std::unordered_map<std::string, uint32_t> Compiler::m_Functions;
 bool Compiler::m_Error = false;
 size_t Compiler::m_Ip = 0;
 
+bool Compiler::m_InFunction = false;
+
 std::vector<std::pair<std::string, std::string>> Compiler::m_Patterns =
 {
     { "\\\\", "\\"},    /* \\ '\' */
@@ -226,6 +228,11 @@ void Compiler::startCompiler()
 
             case TOKEN_MEM:
                 {
+                    if (m_InFunction)
+                    {
+                        Error::compilerError(t, "Cannot define mememory in Func");
+                    }
+
                     if (m_Memory.find(word) != m_Memory.end())
                     {
                         size_t index = std::distance(m_Memory.begin(), m_Memory.find(word));
@@ -315,6 +322,11 @@ void Compiler::startCompiler()
 
             case TOKEN_CREATE_VAR:
                 {
+                    if (m_InFunction)
+                    {
+                        Error::compilerError(t, "Cannot create variable in Func");
+                    }
+
                     if (ip == m_Tokens.size() - 1)
                     {
                         Error::compilerError(t, "Expected type but found EOF instead");
@@ -715,12 +727,19 @@ void Compiler::startCompiler()
 
             case TOKEN_FUNC:
                 {
-                    int32_t ipOffset = 0;
+                    if (m_InFunction)
+                    {
+                        Error::compilerError(t, "Can not define Func in another Func");
+                        exit(-1);
+                    }
+
                     bool inputs = true;
                     std::vector<ValueType> inputTypes;
                     std::vector<ValueType> outputTypes;
 
                     bool run = true;
+
+                    int32_t ipOffset = 0;
 
                     while (run)
                     {
@@ -774,14 +793,23 @@ void Compiler::startCompiler()
 
                     m_Functions[stringWord] = offset;
 
+                    m_InFunction = true;
+
                     ip += ipOffset + 1;
                     break;
                 }
 
             case TOKEN_ENDFUNC:
                 {
+                    if (!m_InFunction)
+                    {
+                        Error::compilerError(t, "Unexpected End Function");
+                        exit(-1);
+                    }
+
                     code.code = OP_ENDFUNC;
                     VM::addOpCode(code);
+                    m_InFunction = false;
 
                     ip++;
                     break;

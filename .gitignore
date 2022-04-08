@@ -8,4 +8,5 @@ output.txt
 # File
 concat
 concat.exe
+temp.concat
 **/**.concat_bin
