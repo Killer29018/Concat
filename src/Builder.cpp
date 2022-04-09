@@ -222,6 +222,7 @@ size_t Builder::getValueSize(const SmartPointer& value)
             size += size_tSize + get_vStringSize(value); break;
         case TYPE_MEM_PTR:
             size += sizeof(uint32_t); break;
+
         case TYPE_IP_OFFSET:
             size += sizeof(int32_t); break;
         case TYPE_FUNC:
@@ -231,6 +232,8 @@ size_t Builder::getValueSize(const SmartPointer& value)
                         + (func->outputs.size() * enumSize);
                 break;
             }
+        case TYPE_CONST:
+            size += sizeof(uint32_t); break;
 
         default:
             assert(false && "Unreachable");
@@ -256,8 +259,11 @@ size_t Builder::getValueSize(const ValueType value)
         size = sizeof(char); break;
     case TYPE_MEM_PTR:
         size = sizeof(uint32_t); break;
+
     case TYPE_IP_OFFSET:
         size = sizeof(int32_t); break;
+    case TYPE_CONST:
+        size = sizeof(uint32_t); break;
 
     default:
         assert(false && "Unreachable");
@@ -290,11 +296,15 @@ void Builder::addValue(char* buffer, const SmartPointer& value, size_t& index)
     case TYPE_MEM_PTR:
         addElement(buffer, index, get_vMemPtr(value), sizeof(get_vMemPtr(value)));
         break;
+
     case TYPE_IP_OFFSET:
         addElement(buffer, index, get_vIpOffset(value), sizeof(get_vIpOffset(value)));
         break;
     case TYPE_FUNC:
         addFunc(buffer, index, value);
+        break;
+    case TYPE_CONST:
+        addConst(buffer, index, value);
         break;
 
     default:
@@ -343,6 +353,7 @@ void Builder::readValue(char* buffer, ValueType type, OpCode& op, size_t bufferS
             op.value = makeSmartPointer<vMemPtr>(value);
             break;
         }
+
     case TYPE_IP_OFFSET:
         {
             int32_t value;
@@ -353,6 +364,11 @@ void Builder::readValue(char* buffer, ValueType type, OpCode& op, size_t bufferS
     case TYPE_FUNC:
         {
             readFunc(buffer, op, bufferSize);
+            break;
+        }
+    case TYPE_CONST:
+        {
+            readConst(buffer, op, bufferSize);
             break;
         }
 
@@ -428,4 +444,23 @@ void Builder::readFunc(char* buffer, OpCode& code, size_t bufferSize)
 
     if (code.code == OP_FUNC && funcIndex != VM::addFunction())
         assert(false && "Something has gone wrong");
+}
+
+void Builder::addConst(char* buffer, size_t& index, const SmartPointer& value)
+{
+    vConst* constValue = as_vConst(value);
+    addElement(buffer, index, constValue->constIndex, sizeof(constValue->constIndex));
+}
+
+void Builder::readConst(char* buffer, OpCode& code, size_t bufferSize)
+{
+    uint32_t value;
+    readElement(buffer, value, sizeof(value));
+
+    if (code.code == OP_CREATE_CONST && value != VM::addConstant())
+    {
+        assert(false && "Something has gone wrong");
+    }
+
+    code.value = makeSmartPointer<vConst>(value);
 }

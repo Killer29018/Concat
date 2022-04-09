@@ -229,11 +229,6 @@ void Compiler::startCompiler()
 
             case TOKEN_MEM:
                 {
-                    if (m_InFunction)
-                    {
-                        Error::compilerError(t, "Cannot define mememory in Func");
-                    }
-
                     if (m_Memory.find(word) != m_Memory.end())
                     {
                         size_t index = std::distance(m_Memory.begin(), m_Memory.find(word));
@@ -245,6 +240,11 @@ void Compiler::startCompiler()
                     }
                     else
                     {
+                        if (m_InFunction)
+                        {
+                            Error::compilerError(t, "Cannot define mememory in Func");
+                        }
+
                         if (ip == m_Tokens.size() - 1)
                         {
                             Error::compilerError(t, "Unexpected end when declaring memory");

@@ -42,6 +42,9 @@ private:
     static void addFunc(char* buffer, size_t& index, const SmartPointer& value);
     static void readFunc(char* buffer, OpCode& code, size_t bufferSize);
 
+    static void addConst(char* buffer, size_t& index, const SmartPointer& value);
+    static void readConst(char* buffer, OpCode& code, size_t bufferSize);
+
     template<typename T>
     static void addElement(char* output, size_t& index, T value, size_t size)
     {

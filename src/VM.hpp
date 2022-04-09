@@ -34,6 +34,7 @@ public:
     static uint32_t addConstant();
 
     static size_t getMemorySize() { return m_Memory.size(); }
+    static std::vector<SmartPointer>& getVariables() { return m_Variables; }
 
     static void printOpCodes();
 
