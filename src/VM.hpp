@@ -41,6 +41,8 @@ public:
     static void simulate();
 
     static void build(const char* filename);
+
+    static void clear() { m_OpCodes.clear(); m_Memory.clear(); m_MemoryNames.clear(); m_Functions.clear(); m_Constants.clear(); m_FunctionDefinitions.clear(); m_Constants.clear(); }
 private:
     VM() = default;
     ~VM() = default;

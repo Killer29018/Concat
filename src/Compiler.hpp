@@ -28,8 +28,11 @@ public:
     static void printTokens();
     static void startCompiler();
 
+
     static Token* getTopToken() { return &m_Tokens.at(m_Tokens.size() - 1); }
     static void popBackToken() { m_Tokens.pop_back(); m_Ip--; }
+
+    static void clear() { m_Tokens.clear(); }
 
 private:
     Compiler() {}

@@ -192,7 +192,7 @@ struct vString : Value
 };
 #define as_vString(val)    ((vString*)(val.get()))
 #define get_vString(val)   (((vString*)(val.get()))->v)
-#define get_vStringSize(val) (strlen(((vString*)(val.get()))->v))
+size_t get_vStringSize(const SmartPointer& val);
 
 struct vMemPtr : Value
 {

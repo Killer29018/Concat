@@ -42,6 +42,10 @@ void Program::buildProgramFromFile(const char* filename)
 
     if (runBuild)
     {
+        Lexer::deallocate();
+        Compiler::clear();
+        VM::clear();
+
         path.replace_extension(binExt);
         printf("\nRunning %s: \n", path.generic_string().c_str());
         runProgramFromFile(path.generic_string().c_str(), true);
@@ -64,8 +68,7 @@ void Program::runProgramFromFile(const char* filename, bool runningBuild)
             exit(0);
         }
 
-        if (!runningBuild)
-            Builder::loadCompiled(filename);
+        Builder::loadCompiled(filename);
     }
     else
     {

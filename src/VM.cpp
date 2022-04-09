@@ -127,6 +127,9 @@ void VM::simulate()
 
         case OP_CAST:
             {
+                if (m_Stack.size() < 1)
+                    Error::stackTooSmallError(op, 1);
+
                 const SmartPointer& a = pop();
                 SmartPointer rV;
 

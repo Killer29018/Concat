@@ -97,3 +97,10 @@ void vString::notEqual(const SmartPointer& v2, SmartPointer& rV, const OpCode& o
     }
 }
 
+size_t get_vStringSize(const SmartPointer& val)
+{
+    vString* value = as_vString(val);
+    if (value->v)
+        return strlen(value->v);
+    return 0;
+}

@@ -1,5 +1,5 @@
 --------------------------------------------------
-VarTest.concat
+Const.concat
 --stdout--
 10
 Hello World
@@ -7,9 +7,9 @@ Hello World
 --stderr--
 
 --build run stdout--
-Created tests/VarTest.concat_bin
+Created tests/Const.concat_bin
 
-Running tests/VarTest.concat_bin: 
+Running tests/Const.concat_bin: 
 10
 Hello World
 
