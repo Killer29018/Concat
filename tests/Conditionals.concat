@@ -11,9 +11,9 @@
     <= Less than or equal to
 */
 
-macro space ' ' print endmacro
-macro a 21 endmacro
-macro b 20 endmacro
+func space --> define ' ' print endfunc
+const a 21
+const b 20
 
 a b == print space
 a b != print space

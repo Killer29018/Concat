@@ -1,4 +1,4 @@
-macro space 32 . endmacro
+func space --> define ' ' print endfunc
 
 0 while dup 10 <= do
     if dup 2 mod 0 == then

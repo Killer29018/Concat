@@ -20,13 +20,13 @@ bit8 @8 print cr
 
 // Crude Arrays
 
-macro getPtr // ptr index -- ptr
+func getPtr memptr int --> memptr define// ptr index -- ptr
     4 * +
-endmacro
+endfunc
 
-macro getPtrRev // ptr index -- ptr
+func getPtrRev memptr int --> memptr define// ptr index -- ptr
     4 * swap 4 - swap -
-endmacro
+endfunc
 
 mem bit20 4 20 * endmem // 4 Bytes
 mem bit20end 0 endmem

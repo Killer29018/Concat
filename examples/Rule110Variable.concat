@@ -1,4 +1,4 @@
-macro KEY 110 endmacro
+const KEY 110
 
 var Size int
 var LeftIndex int

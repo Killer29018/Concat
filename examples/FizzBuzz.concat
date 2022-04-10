@@ -1,8 +1,6 @@
 /*
     Fizz buzz between 1 and 1000 made with while loops
 */
-macro space ' ' print endmacro
-
 func fizz int --> bool define
     if 3 mod 0 == dup then
         "FIZZ" print

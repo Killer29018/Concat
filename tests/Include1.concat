@@ -1,3 +1,2 @@
 "../std.concat" include
-macro space 32 . endmacro
-
+func space --> define ' ' print endfunc

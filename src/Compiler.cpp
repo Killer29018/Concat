@@ -9,7 +9,6 @@
 #include "Lexer.hpp"
 
 std::vector<Token> Compiler::m_Tokens;
-std::unordered_map<std::string, std::vector<Token>> Compiler::m_Macros {};
 std::set<std::string> Compiler::m_Memory;
 std::unordered_map<std::string, uint32_t> Compiler::m_Variables;
 std::unordered_map<std::string, uint32_t> Compiler::m_Functions;
@@ -420,57 +419,6 @@ void Compiler::startCompiler()
                     ip++;
                     break;
                 }
-
-            case TOKEN_MACRO:
-                {
-                    if (m_Macros.find(word) != m_Macros.end())
-                    {
-                        std::vector<Token>& tokens = m_Macros.at(word);
-
-                        for (int i = tokens.size() - 1; i >= 0; i--)
-                        {
-                            m_Tokens.insert(m_Tokens.begin() + ip + 1, tokens[i]);
-                        }
-                        ip++;
-                        break;
-                    }
-                    else
-                    {
-                        size_t ipOffset = 0;
-                        std::vector<Token> macroTokens;
-
-                        while ((ip + ipOffset) < m_Tokens.size())
-                        {
-                            ipOffset++;
-
-                            if ((ip + ipOffset) == m_Tokens.size())
-                            {
-                                Error::compilerError(t, "macro %s has no corresponding endmacro", word);
-                                m_Error = true;
-                                break;
-                            }
-
-                            if (m_Tokens.at(ip + ipOffset).type == TOKEN_ENDMACRO)
-                            {
-                                ipOffset++;
-                                break;
-                            }
-                            else
-                            {
-                                macroTokens.push_back(m_Tokens.at(ip + ipOffset));
-                            }
-
-                        }
-
-                        m_Macros.insert({ word, macroTokens });
-
-                        ip += ipOffset;
-                    }
-                    break;
-                }
-
-            case TOKEN_ENDMACRO: // Unreachable
-                assert(false && "Unreachable");
 
             case TOKEN_IF: 
                 addBasicOpcode(code, ip, OP_IF); break;

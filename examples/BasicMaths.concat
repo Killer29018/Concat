@@ -2,34 +2,24 @@
 A Basic program to show of the basic Math Operations and show a simple program
 */
 
-macro space ' ' print endmacro
-macro op_+ '+' print endmacro
-macro op_- '-' print endmacro
-macro op_* '*' print endmacro
-macro op_/ '/' print endmacro
-macro op_mod '%' print endmacro
+var A int
+var B int
 
-macro op_= '=' print endmacro
+input cast(int) A swap !
+input cast(int) B swap !
 
-21 // Value A
-2  // Value B
+func printOperator char int --> define
+    A print
+    ' ' print
+    swap print
+    ' ' print
+    B print
+    " = " print
+    print cr
+endfunc
 
-// A + B = C
-over over
-over print space op_+ space dup print space op_= space + print cr
-
-// A - B = C
-over over
-over print space op_- space dup print space op_= space - print cr
-
-// A * B = C
-over over
-over print space op_* space dup print space op_= space * print cr
-
-// A / B = C
-over over
-over print space op_/ space dup print space op_= space / print cr
-
-// A % B = C
-over over
-over print space op_mod space dup print space op_= space mod print cr
+'+' A B +       printOperator
+'-' A B -       printOperator
+'*' A B *       printOperator
+'/' A B /       printOperator
+'%' A B mod     printOperator

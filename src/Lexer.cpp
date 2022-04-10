@@ -13,7 +13,6 @@
 
 std::vector<std::string> Lexer::filenames;
 
-std::unordered_set<std::string> Lexer::m_Macros;
 std::unordered_set<std::string> Lexer::m_Mem;
 std::unordered_set<std::string> Lexer::m_Var;
 std::unordered_set<std::string> Lexer::m_Func;
@@ -147,10 +146,6 @@ bool Lexer::getTokenType(Token& token)
     {
         token.type = Keywords.at(word);
     }
-    else if (m_Macros.find(word) != m_Macros.end())
-    {
-        token.type = TOKEN_MACRO;
-    }
     else if (m_Mem.find(word) != m_Mem.end())
     {
         token.type = TOKEN_MEM;
@@ -272,16 +267,10 @@ bool Lexer::parseWord(Token& token, const char* word)
 
         delete[] includeWord;
     }
-    else // Mem, Var, Macro, Func, Const
+    else // Mem, Var, Func, Const
     {
         Token* top = Compiler::getTopToken();
-        if (top->type == TOKEN_MACRO)
-        {
-            token.type = TOKEN_MACRO;
-            m_Macros.emplace(word);
-            Compiler::popBackToken();
-        }
-        else if (top->type == TOKEN_MEM)
+        if (top->type == TOKEN_MEM)
         {
             token.type = TOKEN_MEM;
             m_Mem.emplace(word);

@@ -2,17 +2,17 @@
 Program to check bitewise and logical operators
 */
 
-macro a 20 endmacro
-macro b 30 endmacro
-macro c 40 endmacro
-macro d 50 endmacro
+const a 20
+const b 30
+const c 40
+const d 50
 
 if a b <  d c > and then
     420 print cr
 endif
 
-macro e 10 endmacro
-macro f 20 endmacro
+const e 10
+const f 20
 
 if e f > invert dup then
     69 print cr

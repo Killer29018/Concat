@@ -1,8 +1,4 @@
-macro rot2
-    rot rot
-endmacro
-
-macro StringSize // string -- size
+func StringSize string --> int define // string -- size
     // (string + 1) (count + 1)
     0
     over @8 cast(int) while 0 != do
@@ -11,9 +7,9 @@ macro StringSize // string -- size
         over @8 cast(int)
     endwhile
     swap drop
-endmacro
+endfunc
 
-macro CompareString // string string -- bool
+func CompareString string string --> bool define // string string -- bool
     over over StringSize swap StringSize
     rot swap
     rot
@@ -25,7 +21,7 @@ macro CompareString // string string -- bool
         while 
             over @8 cast(int) over @8 cast(int) over over + 0 != 
             // string1 string2 ((char1 + char2) == 0) char2 char1
-            rot2 == ==
+            rot rot == ==
             do
             // string1 string2
 
@@ -34,6 +30,6 @@ macro CompareString // string string -- bool
         endwhile
         // over over print print cr
 
-        over @8 cast(int) over @8 cast(int) == rot2 drop drop
+        over @8 cast(int) over @8 cast(int) == rot rot drop drop
     endif
-endmacro
+endfunc

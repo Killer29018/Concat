@@ -2,22 +2,22 @@ if exists("b:current_syntax")
     finish
 endif
 
-syntax keyword concat_PreProc macro endmacro
-syntax match concat_PreProc "\(^macro\s\)\@<=\S\+"
-highlight link concat_PreProc PreProc
-
 syntax keyword concat_Identifier mem endmem
+syntax keyword concat_Identifier const
 syntax keyword concat_Identifier var endvar
 highlight link concat_Identifier Identifier
 
 syntax keyword concat_Keyword dup drop swap over rot mod
 syntax keyword concat_Keyword print cr 
 syntax keyword concat_Keyword and or invert land lor lnot << >>
-syntax keyword concat_Keyword cast(int) cast(bool) cast(char) cast(string)
 syntax keyword concat_Keyword include
-syntax keyword concat_Keyword int bool char string memptr
+syntax keyword concat_Keyword input
+syntax keyword concat_Keyword cast(int) cast(bool) cast(char) cast(string) cast(memptr)
 syntax match concat_Keyword "\v--\>"    " -->
 highlight link concat_Keyword Keyword
+
+syntax keyword concat_Typedef int bool char string memptr
+highlight link concat_Typedef Typedef
 
 syntax keyword concat_Function func define endfunc
 highlight link concat_Function Function
@@ -48,6 +48,8 @@ syntax match concat_Operator "\v\<\="   " <=
 syntax match concat_Operator "\v\."     " .
 
 highlight link concat_Operator Operator
+
+highlight link concat_Cast Operator
 
 syntax match concat_Comments "\v//.*$"
 syntax region concat_Comments start=/\v\/\*/ skip=/\v\\./ end=/\v\*\//
