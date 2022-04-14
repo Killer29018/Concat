@@ -5,6 +5,8 @@ StdTest.concat
 11
 1
 Same
+1
+  0
 
 --stderr--
 
@@ -16,6 +18,8 @@ Running tests/StdTest.concat_bin:
 11
 1
 Same
+1
+  0
 
 --build run stderr--
 
@@ -24,6 +28,8 @@ Same
 11
 1
 Same
+1
+  0
 
 --build stderr--
 

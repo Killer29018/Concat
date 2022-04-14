@@ -10,3 +10,6 @@ if CompareString then
 else
     "Different" print cr
 endif
+
+"1" print cr
+"0" 3 AddPadding print cr

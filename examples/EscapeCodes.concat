@@ -1,0 +1,61 @@
+"../std.concat" include
+
+var EscapeSequence char
+EscapeSequence 27 cast(char) !
+
+var ForegroundSequence string
+ForegroundSequence "" EscapeSequence + "[38;5;" + !
+
+var BackgroundSequence string
+BackgroundSequence "" EscapeSequence + "[48;5;" + !
+
+"" EscapeSequence + "[2J" + print 
+"" EscapeSequence + "[H" + print "Hello World" print cr // Reset Cursor
+"" EscapeSequence + "[1;31;40m" + print "Hello World" print cr // Bold Cursor, Red Foregroud, Black background
+"" EscapeSequence + "[0m" + print // Reset
+
+
+0 while dup 256 < do
+    dup cast(string) // index "index"
+    ForegroundSequence over + 'm' + print // ESC[38;5;{index}m 
+
+    dup 3 AddPadding print ' ' print drop
+
+    if dup 1 + 21 mod 0 == then
+        cr
+    endif
+
+    1 +
+endwhile drop
+cr
+
+0 while dup 256 < do
+    dup cast(string) // index "index"
+    BackgroundSequence over + 'm' + print // ESC[38;5;{index}m 
+
+    dup 3 AddPadding print ' ' print drop
+
+    if dup 1 + 21 mod 0 == then
+        cr
+    endif
+
+    1 +
+endwhile drop
+cr
+
+0 while dup 256 < do
+    dup cast(string) // index "index"
+    ForegroundSequence over + 'm' + print // ESC[38;5;{index}m 
+    over 255 swap - cast(string)
+    BackgroundSequence swap + 'm' + print // ESC[38;5;{index}m 
+
+    dup 3 AddPadding print ' ' print drop
+
+    if dup 1 + 21 mod 0 == then
+        cr
+    endif
+
+    1 +
+endwhile drop
+cr
+"" EscapeSequence + "[0m" + print // Reset

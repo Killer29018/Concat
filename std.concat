@@ -33,3 +33,13 @@ func CompareString string string --> bool define // string string -- bool
         over @8 cast(int) over @8 cast(int) == rot rot drop drop
     endif
 endfunc
+
+func AddPadding string int --> string define
+    swap dup StringSize // digits string size
+    rot swap // string digits size
+    while over over swap < do // size < digits
+        rot // digits size string
+        " " swap + // digits size string
+        rot rot 1 +
+    endwhile drop drop
+endfunc

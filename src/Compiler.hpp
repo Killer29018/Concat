@@ -28,7 +28,7 @@ public:
     static void startCompiler();
 
 
-    static Token* getTopToken() { return &m_Tokens.at(m_Tokens.size() - 1); }
+    static Token* getTopToken() { if (m_Tokens.size() > 0) return &m_Tokens.at(m_Tokens.size() - 1); else return nullptr;}
     static void popBackToken() { m_Tokens.pop_back(); m_Ip--; }
 
     static void clear() { m_Tokens.clear(); }

@@ -221,9 +221,16 @@ bool Lexer::parseWord(Token& token, const char* word)
         add = false;
         Token* t = Compiler::getTopToken();
 
+        if (!t)
+        {
+            Error::compilerError(token, "Could not find include path, Nothing found");
+            exit(-1);
+        }
+
         if (t->type != TOKEN_STRING)
         {
             Error::compilerError(*t, "Expected a string for include");
+            exit(-1);
         }
 
         int length = t->endIndex - t->startIndex - 2;
@@ -237,7 +244,7 @@ bool Lexer::parseWord(Token& token, const char* word)
 
         if (!std::filesystem::exists(newFile))
         {
-            Error::compilerError(token, "Failed to include \"%s\"\n", newFile.filename().generic_string().c_str());
+            Error::compilerError(token, "Failed to include \"%s\"", newFile.filename().generic_string().c_str());
             exit(-1);
         }
 

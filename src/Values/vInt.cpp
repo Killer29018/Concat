@@ -2,6 +2,8 @@
 #include "../SmartPointer.hpp"
 #include "../Error.hpp"
 
+#include <cstring>
+
 void vInt::print(const OpCode& op) const
 {
     printf("%d", v);
@@ -21,6 +23,17 @@ void vInt::cast(SmartPointer& rV, const OpCode& op) const
         rV = makeSmartPointer<vBool>((bool)v); break;
     case TYPE_CHAR:
         rV = makeSmartPointer<vChar>((char)v); break;
+    case TYPE_STRING:
+        {
+            std::string tmp = std::to_string(v);
+            char* newString = new char[tmp.length() + 1];
+
+            strcpy(newString, tmp.c_str());
+            newString[tmp.length()] = 0x00;
+            rV = makeSmartPointer<vString>(newString);
+
+            break;
+        }
 
     default:
         Error::castError(op, type);
