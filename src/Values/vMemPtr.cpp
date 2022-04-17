@@ -1,6 +1,7 @@
 #include "Value.hpp"
 #include "../SmartPointer.hpp"
 #include "../Error.hpp"
+#include "../Builder.hpp"
 
 void vMemPtr::print(const OpCode& op) const
 {
@@ -105,3 +106,27 @@ void vMemPtr::lessEqual(const SmartPointer& v2, SmartPointer& rV, const OpCode& 
     }
 }
 
+
+size_t vMemPtr::getSize() const
+{
+    return enumSize + sizeof(uint32_t);
+}
+
+void vMemPtr::writeBuffer(char* buffer, size_t& index) const
+{
+    Builder::addElement(buffer, index, v, sizeof(v));
+}
+
+void vMemPtr::readBuffer(std::ifstream& file, OpCode& code)
+{
+    uint32_t value;
+    size_t size = sizeof(char) * sizeof(value);
+    char* buffer = (char*)malloc(size);
+
+    file.read(buffer, size);
+
+    Builder::readElement(buffer, value, sizeof(value));
+    code.value = makeSmartPointer<vMemPtr>(value);
+
+    delete buffer;
+}

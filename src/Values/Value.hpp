@@ -12,7 +12,6 @@
 #include <utility>
 #include <functional>
 
-
 class SmartPointer;
 
 struct OpCode;
@@ -89,11 +88,19 @@ public:
 
     virtual void invert(SmartPointer& rV, const OpCode& op) const;
     virtual void lnot(SmartPointer& rV, const OpCode& op) const;
+
+    virtual size_t getSize() const;
+    virtual void writeBuffer(char* buffer, size_t& index) const;
+    static void readBuffer(std::ifstream& file, OpCode& code);
 };
 
 struct vNull : Value
 {
     vNull() : Value(TYPE_NULL) {}
+
+    size_t getSize() const;
+    void writeBuffer(char* buffer, size_t& index) const;
+    static void readBuffer(std::ifstream& file, OpCode& code);
 };
 
 struct vInt : Value
@@ -125,6 +132,10 @@ struct vInt : Value
     void lShift(const SmartPointer& v2, SmartPointer& rV, const OpCode& op) const override;
 
     void lnot(SmartPointer& rV, const OpCode& op) const override;
+
+    size_t getSize() const;
+    void writeBuffer(char* buffer, size_t& index) const;
+    static void readBuffer(std::ifstream& file, OpCode& code);
 };
 #define as_vInt(val)        ((vInt*)(val.get()))
 #define get_vInt(val)       (((vInt*)(val.get()))->v)
@@ -147,6 +158,10 @@ struct vBool : Value
     void lor(const SmartPointer& v2, SmartPointer& rV, const OpCode& op) const override;
 
     void invert(SmartPointer& rV, const OpCode& op) const override;
+
+    size_t getSize() const;
+    void writeBuffer(char* buffer, size_t& index) const;
+    static void readBuffer(std::ifstream& file, OpCode& code);
 };
 #define as_vBool(val)       ((vBool*)(val.get()))
 #define get_vBool(val)      (((vBool*)(val.get()))->v)
@@ -169,6 +184,10 @@ struct vChar : Value
     void less(const SmartPointer& v2, SmartPointer& rV, const OpCode& op) const override;
     void greaterEqual(const SmartPointer& v2, SmartPointer& rV, const OpCode& op) const override;
     void lessEqual(const SmartPointer& v2, SmartPointer& rV, const OpCode& op) const override;
+
+    size_t getSize() const;
+    void writeBuffer(char* buffer, size_t& index) const;
+    static void readBuffer(std::ifstream& file, OpCode& code);
 };
 #define as_vChar(val)       ((vChar*)(val.get()))
 #define get_vChar(val)      (((vChar*)(val.get()))->v)
@@ -189,10 +208,15 @@ struct vString : Value
     void add(const SmartPointer& v2, SmartPointer& rV, const OpCode& op) const override;
     void equal(const SmartPointer& v2, SmartPointer& rV, const OpCode& op) const override;
     void notEqual(const SmartPointer& v2, SmartPointer& rV, const OpCode& op) const override;
+
+    size_t getSize() const;
+    void writeBuffer(char* buffer, size_t& index) const;
+    static void readBuffer(std::ifstream& file, OpCode& code);
 };
 #define as_vString(val)    ((vString*)(val.get()))
 #define get_vString(val)   (((vString*)(val.get()))->v)
 size_t get_vStringSize(const SmartPointer& val);
+size_t get_vStringSize(const vString* val);
 
 struct vMemPtr : Value
 {
@@ -211,6 +235,10 @@ struct vMemPtr : Value
     void less(const SmartPointer& v2, SmartPointer& rV, const OpCode& op) const override;
     void greaterEqual(const SmartPointer& v2, SmartPointer& rV, const OpCode& op) const override;
     void lessEqual(const SmartPointer& v2, SmartPointer& rV, const OpCode& op) const override;
+
+    size_t getSize() const;
+    void writeBuffer(char* buffer, size_t& index) const;
+    static void readBuffer(std::ifstream& file, OpCode& code);
 };
 #define as_vMemPtr(val)     ((vMemPtr*)(val.get()))
 #define get_vMemPtr(val)    (((vMemPtr*)(val.get()))->v)
@@ -220,6 +248,10 @@ struct vIpOffset : Value
     int32_t v;
 
     vIpOffset(int32_t value) : Value(TYPE_IP_OFFSET), v(value) {}
+
+    size_t getSize() const;
+    void writeBuffer(char* buffer, size_t& index) const;
+    static void readBuffer(std::ifstream& file, OpCode& code);
 };
 #define as_vIpOffset(val)   ((vIpOffset*)(val.get()))
 #define get_vIpOffset(val)  (((vIpOffset*)(val.get()))->v)
@@ -235,6 +267,10 @@ struct vFunc : Value
 
     vFunc(uint32_t index)
         : Value(TYPE_FUNC), funcIndex(index) {}
+
+    size_t getSize() const;
+    void writeBuffer(char* buffer, size_t& index) const;
+    static void readBuffer(std::ifstream& file, OpCode& code);
 };
 #define as_vFunc(val)   ((vFunc*)(val.get()))
 
@@ -243,6 +279,10 @@ struct vVar : Value
     uint32_t varIndex;
 
     vVar(uint32_t varIndex) : Value(TYPE_VAR), varIndex(varIndex) {}
+
+    size_t getSize() const;
+    void writeBuffer(char* buffer, size_t& index) const;
+    static void readBuffer(std::ifstream& file, OpCode& code);
 };
 #define as_vVar(val)   ((vVar*)(val.get()))
 
@@ -251,6 +291,10 @@ struct vConst : Value
     uint32_t constIndex;
 
     vConst(uint32_t constIndex) : Value(TYPE_CONST), constIndex(constIndex) {}
+
+    size_t getSize() const;
+    void writeBuffer(char* buffer, size_t& index) const;
+    static void readBuffer(std::ifstream& file, OpCode& code);
 };
 #define as_vConst(val)   ((vConst*)(val.get()))
 

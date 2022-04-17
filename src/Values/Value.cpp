@@ -185,3 +185,19 @@ void Value::lnot(SmartPointer& rV, const OpCode& op) const
     Error::operationError(op, "lnot", type);
 }
  
+
+size_t Value::getSize() const
+{
+    assert(false && "Unreachable");
+    return 0;
+}
+
+void Value::writeBuffer(char* buffer, size_t& index) const
+{
+    assert(false && "Unreachable");
+}
+
+void Value::readBuffer(std::ifstream& file, OpCode& code) 
+{
+    assert(false && "Unreachable");
+}

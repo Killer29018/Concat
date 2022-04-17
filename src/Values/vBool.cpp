@@ -1,6 +1,7 @@
 #include "Value.hpp"
 #include "../SmartPointer.hpp"
 #include "../Error.hpp"
+#include "../Builder.hpp"
 
 void vBool::print(const OpCode& op) const
 {
@@ -84,3 +85,27 @@ void vBool::invert(SmartPointer& rV, const OpCode& op) const
     rV = makeSmartPointer<vBool>(!v);
 }
 
+
+size_t vBool::getSize() const
+{
+    return enumSize + sizeof(bool);
+}
+
+void vBool::writeBuffer(char* buffer, size_t& index) const
+{
+    Builder::addElement(buffer, index, v, sizeof(v));
+}
+
+void vBool::readBuffer(std::ifstream& file, OpCode& code)
+{
+    bool value;
+    size_t size = sizeof(char) * sizeof(value);
+    char* buffer = (char*)malloc(size);
+
+    file.read(buffer, size);
+
+    Builder::readElement(buffer, value, sizeof(value));
+    code.value = makeSmartPointer<vBool>(value);
+
+    delete buffer;
+}

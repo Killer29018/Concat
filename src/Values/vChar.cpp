@@ -1,6 +1,7 @@
 #include "Value.hpp"
 #include "../SmartPointer.hpp"
 #include "../Error.hpp"
+#include "../Builder.hpp"
 
 void vChar::print(const OpCode& op) const
 {
@@ -100,3 +101,27 @@ void vChar::lessEqual(const SmartPointer& v2, SmartPointer& rV, const OpCode& op
     }
 }
 
+
+size_t vChar::getSize() const
+{
+    return enumSize + sizeof(char); 
+}
+
+void vChar::writeBuffer(char* buffer, size_t& index) const
+{
+    Builder::addElement(buffer, index, v, sizeof(v));
+}
+
+void vChar::readBuffer(std::ifstream& file, OpCode& code)
+{
+    char value;
+    size_t size = sizeof(char) * sizeof(value);
+    char* buffer = (char*)malloc(size);
+
+    file.read(buffer, size);
+
+    Builder::readElement(buffer, value, sizeof(value));
+    code.value = makeSmartPointer<vChar>(value);
+
+    delete buffer;
+}

@@ -213,304 +213,75 @@ void Builder::readOpCode(char* buffer, OpCode& op, std::ifstream& file)
 
 size_t Builder::getValueSize(const SmartPointer& value)
 {
-    size_t size = enumSize;
-    if (value.get())
-    {
-        switch (value->type)
-        {
-        case TYPE_NULL:
-            break;
-        case TYPE_INT:
-            size += sizeof(int32_t); break;
-        case TYPE_BOOL:
-            size += sizeof(bool); break;
-        case TYPE_CHAR:
-            size += sizeof(char); break;
-        case TYPE_STRING:
-                size += size_tSize + get_vStringSize(value); break;
-        case TYPE_MEM_PTR:
-            size += sizeof(uint32_t); break;
+    if (!value.get())
+        return enumSize;
 
-        case TYPE_IP_OFFSET:
-            size += sizeof(int32_t); break;
-        case TYPE_FUNC:
-            {
-                vFunc* func = as_vFunc(value);
-                size += sizeof(uint32_t) + (size_tSize * 3) + (func->inputs.size() * enumSize)
-                        + (func->outputs.size() * enumSize);
-                break;
-            }
-        case TYPE_VAR:
-            size += sizeof(uint32_t); break;
-        case TYPE_CONST:
-            size += sizeof(uint32_t); break;
-
-        default:
-            assert(false && "Unreachable");
-        }
-    }
-
-    return size;
+    return value->getSize();
 }
 
 void Builder::addValue(char* buffer, const SmartPointer& value, size_t& index)
 {
-    if (!value)
+    if (!value.get())
         return;
 
-    switch (value->type)
-    {
-    case TYPE_NULL:
-        break;
-    case TYPE_INT:
-        addElement(buffer, index, get_vInt(value), sizeof(get_vInt(value)));
-        break;
-    case TYPE_BOOL:
-        addElement(buffer, index, get_vBool(value), sizeof(get_vBool(value)));
-        break;
-    case TYPE_CHAR:
-        addElement(buffer, index, get_vChar(value), sizeof(get_vChar(value)));
-        break;
-    case TYPE_STRING:
-        addString(buffer, index, value);
-        break;
-    case TYPE_MEM_PTR:
-        addElement(buffer, index, get_vMemPtr(value), sizeof(get_vMemPtr(value)));
-        break;
-
-    case TYPE_IP_OFFSET:
-        addElement(buffer, index, get_vIpOffset(value), sizeof(get_vIpOffset(value)));
-        break;
-    case TYPE_FUNC:
-        addFunc(buffer, index, value);
-        break;
-    case TYPE_VAR:
-        {
-            addElement(buffer, index, as_vVar(value)->varIndex, sizeof(as_vVar(value)->varIndex));
-            break;
-        }
-    case TYPE_CONST:
-        addConst(buffer, index, value);
-        break;
-
-    default:
-        assert(false && "Unreachable");
-    }
+    value->writeBuffer(buffer, index);
 }
 
-void Builder::readValue(std::ifstream& file, ValueType type, OpCode& op)
+void Builder::readValue(std::ifstream& file, ValueType type, OpCode& code)
 {
-    char* buffer = (char*)malloc(0);
-    size_t size;
     switch (type)
     {
     case TYPE_NULL:
-        op.value = makeSmartPointer<vNull>(); break;
+        vNull::readBuffer(file, code);
+        break;
     case TYPE_INT:
         {
-            int32_t value;
-            size = sizeof(char) * sizeof(value);
-            buffer = (char*)realloc(buffer, size);
-            file.read(buffer, size);
-
-            readElement(buffer, value, sizeof(value));
-            op.value = makeSmartPointer<vInt>(value);
+            vInt::readBuffer(file, code);
             break;
         }
     case TYPE_BOOL:
         {
-            bool value;
-            size = sizeof(char) * sizeof(value);
-            buffer = (char*)realloc(buffer, size);
-            file.read(buffer, size);
-
-            readElement(buffer, value, sizeof(value));
-            op.value = makeSmartPointer<vBool>(value);
+            vBool::readBuffer(file, code);
             break;
         }
     case TYPE_CHAR:
         {
-            char value;
-            size = sizeof(char) * sizeof(value);
-            buffer = (char*)realloc(buffer, size);
-            file.read(buffer, size);
-
-            readElement(buffer, value, sizeof(value));
-            op.value = makeSmartPointer<vChar>(value);
+            vChar::readBuffer(file, code);
             break;
         }
     case TYPE_STRING:
         {
-            readString(file, op);
+            vString::readBuffer(file, code);
             break;
         }
     case TYPE_MEM_PTR:
         {
-            uint32_t value;
-            size = sizeof(char) * sizeof(value);
-            buffer = (char*)realloc(buffer, size);
-            file.read(buffer, size);
-
-            readElement(buffer, value, sizeof(value));
-            op.value = makeSmartPointer<vMemPtr>(value);
+            vMemPtr::readBuffer(file, code);
             break;
         }
 
     case TYPE_IP_OFFSET:
         {
-            int32_t value;
-            size = sizeof(char) * sizeof(value);
-            buffer = (char*)realloc(buffer, size);
-            file.read(buffer, size);
-
-            readElement(buffer, value, sizeof(value));
-            op.value = makeSmartPointer<vIpOffset>(value);
+            vIpOffset::readBuffer(file, code);
             break;
         }
     case TYPE_FUNC:
         {
-            readFunc(file, op);
+            vFunc::readBuffer(file, code);
             break;
         }
     case TYPE_VAR:
         {
-            uint32_t value;
-            size = sizeof(char) * sizeof(value);
-            buffer = (char*)realloc(buffer, size);
-            file.read(buffer, size);
-
-            readElement(buffer, value, sizeof(value));
-            op.value = makeSmartPointer<vVar>(value);
+            vVar::readBuffer(file, code);
             break;
         }
     case TYPE_CONST:
         {
-            readConst(file, op);
+            vConst::readBuffer(file, code);
             break;
         }
 
     default:
         assert(false && "Unreachable");
     }
-    delete buffer;
-}
-
-void Builder::addString(char* buffer, size_t& index, const SmartPointer& value)
-{
-    vString* str = as_vString(value);
-    size_t size = get_vStringSize(value);
-
-    addElement(buffer, index, size, size_tSize);
-    strncpy(buffer + index, str->v, size);
-
-    index += size;
-}
-
-void Builder::readString(std::ifstream& file, OpCode& op)
-{
-    char* buffer;
-    size_t size = sizeof(char) * size_tSize;
-    buffer = (char*)malloc(size);
-    file.read(buffer, size);
-
-    size_t length;
-    readElement(buffer, length, size_tSize);
-
-    char* value = (char*)malloc(length + 1);
-    file.read(value, length);
-    value[length] = 0;
-
-    op.value = makeSmartPointer<vString>(value);
-
-    delete buffer;
-}
-
-void Builder::addFunc(char* buffer, size_t& index, const SmartPointer& value)
-{
-    vFunc* func = as_vFunc(value);
-
-    size_t inputsSize = func->inputs.size();
-    size_t outputsSize = func->outputs.size();
-    size_t totalSize = inputsSize + outputsSize;
-
-    addElement(buffer, index, totalSize, size_tSize);
-
-    addElement(buffer, index, func->funcIndex, size_tSize);
-
-    addElement(buffer, index, inputsSize, size_tSize);
-    for (size_t i = 0; i < inputsSize; i++) { addElement(buffer, index, (int)func->inputs[i], enumSize); }
-
-    addElement(buffer, index, outputsSize, size_tSize);
-    for (size_t i = 0; i < outputsSize; i++) { addElement(buffer, index, (int)func->outputs[i], enumSize); }
-}
-
-void Builder::readFunc(std::ifstream& file, OpCode& code)
-{
-    size_t size = sizeof(char) * size_tSize;
-    char* buffer = (char*)malloc(size);
-    file.read(buffer, size);
-
-    size_t totalLength;
-    readElement(buffer, totalLength, size_tSize);
-    totalLength *= enumSize;
-    totalLength += (size_tSize * 2) + sizeof(uint32_t);
-
-    buffer = (char*)realloc(buffer, totalLength);
-    file.read(buffer, totalLength);
-    
-    uint32_t funcIndex;
-    size_t inputsSize, outputsSize;
-    enumType type;
-    size_t index = 0;
-
-    readElement(buffer, index, funcIndex, sizeof(uint32_t));
-
-    readElement(buffer, index, inputsSize, size_tSize);
-
-    code.value = makeSmartPointer<vFunc>(funcIndex);
-
-    vFunc* func = as_vFunc(code.value);
-
-    for (size_t i = 0; i < inputsSize; i++)
-    {
-        readElement(buffer, index, type, enumSize);
-        func->inputs.push_back((ValueType)type);
-    }
-
-    readElement(buffer, index, outputsSize, size_tSize);
-    for (size_t i = 0; i < outputsSize; i++)
-    {
-        readElement(buffer, index, type, enumSize);
-        func->outputs.push_back((ValueType)type);
-    }
-
-    if (code.code == OP_FUNC && funcIndex != VM::addFunction())
-        assert(false && "Something has gone wrong");
-
-    delete buffer;
-}
-
-void Builder::addConst(char* buffer, size_t& index, const SmartPointer& value)
-{
-    vConst* constValue = as_vConst(value);
-    addElement(buffer, index, constValue->constIndex, sizeof(constValue->constIndex));
-}
-
-void Builder::readConst(std::ifstream& file, OpCode& code)
-{
-    uint32_t value;
-    constexpr size_t size = sizeof(char) * sizeof(value);
-    char* buffer = (char*)malloc(size);
-    file.read(buffer, size);
-
-    readElement(buffer, value, sizeof(value));
-
-    if (code.code == OP_CREATE_CONST && value != VM::addConstant())
-    {
-        assert(false && "Something has gone wrong");
-    }
-
-    code.value = makeSmartPointer<vConst>(value);
-    
-    delete buffer;
 }

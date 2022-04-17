@@ -18,31 +18,11 @@
 
 class Builder
 {
+public:
 private:
 public:
     static void buildCompiled(const char* filename, std::vector<OpCode>* opcodes);
     static void loadCompiled(const char* sourcePath);
-private:
-    Builder() = default;
-    ~Builder() = default;
-
-    static void writeOpCode(char* buffer, const OpCode& op, size_t& index);
-    static void readOpCode(char* buffer, OpCode& op, std::ifstream& file);
-
-    static size_t getValueSize(const SmartPointer& value);
-    // static size_t getValueSize(const ValueType value);
-
-    static void addValue(char* buffer, const SmartPointer& value, size_t& index);
-    static void readValue(std::ifstream& file, ValueType type, OpCode& op);
-
-    static void addString(char* buffer, size_t& index, const SmartPointer& value);
-    static void readString(std::ifstream& file, OpCode& code);
-
-    static void addFunc(char* buffer, size_t& index, const SmartPointer& value);
-    static void readFunc(std::ifstream& file, OpCode& code);
-
-    static void addConst(char* buffer, size_t& index, const SmartPointer& value);
-    static void readConst(std::ifstream& file, OpCode& code);
 
     template<typename T>
     static void addElement(char* output, size_t& index, T value, size_t size)
@@ -86,6 +66,18 @@ private:
     {
         value = output[0] & 0xFF;
     }
+private:
+    Builder() = default;
+    ~Builder() = default;
+
+    static void writeOpCode(char* buffer, const OpCode& op, size_t& index);
+    static void readOpCode(char* buffer, OpCode& op, std::ifstream& file);
+
+    static size_t getValueSize(const SmartPointer& value);
+    // static size_t getValueSize(const ValueType value);
+
+    static void addValue(char* buffer, const SmartPointer& value, size_t& index);
+    static void readValue(std::ifstream& file, ValueType type, OpCode& op);
 };
 
 #endif

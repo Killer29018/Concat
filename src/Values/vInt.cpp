@@ -1,6 +1,7 @@
 #include "Value.hpp"
 #include "../SmartPointer.hpp"
 #include "../Error.hpp"
+#include "../Builder.hpp"
 
 #include <cstring>
 
@@ -227,4 +228,28 @@ void vInt::lShift(const SmartPointer &v2, SmartPointer &rV, const OpCode& op) co
 void vInt::lnot(SmartPointer& rV, const OpCode& op) const
 {
     rV = makeSmartPointer<vInt>(~v);
+}
+
+size_t vInt::getSize() const
+{
+    return enumSize + sizeof(int32_t);
+}
+
+void vInt::writeBuffer(char* buffer, size_t& index) const
+{
+    Builder::addElement(buffer, index, v, sizeof(v));
+}
+
+void vInt::readBuffer(std::ifstream& file, OpCode& code)
+{
+    int32_t value;
+    size_t size = sizeof(char) * sizeof(value);
+    char* buffer = (char*)malloc(size);
+
+    file.read(buffer, size);
+
+    Builder::readElement(buffer, value, sizeof(value));
+    code.value = makeSmartPointer<vInt>(value);
+
+    delete buffer;
 }

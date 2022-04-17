@@ -1,6 +1,7 @@
 #include "Value.hpp"
 #include "../SmartPointer.hpp"
 #include "../Error.hpp"
+#include "../Builder.hpp"
 
 #include <cstring>
 
@@ -103,4 +104,45 @@ size_t get_vStringSize(const SmartPointer& val)
     if (value->v)
         return strlen(value->v);
     return 0;
+}
+
+size_t get_vStringSize(const vString* val)
+{
+    if (val->v)
+        return strlen(val->v);
+    return 0;
+}
+
+
+size_t vString::getSize() const
+{
+    return enumSize + size_tSize + get_vStringSize(this);
+}
+
+void vString::writeBuffer(char* buffer, size_t& index) const
+{
+    size_t size = get_vStringSize(this);
+
+    Builder::addElement(buffer, index, size, size_tSize);
+    strncpy(buffer + index, v, size);
+
+    index += size;
+}
+
+void vString::readBuffer(std::ifstream& file, OpCode& code)
+{
+    size_t size = sizeof(char) * size_tSize;
+    char* buffer = (char*)malloc(size);
+    file.read(buffer, size);
+
+    size_t length;
+    Builder::readElement(buffer, length, size_tSize);
+
+    char* value = (char*)malloc(length + 1);
+    file.read(value, length);
+    value[length] = 0;
+
+    code.value = makeSmartPointer<vString>(value);
+
+    delete buffer;
 }
