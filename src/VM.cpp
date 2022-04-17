@@ -67,6 +67,11 @@ uint32_t VM::addFunction()
     return index;
 }
 
+void VM::addFunctionDefinition(OpCode& op)
+{
+    m_FunctionDefinitions[as_vFunc(op.value)->funcIndex] = op.value;
+}
+
 uint32_t VM::addGlobalVariable(SmartPointer value)
 {
     uint32_t index = (uint32_t)m_GlobalVariables.size();
@@ -700,7 +705,6 @@ void VM::simulate()
         case OP_FUNC:
             {
                 m_Functions[as_vFunc(op.value)->funcIndex] = ip + 1;
-                m_FunctionDefinitions[as_vFunc(op.value)->funcIndex] = op.value;
 
                 while (m_OpCodes[ip].code != OP_ENDFUNC) { ip++; }
 

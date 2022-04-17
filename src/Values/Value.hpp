@@ -262,6 +262,8 @@ struct vFunc : Value
     std::vector<ValueType> outputs;
     uint32_t funcIndex;
 
+    std::vector<SmartPointer> variables;
+
     vFunc(std::vector<ValueType> inputs, std::vector<ValueType> outputs, uint32_t index)
         : Value(TYPE_FUNC), inputs(inputs), outputs(outputs), funcIndex(index) {}
 

@@ -31,6 +31,7 @@ public:
     static void pushInt(int32_t value);
     static uint32_t addMemory(uint32_t bytes);
     static uint32_t addFunction();
+    static void addFunctionDefinition(OpCode& code);
     static uint32_t addGlobalVariable(SmartPointer value);
     static uint32_t addGlobalConstant();
 
@@ -43,7 +44,7 @@ public:
 
     static void build(const char* filename);
 
-    static void clear() { m_OpCodes.clear(); m_Memory.clear(); m_MemoryNames.clear(); m_Functions.clear(); m_GlobalConstants.clear(); m_FunctionDefinitions.clear(); m_GlobalVariables.clear(); }
+    static void clear() { m_OpCodes.clear(); m_Memory.clear(); m_MemoryNames.clear(); m_Functions.clear(); m_FunctionDefinitions.clear(); m_GlobalConstants.clear(); m_GlobalVariables.clear(); }
 private:
     VM() = default;
     ~VM() = default;

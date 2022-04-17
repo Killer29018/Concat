@@ -47,12 +47,17 @@ void vFunc::readBuffer(std::ifstream& file, OpCode& code)
 
     Builder::readElement(buffer, index, funcIndex, sizeof(uint32_t));
 
-    Builder::readElement(buffer, index, inputsSize, size_tSize);
-
     code.value = makeSmartPointer<vFunc>(funcIndex);
 
     vFunc* func = as_vFunc(code.value);
 
+    if (code.code == OP_FUNC && funcIndex != VM::addFunction())
+        assert(false && "Something has gone wrong");
+
+    if (code.code == OP_FUNC)
+        VM::addFunctionDefinition(code);
+
+    Builder::readElement(buffer, index, inputsSize, size_tSize);
     for (size_t i = 0; i < inputsSize; i++)
     {
         Builder::readElement(buffer, index, type, enumSize);
@@ -65,9 +70,6 @@ void vFunc::readBuffer(std::ifstream& file, OpCode& code)
         Builder::readElement(buffer, index, type, enumSize);
         func->outputs.push_back((ValueType)type);
     }
-
-    if (code.code == OP_FUNC && funcIndex != VM::addFunction())
-        assert(false && "Something has gone wrong");
 
     delete buffer;
 }

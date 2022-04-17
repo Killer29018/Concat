@@ -17,6 +17,7 @@ bool Compiler::m_Error = false;
 size_t Compiler::m_Ip = 0;
 
 bool Compiler::m_InFunction = false;
+size_t Compiler::m_CurrentFunctionIndex = 0;
 
 std::vector<std::pair<std::string, std::string>> Compiler::m_Patterns =
 {
@@ -783,13 +784,15 @@ void Compiler::startCompiler()
                     }
 
                     code.code = OP_FUNC;
-                    uint32_t offset = VM::addFunction();
-                    code.value = makeSmartPointer<vFunc>(inputTypes, outputTypes, offset);
+                    uint32_t index = VM::addFunction();
+                    code.value = makeSmartPointer<vFunc>(inputTypes, outputTypes, index);
+                    VM::addFunctionDefinition(code);
                     VM::addOpCode(code);
 
-                    m_Functions[stringWord] = offset;
+                    m_Functions[stringWord] = index;
 
                     m_InFunction = true;
+                    m_CurrentFunctionIndex = index;
 
                     ip += ipOffset + 1;
                     break;
@@ -806,6 +809,7 @@ void Compiler::startCompiler()
                     code.code = OP_ENDFUNC;
                     VM::addOpCode(code);
                     m_InFunction = false;
+                    m_CurrentFunctionIndex = 0;
 
                     ip++;
                     break;
