@@ -20,10 +20,11 @@ std::stack<vFunc*> VM::m_ReturnFuncStack;
 
 std::vector<uint8_t> VM::m_Memory;
 std::unordered_map<uint32_t, size_t> VM::m_MemoryNames;
-std::vector<SmartPointer> VM::m_Variables;
 std::vector<size_t> VM::m_Functions;
 std::unordered_map<size_t, SmartPointer> VM::m_FunctionDefinitions;
-std::vector<SmartPointer> VM::m_Constants;
+
+std::vector<SmartPointer> VM::m_GlobalVariables;
+std::vector<SmartPointer> VM::m_GlobalConstants;
 
 int32_t VM::m_CurrentVarIndex = -1;
 
@@ -66,19 +67,19 @@ uint32_t VM::addFunction()
     return index;
 }
 
-uint32_t VM::addVariable(SmartPointer value)
+uint32_t VM::addGlobalVariable(SmartPointer value)
 {
-    uint32_t index = (uint32_t)m_Variables.size();
+    uint32_t index = (uint32_t)m_GlobalVariables.size();
 
-    m_Variables.push_back(value);
+    m_GlobalVariables.push_back(value);
 
     return index;
 }
 
-uint32_t VM::addConstant()
+uint32_t VM::addGlobalConstant()
 {
-    uint32_t index = (uint32_t)m_Constants.size();
-    m_Constants.emplace_back();
+    uint32_t index = (uint32_t)m_GlobalConstants.size();
+    m_GlobalConstants.emplace_back();
 
     return index;
 }
@@ -451,7 +452,7 @@ void VM::simulate()
                 OpCode* value = &m_OpCodes.at(ip + 1);
                 vConst* constValue = as_vConst(op.value);
 
-                m_Constants[constValue->constIndex] = value->value;
+                m_GlobalConstants[constValue->constIndex] = value->value;
 
                 ip += 2;
                 break;
@@ -460,7 +461,7 @@ void VM::simulate()
             {
                 vConst* constValue = as_vConst(op.value);
 
-                m_Stack.push(m_Constants[constValue->constIndex]);
+                m_Stack.push(m_GlobalConstants[constValue->constIndex]);
                 ip++;
                 break;
             }
@@ -886,7 +887,7 @@ void VM::writeMemory(const SmartPointer& address, const SmartPointer& value, siz
 void VM::writeMemoryVar(const SmartPointer& address, const SmartPointer& value, const OpCode& op)
 {
     vVar* var = as_vVar(address);
-    SmartPointer& variable = m_Variables[var->varIndex];
+    SmartPointer& variable = m_GlobalVariables[var->varIndex];
 
     OpCode tempOp = op;
     tempOp.value = variable;
@@ -896,7 +897,7 @@ void VM::writeMemoryVar(const SmartPointer& address, const SmartPointer& value, 
         SmartPointer rV;
         if (value->tryCast(rV, tempOp))
         {
-            m_Variables[var->varIndex] = rV;
+            m_GlobalVariables[var->varIndex] = rV;
         }
         else
         {
@@ -905,7 +906,7 @@ void VM::writeMemoryVar(const SmartPointer& address, const SmartPointer& value, 
     }
     else
     {
-        m_Variables[var->varIndex] = value;
+        m_GlobalVariables[var->varIndex] = value;
     }
 }
 
@@ -985,7 +986,7 @@ const SmartPointer VM::pop()
 
     if (v->type == TYPE_VAR)
     {
-        v = m_Variables[as_vVar(v)->varIndex];
+        v = m_GlobalVariables[as_vVar(v)->varIndex];
     }
 
     return v; 

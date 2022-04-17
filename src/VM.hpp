@@ -18,10 +18,11 @@ private:
 
     static std::vector<uint8_t> m_Memory;
     static std::unordered_map<uint32_t, size_t> m_MemoryNames;
-    static std::vector<SmartPointer> m_Variables;
     static std::vector<size_t> m_Functions;
     static std::unordered_map<size_t, SmartPointer> m_FunctionDefinitions;
-    static std::vector<SmartPointer> m_Constants;
+
+    static std::vector<SmartPointer> m_GlobalVariables;
+    static std::vector<SmartPointer> m_GlobalConstants;
 
     static int32_t m_CurrentVarIndex;
 public:
@@ -30,11 +31,11 @@ public:
     static void pushInt(int32_t value);
     static uint32_t addMemory(uint32_t bytes);
     static uint32_t addFunction();
-    static uint32_t addVariable(SmartPointer value);
-    static uint32_t addConstant();
+    static uint32_t addGlobalVariable(SmartPointer value);
+    static uint32_t addGlobalConstant();
 
     static size_t getMemorySize() { return m_Memory.size(); }
-    static std::vector<SmartPointer>& getVariables() { return m_Variables; }
+    static std::vector<SmartPointer>& getVariables() { return m_GlobalVariables; }
 
     static void printOpCodes();
 
@@ -42,7 +43,7 @@ public:
 
     static void build(const char* filename);
 
-    static void clear() { m_OpCodes.clear(); m_Memory.clear(); m_MemoryNames.clear(); m_Functions.clear(); m_Constants.clear(); m_FunctionDefinitions.clear(); m_Constants.clear(); }
+    static void clear() { m_OpCodes.clear(); m_Memory.clear(); m_MemoryNames.clear(); m_Functions.clear(); m_GlobalConstants.clear(); m_FunctionDefinitions.clear(); m_GlobalVariables.clear(); }
 private:
     VM() = default;
     ~VM() = default;

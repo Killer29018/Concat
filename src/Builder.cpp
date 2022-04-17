@@ -133,7 +133,7 @@ void Builder::loadCompiled(const char* sourcePath)
 
         readValue(file, type, op);
 
-        VM::addVariable(op.value);
+        VM::addGlobalVariable(op.value);
     }
 
     // OpCodes

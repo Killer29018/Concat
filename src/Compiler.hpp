@@ -14,9 +14,9 @@ class Compiler
 private:
     static std::vector<Token> m_Tokens;
     static std::set<std::string> m_Memory;
-    static std::unordered_map<std::string, uint32_t> m_Variables;
     static std::unordered_map<std::string, uint32_t> m_Functions;
-    static std::unordered_map<std::string, uint32_t> m_Constants;
+    static std::unordered_map<std::string, uint32_t> m_GlobalVariables;
+    static std::unordered_map<std::string, uint32_t> m_GlobalConstants;
     static bool m_Error;
     static size_t m_Ip;
     static bool m_InFunction;

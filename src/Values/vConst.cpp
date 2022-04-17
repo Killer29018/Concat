@@ -23,7 +23,7 @@ void vConst::readBuffer(std::ifstream& file, OpCode& code)
 
     Builder::readElement(buffer, value, sizeof(value));
 
-    if (code.code == OP_CREATE_CONST && value != VM::addConstant())
+    if (code.code == OP_CREATE_CONST && value != VM::addGlobalConstant())
     {
         assert(false && "Something has gone wrong");
     }
