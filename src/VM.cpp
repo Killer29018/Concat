@@ -26,7 +26,11 @@ std::unordered_map<size_t, SmartPointer> VM::m_FunctionDefinitions;
 std::vector<SmartPointer> VM::m_GlobalVariables;
 std::vector<SmartPointer> VM::m_GlobalConstants;
 
-int32_t VM::m_CurrentVarIndex = -1;
+std::vector<std::vector<SmartPointer>> VM::m_LocalVariables;
+std::vector<std::vector<SmartPointer>> VM::m_LocalConstants;
+
+int32_t VM::m_CurrentMemIndex = -1;
+uint32_t VM::m_CurrentFuncIndex = 0;
 
 constexpr int STRINGPADDING = 20;
 
@@ -64,6 +68,9 @@ uint32_t VM::addFunction()
     uint32_t index = (uint32_t)m_Functions.size();
     m_Functions.push_back(0);
 
+    m_LocalVariables.push_back(std::vector<SmartPointer>());
+    m_LocalConstants.push_back(std::vector<SmartPointer>());
+
     return index;
 }
 
@@ -87,6 +94,13 @@ uint32_t VM::addGlobalConstant()
     m_GlobalConstants.emplace_back();
 
     return index;
+}
+
+uint32_t VM::addLocalVariable(uint32_t funcIndex, SmartPointer value)
+{
+    m_LocalVariables[funcIndex].push_back(value);
+
+    return m_LocalVariables[funcIndex].size() - 1;
 }
 
 void VM::printOpCodes()
@@ -415,8 +429,8 @@ void VM::simulate()
 
         case OP_CREATE_MEM:
             {
-                m_CurrentVarIndex = get_vMemPtr(op.value);
-                m_MemoryNames.insert({ m_CurrentVarIndex, 0 });
+                m_CurrentMemIndex = get_vMemPtr(op.value);
+                m_MemoryNames.insert({ m_CurrentMemIndex, 0 });
                 ip++;
                 break;
             }
@@ -435,7 +449,7 @@ void VM::simulate()
 
                 const SmartPointer& a = pop();
 
-                if (m_CurrentVarIndex == -1)
+                if (m_CurrentMemIndex == -1)
                     assert(false && "Unreachable. Should be dealt with in Compiler");
 
                 if (a->type != TYPE_INT)
@@ -445,9 +459,9 @@ void VM::simulate()
 
                 uint32_t index = addMemory(get_vInt(a));
 
-                m_MemoryNames.at(m_CurrentVarIndex) = index;
+                m_MemoryNames.at(m_CurrentMemIndex) = index;
 
-                m_CurrentVarIndex = -1;
+                m_CurrentMemIndex = -1;
                 ip++;
                 break;
             }
@@ -739,8 +753,8 @@ void VM::simulate()
                     m_Stack.push(values[i - 1]);
                 }
 
-
                 m_ReturnFuncStack.push(func);
+                m_CurrentFuncIndex = func->funcIndex;
 
                 ip = m_Functions[as_vFunc(op.value)->funcIndex];
 
@@ -752,6 +766,11 @@ void VM::simulate()
                 ip = m_ReturnStack.top(); m_ReturnStack.pop();
                 vFunc* func = m_ReturnFuncStack.top(); m_ReturnFuncStack.pop();
 
+                if (m_ReturnFuncStack.size() != 0)
+                    m_CurrentFuncIndex = m_ReturnFuncStack.top()->funcIndex;
+                else
+                    m_CurrentFuncIndex = 0;
+
                 if (count + func->outputs.size() != m_Stack.size())
                     Error::runtimeError(op, "Unexpected data on the stack. Expected %zu elements but found %zu instead", count + func->outputs.size(), m_Stack.size());
 
@@ -761,8 +780,15 @@ void VM::simulate()
                 for (size_t i = 0; i < outputsSize; i++)
                 {
                     values.push_back(m_Stack.top());
+                    ValueType type = m_Stack.top()->type;
 
-                    if (m_Stack.top()->type != func->outputs[outputsSize - i - 1])
+
+                    if (type == TYPE_VAR)
+                    {
+                        type = getVariable(m_Stack.top())->type;
+                    }
+
+                    if (type != func->outputs[outputsSize - i - 1])
                         Error::runtimeError(op, "Expected %s for element %zu but found %s instead", ValueTypeString[func->outputs[outputsSize - i - 1]], i, ValueTypeString[m_Stack.top()->type]);
 
                     m_Stack.pop();
@@ -825,7 +851,7 @@ void VM::printValueDebug(size_t index)
             break;
         }
     case TYPE_VAR:
-        printf("%.4lu | %-*s | %d\n", index, STRINGPADDING, OpCodeString[code.code], as_vVar(code.value)->varIndex);
+        printf("%.4lu | %-*s | %d | %d\n", index, STRINGPADDING, OpCodeString[code.code], as_vVar(code.value)->varIndex, as_vVar(code.value)->inFunction);
         break;
     case TYPE_CONST:
         printf("%.4lu | %-*s | %d\n", index, STRINGPADDING, OpCodeString[code.code], as_vConst(code.value)->constIndex);
@@ -890,8 +916,7 @@ void VM::writeMemory(const SmartPointer& address, const SmartPointer& value, siz
 
 void VM::writeMemoryVar(const SmartPointer& address, const SmartPointer& value, const OpCode& op)
 {
-    vVar* var = as_vVar(address);
-    SmartPointer& variable = m_GlobalVariables[var->varIndex];
+    SmartPointer& variable = getVariable(address);
 
     OpCode tempOp = op;
     tempOp.value = variable;
@@ -901,7 +926,7 @@ void VM::writeMemoryVar(const SmartPointer& address, const SmartPointer& value, 
         SmartPointer rV;
         if (value->tryCast(rV, tempOp))
         {
-            m_GlobalVariables[var->varIndex] = rV;
+            writeVariable(address, rV);
         }
         else
         {
@@ -910,7 +935,7 @@ void VM::writeMemoryVar(const SmartPointer& address, const SmartPointer& value, 
     }
     else
     {
-        m_GlobalVariables[var->varIndex] = value;
+        writeVariable(address, value);
     }
 }
 
@@ -983,6 +1008,44 @@ void VM::inplaceMemOperation(const OpCode& op)
     writeMemory(address, rV, size);
 }
 
+SmartPointer& VM::getVariable(const SmartPointer& value)
+{
+    if (value->type != TYPE_VAR)
+    {
+        assert(false && "Not possible");
+    }
+
+    const vVar* var = (vVar*)value.get();
+
+    if (var->inFunction)
+    {
+        return m_LocalVariables[m_CurrentFuncIndex][var->varIndex];
+    }
+    else
+    {
+        return m_GlobalVariables[var->varIndex];
+    }
+}
+
+void VM::writeVariable(const SmartPointer& target, const SmartPointer& value)
+{
+    if (target->type != TYPE_VAR)
+    {
+        assert(false && "Not possible");
+    }
+
+    const vVar* var = (vVar*)target.get();
+
+    if (var->inFunction)
+    {
+        m_LocalVariables[m_CurrentFuncIndex][var->varIndex] = value;
+    }
+    else
+    {
+        m_GlobalVariables[var->varIndex] = value;
+    }
+}
+
 const SmartPointer VM::pop() 
 { 
     SmartPointer v = m_Stack.top(); 
@@ -990,7 +1053,7 @@ const SmartPointer VM::pop()
 
     if (v->type == TYPE_VAR)
     {
-        v = m_GlobalVariables[as_vVar(v)->varIndex];
+        v = getVariable(v);
     }
 
     return v; 

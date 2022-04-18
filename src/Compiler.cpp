@@ -11,8 +11,13 @@
 std::vector<Token> Compiler::m_Tokens;
 std::set<std::string> Compiler::m_Memory;
 std::unordered_map<std::string, uint32_t> Compiler::m_Functions;
+
 std::unordered_map<std::string, uint32_t> Compiler::m_GlobalVariables;
 std::unordered_map<std::string, uint32_t> Compiler::m_GlobalConstants;
+
+std::unordered_map<uint32_t, std::unordered_map<std::string, uint32_t>> Compiler::m_LocalVariables;
+std::unordered_map<uint32_t, std::unordered_map<std::string, uint32_t>> Compiler::m_LocalConstants;
+
 bool Compiler::m_Error = false;
 size_t Compiler::m_Ip = 0;
 
@@ -232,7 +237,6 @@ void Compiler::startCompiler()
                     if (m_Memory.find(word) != m_Memory.end())
                     {
                         size_t index = std::distance(m_Memory.begin(), m_Memory.find(word));
-                        // addBasicOpCode(code, ip, OP_LOAD_VAR);
                         code.code = OP_LOAD_MEM;
                         code.value = makeSmartPointer<vMemPtr>(index);
                         VM::addOpCode(code);
@@ -269,7 +273,6 @@ void Compiler::startCompiler()
                             {
                                 m_Memory.emplace(word);
                                 size_t index = std::distance(m_Memory.begin(), m_Memory.find(word));
-                                // addBasicOpCode(code, ip, OP_LOAD_VAR);
                                 code.code = OP_CREATE_MEM;
                                 code.value = makeSmartPointer<vMemPtr>(index);
                                 VM::addOpCode(code);
@@ -369,12 +372,6 @@ void Compiler::startCompiler()
 
             case TOKEN_CREATE_VAR:
                 {
-                    if (m_InFunction)
-                    {
-                        Error::compilerError(t, "Cannot create variable in Func");
-                        // Local variable
-                    }
-
                     if (ip == m_Tokens.size() - 1)
                     {
                         Error::compilerError(t, "Expected type but found EOF instead");
@@ -395,29 +392,64 @@ void Compiler::startCompiler()
                     ValueType type = convertTokenToValue(nextToken->type);
 
                     Value* v = createValue(type);
-                    uint32_t position = VM::addGlobalVariable(SmartPointer(v));
+                    if (m_InFunction)
+                    {
+                        vFunc* func = VM::getFunction(m_CurrentFunctionIndex);
+                        uint32_t position = VM::addLocalVariable(m_CurrentFunctionIndex, SmartPointer(v));
 
-                    m_GlobalVariables[stringWord] = position;
+                        m_LocalVariables[m_CurrentFunctionIndex][stringWord] = position;
+                    }
+                    else
+                    {
+                        uint32_t position = VM::addGlobalVariable(SmartPointer(v));
+
+                        m_GlobalVariables[stringWord] = position;
+                    }
 
                     ip += 2;
                     break;
                 }
             case TOKEN_VAR:
                 {
-                    auto position = m_GlobalVariables.find(stringWord);
-                    if (position == m_GlobalVariables.end())
+                    bool checkGlobal = true;
+                    if (m_InFunction)
                     {
-                        Error::compilerError(t, "Could not find variable %s", word);
-                        m_Error = true;
+                        auto position = m_LocalVariables[m_CurrentFunctionIndex].find(stringWord);
+                        if (position == m_LocalVariables[m_CurrentFunctionIndex].end())
+                        {
+                        }
+                        else
+                        {
+                            checkGlobal = false;
+                            code.code = OP_VAR;
+                            code.value = makeSmartPointer<vVar>(position->second, true);
+                            VM::addOpCode(code);
+                            ip++;
+                            break;
+                        }
+                    }
 
+                    if (checkGlobal)
+                    {
+                        auto position = m_GlobalVariables.find(stringWord);
+                        if (position == m_GlobalVariables.end())
+                        {
+                            Error::compilerError(t, "Could not find variable '%s'", word);
+                            m_Error = true;
+
+                            ip++;
+                            break;
+                        }
+
+                        code.code = OP_VAR;
+                        code.value = makeSmartPointer<vVar>(position->second);
+                        VM::addOpCode(code);
                         ip++;
                         break;
                     }
 
-                    code.code = OP_VAR;
-                    code.value = makeSmartPointer<vVar>(position->second);
-                    VM::addOpCode(code);
-
+                    Error::compilerError(t, "Could not find variable '%s'", word);
+                    m_Error = true;
                     ip++;
                     break;
                 }

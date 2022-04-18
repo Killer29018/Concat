@@ -279,8 +279,10 @@ struct vFunc : Value
 struct vVar : Value
 {
     uint32_t varIndex;
+    bool inFunction;
 
-    vVar(uint32_t varIndex) : Value(TYPE_VAR), varIndex(varIndex) {}
+    vVar(uint32_t varIndex) : Value(TYPE_VAR), varIndex(varIndex), inFunction(false) {}
+    vVar(uint32_t varIndex, bool inFunction) : Value(TYPE_VAR), varIndex(varIndex), inFunction(true) {}
 
     size_t getSize() const;
     void writeBuffer(char* buffer, size_t& index) const;

@@ -24,7 +24,11 @@ private:
     static std::vector<SmartPointer> m_GlobalVariables;
     static std::vector<SmartPointer> m_GlobalConstants;
 
-    static int32_t m_CurrentVarIndex;
+    static std::vector<std::vector<SmartPointer>> m_LocalVariables;
+    static std::vector<std::vector<SmartPointer>> m_LocalConstants;
+
+    static int32_t m_CurrentMemIndex;
+    static uint32_t m_CurrentFuncIndex;
 public:
     static void addOpCode(OpCodeEnum code);
     static void addOpCode(const OpCode& code);
@@ -35,8 +39,13 @@ public:
     static uint32_t addGlobalVariable(SmartPointer value);
     static uint32_t addGlobalConstant();
 
+    static uint32_t addLocalVariable(uint32_t funcIndex, SmartPointer value);
+    static uint32_t addLocalConstant();
+
     static size_t getMemorySize() { return m_Memory.size(); }
     static std::vector<SmartPointer>& getVariables() { return m_GlobalVariables; }
+    static std::vector<std::vector<SmartPointer>>& getLocalVariables() { return m_LocalVariables; }
+    static vFunc* getFunction(size_t index) { return (vFunc*)(m_FunctionDefinitions[index].get()); }
 
     static void printOpCodes();
 
@@ -59,6 +68,9 @@ private:
     static void writeMemoryVar(const SmartPointer& address, const SmartPointer& value, const OpCode& op);
 
     static void inplaceMemOperation(const OpCode& op);
+
+    static SmartPointer& getVariable(const SmartPointer& value);
+    static void writeVariable(const SmartPointer& target, const SmartPointer& value);
 
     static const SmartPointer pop();
     static const SmartPointer popDirect();

@@ -17,6 +17,9 @@ private:
     static std::unordered_map<std::string, uint32_t> m_Functions;
     static std::unordered_map<std::string, uint32_t> m_GlobalVariables;
     static std::unordered_map<std::string, uint32_t> m_GlobalConstants;
+
+    static std::unordered_map<uint32_t, std::unordered_map<std::string, uint32_t>> m_LocalVariables;
+    static std::unordered_map<uint32_t, std::unordered_map<std::string, uint32_t>> m_LocalConstants;
     static bool m_Error;
     static size_t m_Ip;
 

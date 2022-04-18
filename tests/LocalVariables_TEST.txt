@@ -1,0 +1,18 @@
+--------------------------------------------------
+LocalVariables.concat
+--stdout--
+
+--stderr--
+[COMPILER ERROR] 'tests/LocalVariables.concat':10:1 Could not find variable 'v'
+
+--build run stdout--
+
+--build run stderr--
+[COMPILER ERROR] 'tests/LocalVariables.concat':10:1 Could not find variable 'v'
+
+--build stdout--
+File not recognised
+--build stderr--
+
+--------------------------------------------------
+

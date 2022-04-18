@@ -30,8 +30,20 @@ void Builder::buildCompiled(const char* filename, std::vector<OpCode>* OpCodes)
         variableCount += getValueSize(variables[i]);
     }
 
+    auto& lVariables = VM::getLocalVariables();
+    size_t lVariableCount = size_tSize;
+    size_t totalLVariableCount = 0;
+    for (size_t i = 0; i < lVariables.size(); i++)
+    {
+        for (size_t j = 0; j < lVariables[i].size(); j++)
+        {
+            lVariableCount += size_tSize + getValueSize(lVariables[i][j]);
+            totalLVariableCount++;
+        }
+    }
+
     // FilenamesCount [FilenameSize, Filename] Variables OpCodes 
-    size_t headerSize = size_tSize + (size_tSize * Lexer::filenames.size()) + filenamesSize + variableCount + size_tSize;
+    size_t headerSize = size_tSize + (size_tSize * Lexer::filenames.size()) + filenamesSize + variableCount + lVariableCount + size_tSize;
     char* buffer = (char*)malloc((sizeof(char) * headerSize));
 
     size_t index = 0;
@@ -50,6 +62,18 @@ void Builder::buildCompiled(const char* filename, std::vector<OpCode>* OpCodes)
         SmartPointer& value = variables[i];
         addElement(buffer, index, (int)value->type, enumSize);
         addValue(buffer, value, index);
+    }
+
+    addElement(buffer, index, totalLVariableCount, size_tSize);
+    for (size_t i = 0; i < lVariables.size(); i++)
+    {
+        for (size_t j = 0; j < lVariables[i].size(); j++)
+        {
+            SmartPointer& value = lVariables[i][j];
+            addElement(buffer, index, i, size_tSize);
+            addElement(buffer, index, (int)value->type, enumSize);
+            addValue(buffer, value, index);
+        }
     }
 
     addElement(buffer, index, OpCodes->size(), size_tSize);
@@ -134,6 +158,33 @@ void Builder::loadCompiled(const char* sourcePath)
         readValue(file, type, op);
 
         VM::addGlobalVariable(op.value);
+    }
+
+    buffer = (char*)realloc(buffer, size_tSize);
+    file.read(buffer, size_tSize);
+    size_t lVariablesSize;
+    readElement(buffer, lVariablesSize, size_tSize);
+
+    for (size_t i = 0; i < lVariablesSize; i++)
+    {
+        buffer = (char*)realloc(buffer, size_tSize);
+        file.read(buffer, size_tSize);
+
+        uint32_t funcIndex;
+        readElement(buffer, funcIndex, size_tSize);
+
+        buffer = (char*)realloc(buffer, enumSize);
+        file.read(buffer, enumSize);
+
+        ValueType type;
+        enumType enumType;
+
+        readElement(buffer, enumType, enumSize);
+        type = (ValueType)enumType;
+
+        readValue(file, type, op);
+
+        VM::addLocalVariable(funcIndex, op.value);
     }
 
     // OpCodes

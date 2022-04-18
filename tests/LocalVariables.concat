@@ -1,0 +1,8 @@
+func CalculateValue --> int define
+    var v int
+    v 10 !
+    v v 10 + !
+    v
+endfunc
+
+CalculateValue print cr
