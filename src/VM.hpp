@@ -46,6 +46,7 @@ public:
     static std::vector<SmartPointer>& getVariables() { return m_GlobalVariables; }
     static std::vector<std::vector<SmartPointer>>& getLocalVariables() { return m_LocalVariables; }
     static vFunc* getFunction(size_t index) { return (vFunc*)(m_FunctionDefinitions[index].get()); }
+    static size_t getFunctionsSize() { return m_Functions.size(); }
 
     static void printOpCodes();
 

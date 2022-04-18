@@ -282,7 +282,7 @@ struct vVar : Value
     bool inFunction;
 
     vVar(uint32_t varIndex) : Value(TYPE_VAR), varIndex(varIndex), inFunction(false) {}
-    vVar(uint32_t varIndex, bool inFunction) : Value(TYPE_VAR), varIndex(varIndex), inFunction(true) {}
+    vVar(uint32_t varIndex, bool inFunction) : Value(TYPE_VAR), varIndex(varIndex), inFunction(inFunction) {}
 
     size_t getSize() const;
     void writeBuffer(char* buffer, size_t& index) const;

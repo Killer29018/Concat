@@ -288,7 +288,7 @@ void Compiler::startCompiler()
                 {
                     if (ip == 0)
                     {
-                        Error::compilerError(t, "could not find var before endmem");
+                        Error::compilerError(t, "could not find mem before endmem");
                         m_Error = true;
                         ip++;
                         break;

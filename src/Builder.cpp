@@ -42,12 +42,13 @@ void Builder::buildCompiled(const char* filename, std::vector<OpCode>* OpCodes)
         }
     }
 
-    // FilenamesCount [FilenameSize, Filename] Variables OpCodes 
-    size_t headerSize = size_tSize + (size_tSize * Lexer::filenames.size()) + filenamesSize + variableCount + lVariableCount + size_tSize;
+    // FilenamesCount [FilenameSize, Filename] FunctionCount Variables LocalVariables OpCodeCount
+    size_t headerSize = size_tSize + (size_tSize * Lexer::filenames.size()) + filenamesSize + size_tSize + variableCount + lVariableCount + size_tSize;
     char* buffer = (char*)malloc((sizeof(char) * headerSize));
 
     size_t index = 0;
 
+    // Filenames
     addElement(buffer, index, Lexer::filenames.size(), size_tSize);
     for (size_t i = 0; i < Lexer::filenames.size(); i++)
     {
@@ -56,6 +57,10 @@ void Builder::buildCompiled(const char* filename, std::vector<OpCode>* OpCodes)
         index += Lexer::filenames[i].size();
     }
 
+    // Function Count
+    addElement(buffer, index, VM::getFunctionsSize(), size_tSize);
+
+    // Variables
     addElement(buffer, index, variables.size(), size_tSize);
     for (size_t i = 0; i < variables.size(); i++)
     {
@@ -64,6 +69,7 @@ void Builder::buildCompiled(const char* filename, std::vector<OpCode>* OpCodes)
         addValue(buffer, value, index);
     }
 
+    // Local Variables
     addElement(buffer, index, totalLVariableCount, size_tSize);
     for (size_t i = 0; i < lVariables.size(); i++)
     {
@@ -75,6 +81,7 @@ void Builder::buildCompiled(const char* filename, std::vector<OpCode>* OpCodes)
             addValue(buffer, value, index);
         }
     }
+
 
     addElement(buffer, index, OpCodes->size(), size_tSize);
 
@@ -94,6 +101,7 @@ void Builder::buildCompiled(const char* filename, std::vector<OpCode>* OpCodes)
 
         file.write(buffer, totalSize);
     }
+
 
     delete[] buffer;
 
@@ -136,8 +144,15 @@ void Builder::loadCompiled(const char* sourcePath)
         delete[] filename;
     }
 
-    // Variables
+    // Function Count
+    buffer = (char*)realloc(buffer, size_tSize);
+    file.read(buffer, size_tSize);
+    size_t functionCount;
+    readElement(buffer, functionCount, size_tSize);
 
+    for (size_t i = 0; i < functionCount; i++) VM::addFunction();
+
+    // Variables
     buffer = (char*)realloc(buffer, size_tSize);
     file.read(buffer, size_tSize);
     size_t variablesSize;
@@ -160,6 +175,7 @@ void Builder::loadCompiled(const char* sourcePath)
         VM::addGlobalVariable(op.value);
     }
 
+    // Local Variables
     buffer = (char*)realloc(buffer, size_tSize);
     file.read(buffer, size_tSize);
     size_t lVariablesSize;
@@ -193,7 +209,6 @@ void Builder::loadCompiled(const char* sourcePath)
     size_t opcodesLength;
     readElement(buffer, opcodesLength, size_tSize);
 
-    // buffer = (char*)realloc(buffer, sizeof(char) * s_BodySize);
     for (size_t i = 0; i < opcodesLength; i++)
     {
         size_t size = sizeof(char) * (enumSize + enumSize + size_tSize + size_tSize + size_tSize);
@@ -286,51 +301,33 @@ void Builder::readValue(std::ifstream& file, ValueType type, OpCode& code)
         vNull::readBuffer(file, code);
         break;
     case TYPE_INT:
-        {
-            vInt::readBuffer(file, code);
-            break;
-        }
+        vInt::readBuffer(file, code);
+        break;
     case TYPE_BOOL:
-        {
-            vBool::readBuffer(file, code);
-            break;
-        }
+        vBool::readBuffer(file, code);
+        break;
     case TYPE_CHAR:
-        {
-            vChar::readBuffer(file, code);
-            break;
-        }
+        vChar::readBuffer(file, code);
+        break;
     case TYPE_STRING:
-        {
-            vString::readBuffer(file, code);
-            break;
-        }
+        vString::readBuffer(file, code);
+        break;
     case TYPE_MEM_PTR:
-        {
-            vMemPtr::readBuffer(file, code);
-            break;
-        }
+        vMemPtr::readBuffer(file, code);
+        break;
 
     case TYPE_IP_OFFSET:
-        {
-            vIpOffset::readBuffer(file, code);
-            break;
-        }
+        vIpOffset::readBuffer(file, code);
+        break;
     case TYPE_FUNC:
-        {
-            vFunc::readBuffer(file, code);
-            break;
-        }
+        vFunc::readBuffer(file, code);
+        break;
     case TYPE_VAR:
-        {
-            vVar::readBuffer(file, code);
-            break;
-        }
+        vVar::readBuffer(file, code);
+        break;
     case TYPE_CONST:
-        {
-            vConst::readBuffer(file, code);
-            break;
-        }
+        vConst::readBuffer(file, code);
+        break;
 
     default:
         assert(false && "Unreachable");

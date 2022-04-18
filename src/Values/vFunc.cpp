@@ -51,9 +51,6 @@ void vFunc::readBuffer(std::ifstream& file, OpCode& code)
 
     vFunc* func = as_vFunc(code.value);
 
-    if (code.code == OP_FUNC && funcIndex != VM::addFunction())
-        assert(false && "Something has gone wrong");
-
     if (code.code == OP_FUNC)
         VM::addFunctionDefinition(code);
 
