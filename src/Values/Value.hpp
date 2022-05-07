@@ -293,8 +293,11 @@ struct vVar : Value
 struct vConst : Value
 {
     uint32_t constIndex;
+    bool inFunction;
+    uint32_t functionIndex;
 
-    vConst(uint32_t constIndex) : Value(TYPE_CONST), constIndex(constIndex) {}
+    vConst(uint32_t constIndex) : Value(TYPE_CONST), constIndex(constIndex), inFunction(false), functionIndex(0) {}
+    vConst(uint32_t constIndex, bool inFunction, uint32_t functionIndex) : Value(TYPE_CONST), constIndex(constIndex), inFunction(inFunction), functionIndex(functionIndex) {}
 
     size_t getSize() const;
     void writeBuffer(char* buffer, size_t& index) const;

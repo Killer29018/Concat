@@ -3,3 +3,4 @@ const C2 "Hello World"
 
 C1 print cr
 C2 print cr
+C1 30 + print cr

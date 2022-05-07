@@ -3,6 +3,7 @@
 #include <cstring>
 #include <cstdlib>
 
+#include "SmartPointer.hpp"
 #include "VM.hpp"
 #include "Error.hpp"
 
@@ -326,11 +327,6 @@ void Compiler::startCompiler()
 
             case TOKEN_CONST:
                 {
-                    if (m_InFunction)
-                    {
-                        Error::compilerError(t, "Cannot define constants in Func");
-                    }
-
                     if (ip == m_Tokens.size() - 1)
                     {
                         Error::compilerError(t, "Expected Type but found EOF instead");
@@ -343,6 +339,17 @@ void Compiler::startCompiler()
                     {
                         Error::compilerError(t, "Expected type but found %s instead", word);
                         exit(-1);
+                    }
+
+                    if (m_InFunction)
+                    {
+                        vFunc* func = VM::getFunction(m_CurrentFunctionIndex);
+                        uint32_t position = VM::addLocalConstant(m_CurrentFunctionIndex);
+
+                        m_LocalConstants[m_CurrentFunctionIndex][stringWord] = position;
+                        code.code = OP_CREATE_CONST;
+                        code.value = makeSmartPointer<vConst>(position, true, m_CurrentFunctionIndex);
+                        VM::addOpCode(code);
                     }
                     else
                     {
@@ -358,14 +365,40 @@ void Compiler::startCompiler()
                 }
             case TOKEN_CALL_CONST:
                 {
-                    if (m_GlobalConstants.find(stringWord) != m_GlobalConstants.end())
+                    bool checkGlobal = true;
+                    if (m_InFunction)
                     {
-                        uint32_t index = m_GlobalConstants[stringWord];
-                        code.code = OP_CONST;
-                        code.value = makeSmartPointer<vConst>(index);
-                        VM::addOpCode(code);
+                        auto position = m_LocalConstants[m_CurrentFunctionIndex].find(stringWord);
+                        if (position != m_LocalVariables[m_CurrentFunctionIndex].end())
+                        {
+                            checkGlobal = false;
+                            code.code = OP_CONST;
+                            code.value = makeSmartPointer<vConst>(position->second, true, m_CurrentFunctionIndex);
+                            VM::addOpCode(code);
+                            ip++;
+                            break;
+                        }
                     }
 
+                    if (checkGlobal)
+                    {
+                        auto position = m_GlobalConstants.find(stringWord);
+                        if (position == m_GlobalConstants.end())
+                        {
+                            m_Error = true;
+                            ip++;
+                            break;
+                        }
+
+                        code.code = OP_CONST;
+                        code.value = makeSmartPointer<vConst>(position->second);
+                        VM::addOpCode(code);
+                        ip++;
+                        break;
+                    }
+
+                    Error::compilerError(t, "Could not find constant '%s'", word);
+                    m_Error = true;
                     ip++;
                     break;
                 }
@@ -415,10 +448,7 @@ void Compiler::startCompiler()
                     if (m_InFunction)
                     {
                         auto position = m_LocalVariables[m_CurrentFunctionIndex].find(stringWord);
-                        if (position == m_LocalVariables[m_CurrentFunctionIndex].end())
-                        {
-                        }
-                        else
+                        if (position != m_LocalVariables[m_CurrentFunctionIndex].end())
                         {
                             checkGlobal = false;
                             code.code = OP_VAR;

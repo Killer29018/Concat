@@ -40,7 +40,7 @@ public:
     static uint32_t addGlobalConstant();
 
     static uint32_t addLocalVariable(uint32_t funcIndex, SmartPointer value);
-    static uint32_t addLocalConstant();
+    static uint32_t addLocalConstant(uint32_t funcIndex);
 
     static size_t getMemorySize() { return m_Memory.size(); }
     static std::vector<SmartPointer>& getVariables() { return m_GlobalVariables; }
@@ -54,7 +54,7 @@ public:
 
     static void build(const char* filename);
 
-    static void clear() { m_OpCodes.clear(); m_Memory.clear(); m_MemoryNames.clear(); m_Functions.clear(); m_FunctionDefinitions.clear(); m_GlobalConstants.clear(); m_GlobalVariables.clear(); }
+    static void clear() { m_OpCodes.clear(); m_Memory.clear(); m_MemoryNames.clear(); m_Functions.clear(); m_FunctionDefinitions.clear(); m_GlobalConstants.clear(); m_GlobalVariables.clear(); m_LocalVariables.clear(); m_LocalConstants.clear(); }
 private:
     VM() = default;
     ~VM() = default;

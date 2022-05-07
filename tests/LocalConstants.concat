@@ -1,0 +1,6 @@
+func add10 int --> int define
+    const addition 10
+    addition +
+endfunc
+
+20 dup add10 swap print cr print cr

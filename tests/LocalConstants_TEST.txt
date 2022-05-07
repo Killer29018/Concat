@@ -1,26 +1,23 @@
 --------------------------------------------------
-Const.concat
+LocalConstants.concat
 --stdout--
-10
-Hello World
-40
+20
+30
 
 --stderr--
 
 --build run stdout--
-Created tests/Const.concat_bin
+Created tests/LocalConstants.concat_bin
 
-Running tests/Const.concat_bin: 
-10
-Hello World
-40
+Running tests/LocalConstants.concat_bin: 
+20
+30
 
 --build run stderr--
 
 --build stdout--
-10
-Hello World
-40
+20
+30
 
 --build stderr--
 

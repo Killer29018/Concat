@@ -99,8 +99,12 @@ uint32_t VM::addGlobalConstant()
 uint32_t VM::addLocalVariable(uint32_t funcIndex, SmartPointer value)
 {
     m_LocalVariables[funcIndex].push_back(value);
-
     return m_LocalVariables[funcIndex].size() - 1;
+}
+uint32_t VM::addLocalConstant(uint32_t funcIndex)
+{
+    m_LocalConstants[funcIndex].emplace_back();
+    return m_LocalConstants[funcIndex].size() - 1;
 }
 
 void VM::printOpCodes()
@@ -471,7 +475,15 @@ void VM::simulate()
                 OpCode* value = &m_OpCodes.at(ip + 1);
                 vConst* constValue = as_vConst(op.value);
 
-                m_GlobalConstants[constValue->constIndex] = value->value;
+                if (constValue->inFunction)
+                {
+                    m_LocalConstants[m_CurrentFuncIndex][constValue->constIndex] = value->value;
+                }
+                else
+                {
+                    m_GlobalConstants[constValue->constIndex] = value->value;
+                }
+
 
                 ip += 2;
                 break;
@@ -480,7 +492,15 @@ void VM::simulate()
             {
                 vConst* constValue = as_vConst(op.value);
 
-                m_Stack.push(m_GlobalConstants[constValue->constIndex]);
+                if (constValue->inFunction)
+                {
+                    m_Stack.push(m_LocalConstants[m_CurrentFuncIndex][constValue->constIndex]);
+                }
+                else
+                {
+                    m_Stack.push(m_GlobalConstants[constValue->constIndex]);
+                }
+
                 ip++;
                 break;
             }

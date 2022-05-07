@@ -6,29 +6,56 @@
 
 size_t vConst::getSize() const
 {
-    return enumSize + sizeof(uint32_t);
+    return enumSize + sizeof(uint32_t) + sizeof(bool) + sizeof(uint32_t);
 }
 
 void vConst::writeBuffer(char* buffer, size_t& index) const
 {
-    Builder::addElement(buffer, index, constIndex, sizeof(constIndex));
+    Builder::addElement(buffer, index, inFunction, sizeof(bool));
+    Builder::addElement(buffer, index, functionIndex, sizeof(uint32_t));
+    Builder::addElement(buffer, index, constIndex, sizeof(uint32_t));
 }
 
 void vConst::readBuffer(std::ifstream& file, OpCode& code)
 {
-    uint32_t value;
-    constexpr size_t size = sizeof(char) * sizeof(value);
+    uint32_t index;
+    bool inFunction;
+    uint32_t functionIndex;
+
+    size_t size = sizeof(char) * sizeof(inFunction);
     char* buffer = (char*)malloc(size);
     file.read(buffer, size);
+    Builder::readElement(buffer, inFunction, sizeof(inFunction));
 
-    Builder::readElement(buffer, value, sizeof(value));
+    size = sizeof(char) * sizeof(functionIndex);
+    buffer = (char*)realloc(buffer, size);
+    file.read(buffer, size);
+    Builder::readElement(buffer, functionIndex, sizeof(functionIndex));
 
-    if (code.code == OP_CREATE_CONST && value != VM::addGlobalConstant())
+    size = sizeof(char) * sizeof(index);
+    buffer = (char*)realloc(buffer, size);
+    file.read(buffer, size);
+    Builder::readElement(buffer, index, sizeof(index));
+
+    code.value = makeSmartPointer<vConst>(index, inFunction, functionIndex);
+
+    if (code.code == OP_CREATE_CONST)
     {
-        assert(false && "Something has gone wrong");
-    }
+        uint32_t pos;
+        if (inFunction)
+        {
+            pos = VM::addLocalConstant(functionIndex);
+        }
+        else
+        {
+            pos = VM::addGlobalConstant();
+        }
 
-    code.value = makeSmartPointer<vConst>(value);
+        if (pos != index)
+        {
+            assert(false && "Something has gone wrong");
+        }
+    }
     
     delete buffer;
 }
